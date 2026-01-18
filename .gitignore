@@ -1,0 +1,21 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyd
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Envs
+.venv/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Data (keep raw data out of git)
+data/raw/
+data/processed/
+
+# OS / Editor
+.DS_Store
+.vscode/*.log

@@ -1,0 +1,15 @@
+{
+  "editor.formatOnSave": true,
+
+  "editor.suggest.autoImports": false,
+  "javascript.suggest.autoImports": false,
+  "typescript.suggest.autoImports": false,
+  "python.analysis.autoImportCompletions": false,
+
+  "[python]": {
+    "editor.defaultFormatter": "charliermarsh.ruff",
+    "editor.formatOnSave": true
+  },
+
+  "python.defaultInterpreterPath": "${workspaceFolder}/.venv/bin/python"
+}
