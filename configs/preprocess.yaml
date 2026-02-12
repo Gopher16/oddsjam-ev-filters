@@ -1,0 +1,158 @@
+# ==============================================================================
+# OddsJam Bet Tracker Preprocessing Config (preprocess.yaml)
+# ==============================================================================
+# Purpose
+# -------
+# This config drives scripts/preprocess_bet_tracker.py which:
+#   - loads an OddsJam Bet Tracker CSV export
+#   - standardizes timestamps to America/New_York
+#   - applies optional date cutoffs and filter-name normalization
+#   - adds feature engineering (liquidity buckets, time-to-event buckets, EV/ROI fields)
+#   - generates QA artifacts (field validation, duplicate audits, status summaries)
+#   - writes:
+#       (a) a "processed" parquet (canonical dataset)
+#       (b) an optional "settled-only" parquet (subset inferred by status + profit-known rate)
+#
+# Key Concepts
+# ------------
+# - "Processed parquet" is the canonical dataset for analysis and (by default) includes
+#   ALL rows (settled + unresolved).
+# - "Settled-only parquet" is a convenience output created by inferring settled statuses.
+# - Status behavior is intentionally split into TWO independent controls:
+#     1) status_settlement.exclude_statuses_for_settled_inference:
+#        statuses excluded ONLY from settlement inference logic
+#     2) status_settlement.exclude_statuses_from_processed:
+#        optional toggle to drop unresolved statuses from the processed output too
+#
+# Liquidity Buckets
+# -----------------
+# - The preprocessing script can produce either:
+#     (a) "raw" / source-like liquidity buckets (many small bands), OR
+#     (b) a condensed scheme (recommended for analysis).
+# - The condensed scheme is configured under liquidity.condensed_* and can be changed
+#   without touching code.
+#
+# Backwards Compatibility
+# -----------------------
+# Older configs used status_settlement.exclude_statuses for inference.
+# That key is still supported, but prefer the newer keys for clarity.
+# ==============================================================================
+
+raw_csv_path: data/raw/oddsjam-bet-tracker-02-06-2026.csv
+output_dir: data/processed
+artifacts_dir: data/processed/artifacts
+
+# optional; if omitted script auto-stamps
+# run_id: 2026-02-09
+
+# Optional: only keep rows on/after this date
+cutoff_date: "2025-03-22"
+
+timestamps:
+  src_col: created_at
+  out_col: created_at_et
+  # Raw CSV is already EST/ET, so tz-naive timestamps should be localized to ET
+  assume_tz_for_naive: America/New_York
+  also_write_created_at_est: true
+
+filters:
+  filter_col: saved_filter_names
+  null_label: "No Filter"
+  fantasy_optimizer_fill:
+    enabled: false
+    stake_col: stake
+    max_stake: 20
+    label: "TEST - Fantasy Optimizer"
+
+liquidity:
+  liquidity_col: liquidity
+  tags_col: tags
+  out_bucket_col: liquidity_bucket
+
+  # Condensed bucketing config
+  condensed:
+    enabled: true
+    # The target bucket labels you want
+    labels: ["<=500", "500-1k", "1k-2k", "2k-5k", "5k-10k", ">10k"]
+    # Boundaries interpreted as dollars. Must be len(labels)+1
+    # Here: (-inf..500], (500..1000], (1000..2000], (2000..5000], (5000..10000], (10000..inf)
+    edges: [-inf, 500, 1000, 2000, 5000, 10000, inf]
+
+# Time-to-event bucketing (event_start_date - created_at_et)
+time_to_event:
+  enabled: true
+  # created_col defaults to created_at_et in the script, but set explicitly for clarity
+  created_col: created_at_et
+  event_start_col: event_start_date
+  out_col: time_to_event_bucket
+  tz: America/New_York
+  # bets placed after event start (negative delta) get this label
+  label_after_start: after_start
+
+qa:
+  stake_col: stake
+  odds_col: odds
+  profit_col: bet_profit
+  duplicate_keys:
+    - ["id"]
+    - ["bet_id"]
+    - ["sportsbook", "created_at_et", "stake", "odds", "bet_profit"]
+    - ["sportsbook", "event", "market", "bet_name", "odds", "stake"]
+    - ["sportsbook", "event_id", "market", "bet_name", "odds", "stake"]
+    - ["sportsbook", "league", "sport", "market", "bet_name", "odds", "stake"]
+    - ["sportsbook", "bet_name", "market", "odds", "stake", "created_at_et"]
+    - ["sportsbook", "bet_name", "market", "odds", "stake"]
+
+# Artifact-dedupe switch (OFF by default)
+dedupe_artifacts:
+  enabled: false
+  strategy: earliest        # earliest | latest | max_stake
+  scope: within_filter      # within_filter | across_filters
+  time_col: created_at_et
+  stake_col: stake
+  filter_col: saved_filter_names
+  identity_cols:
+    - sportsbook
+    - event_id
+    - event
+    - league
+    - sport
+    - market
+    - bet_name
+    - selection
+    - odds
+    - line
+
+# EV feature engineering
+ev_features:
+  enabled: true
+  odds_col: odds
+  clv_col: clv
+  stake_col: stake
+
+# Status behavior -> infer settled -> build df_settled
+status_settlement:
+  enabled: true
+  status_col: status
+  stake_col: stake
+  profit_col: bet_profit
+  profit_known_threshold: 0.95
+
+  # Used ONLY when inferring settled statuses (recommended)
+  exclude_statuses_for_settled_inference: ["pending", "open", "unsettled"]
+
+  # Optional, affects processed parquet too
+  # - false (default): processed parquet keeps ALL rows
+  # - true: processed parquet excludes the statuses listed in exclude_statuses_for_settled_inference
+  exclude_statuses_from_processed: true
+
+as_of_date: "02-06-2026"  # MM-DD-YYYY
+
+output:
+  name_template: "oddsjam-bet-tracker-processed-{as_of_date}.parquet"
+
+  # Optional convenience file for notebooks (set null to disable)
+  stable_name: "oddsjam-bet-tracker-processed-latest.parquet"
+
+  # Optional settled-only parquet (set null/omit to disable)
+  settled_name_template: "oddsjam-bet-tracker-settled-{as_of_date}.parquet"
