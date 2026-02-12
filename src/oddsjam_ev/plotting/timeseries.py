@@ -10,50 +10,32 @@ from matplotlib.dates import AutoDateLocator, ConciseDateFormatter
 from matplotlib.ticker import FuncFormatter
 
 
-# -----------------------------------------------------------------------------
-# Helpers
-# -----------------------------------------------------------------------------
 def _fmt_dollars(x: float, _pos: int) -> str:
     return f"${x:,.0f}"
 
 
 def _to_plot_time(s: pd.Series) -> pd.Series:
-    """
-    Convert a datetime-like series to tz-naive timestamps for matplotlib.
-    """
     dt = pd.to_datetime(s, errors="coerce")
     if pd.api.types.is_datetime64tz_dtype(dt):
         return dt.dt.tz_localize(None)
     return dt
 
 
-def _normalize_filters(filters: object) -> list[str]:
-    """
-    Ensure filters is a list[str] and NOT a single string.
-    """
+def _normalize_filters(df: pd.DataFrame, filters: object, *, filter_col: str) -> list[str]:
     if filters is None:
         return []
     if isinstance(filters, str):
-        raise TypeError("filters must be a list/Index of filter names, not a single string.")
-    if isinstance(filters, (pd.Index, np.ndarray, tuple, set)):
+        return [str(filters)]
+    if isinstance(filters, (pd.Index, np.ndarray, tuple, set, list)):
         return [str(x) for x in list(filters)]
-    if isinstance(filters, list):
-        return [str(x) for x in filters]
     if isinstance(filters, Iterable):
         return [str(x) for x in list(filters)]
     raise TypeError(f"Unsupported filters type: {type(filters)}")
 
 
 def top_n_filters_by_metric(
-    filter_summary: pd.DataFrame,
-    *,
-    metric: str,
-    n: int,
-    ascending: bool = False,
+    filter_summary: pd.DataFrame, *, metric: str, n: int, ascending: bool = False
 ) -> list[str]:
-    """
-    Return top N filter names from a filter_summary dataframe (index = filter names).
-    """
     if metric not in filter_summary.columns:
         raise KeyError(f"metric '{metric}' not found in filter_summary columns")
     return (
@@ -63,6 +45,7 @@ def top_n_filters_by_metric(
 
 # -----------------------------------------------------------------------------
 # Cumulative profit over time (one line per filter)
+# NOTE: This plot already has a natural "global" view: filters=None => all filters.
 # -----------------------------------------------------------------------------
 @dataclass(frozen=True)
 class CumProfitPlotConfig:
@@ -104,7 +87,7 @@ def plot_cum_profit_top_filters(
 def plot_cumulative_profit_over_time(
     df: pd.DataFrame,
     *,
-    filters: list[str] | pd.Index | np.ndarray,
+    filters: object = None,
     cfg: CumProfitPlotConfig | None = None,
     filter_col: str = "saved_filter_names",
     time_col: str = "created_at_est",
@@ -112,13 +95,20 @@ def plot_cumulative_profit_over_time(
     title: str | None = None,
 ) -> None:
     cfg = cfg or CumProfitPlotConfig()
-    filters_list = _normalize_filters(filters)
-    if not filters_list:
-        raise ValueError("Provide a non-empty list of filters.")
 
     for c in [filter_col, time_col, profit_col]:
         if c not in df.columns:
             raise KeyError(f"Missing required column: {c}")
+
+    # filters=None => all filters (existing behavior)
+    if filters is None:
+        filters_list = sorted(df[filter_col].dropna().astype(str).unique().tolist())
+    else:
+        filters_list = _normalize_filters(df, filters, filter_col=filter_col)
+
+    if not filters_list:
+        print("No filters found to plot.")
+        return
 
     sub = df[df[filter_col].isin(filters_list)].copy()
     if sub.empty:
@@ -128,7 +118,6 @@ def plot_cumulative_profit_over_time(
     sub["plot_time"] = _to_plot_time(sub[time_col])
     sub[profit_col] = pd.to_numeric(sub[profit_col], errors="coerce")
     sub = sub.dropna(subset=["plot_time", profit_col])
-
     if sub.empty:
         print("No rows remain after parsing time/profit.")
         return
@@ -155,7 +144,6 @@ def plot_cumulative_profit_over_time(
             .rename("cum_profit")
             .reset_index()
         )
-
         for f in filters_list:
             g = res[res[filter_col] == f]
             if len(g) < cfg.min_points_per_line:
@@ -166,7 +154,8 @@ def plot_cumulative_profit_over_time(
         ax.axhline(0, color="red", linestyle="--", linewidth=1.5)
 
     ax.set_title(
-        title or f"{cfg.title_prefix}Top {len(filters_list)} Filters",
+        title
+        or f"{cfg.title_prefix}{'ALL Filters' if filters is None else f'{len(filters_list)} Filters'}",
         fontsize=14,
         fontweight="bold",
     )
@@ -182,23 +171,13 @@ def plot_cumulative_profit_over_time(
     if cfg.grid:
         ax.grid(True, linestyle="--", alpha=0.3)
 
-    lines = ax.get_lines()
-    if lines:
-        ys = np.concatenate([ln.get_ydata() for ln in lines if len(ln.get_ydata())])
-        ymin, ymax = float(np.nanmin(ys)), float(np.nanmax(ys))
-    else:
-        ymin, ymax = 0.0, 0.0
-
-    pad = max(abs(ymin), abs(ymax)) * cfg.y_pad_frac + 1e-9
-    ax.set_ylim(ymin - pad, ymax + pad)
-
     ax.legend(title="Saved Filter", frameon=False, ncol=1, loc="best")
     plt.tight_layout()
     plt.show()
 
 
 # -----------------------------------------------------------------------------
-# Cumulative profit by group (one figure per filter; line per group)
+# Cumulative profit by group (ONE FIGURE global; ONE FIGURE per specified filter)
 # -----------------------------------------------------------------------------
 @dataclass(frozen=True)
 class CumProfitByGroupPlotConfig(CumProfitPlotConfig):
@@ -211,22 +190,94 @@ CumProfitByGroupConfig = CumProfitByGroupPlotConfig  # backwards-compatible alia
 def plot_cum_profit_by_group(
     df: pd.DataFrame,
     *,
-    filters: list[str] | pd.Index | np.ndarray,
     group_col: str,
+    filters: object = None,
+    global_view: bool = True,
     cfg: CumProfitByGroupPlotConfig | None = None,
     filter_col: str = "saved_filter_names",
     time_col: str = "created_at_est",
     profit_col: str = "bet_profit",
     min_points_per_line: int | None = None,
 ) -> None:
+    """
+    Desired behavior:
+      1) Global unfiltered plot:
+           filters=None, global_view=True -> ONE figure (all filters combined), lines by group_col
+      2) Single-filter plot:
+           filters="Filter A" -> ONE figure, lines by group_col within that filter
+      3) Multiple explicit filters:
+           filters=[...] -> one figure per filter (existing behavior)
+    """
     cfg = cfg or CumProfitByGroupPlotConfig()
-    filters_list = _normalize_filters(filters)
-    if not filters_list:
-        raise ValueError("Provide a non-empty list of filters.")
+    mpl = min_points_per_line if min_points_per_line is not None else cfg.min_points_per_line
 
-    for c in [filter_col, group_col, time_col, profit_col]:
+    for c in [group_col, time_col, profit_col]:
         if c not in df.columns:
             raise KeyError(f"Missing required column: {c}")
+
+    if filters is None and global_view:
+        # --- one global figure, all filters combined
+        sub = df.copy()
+        sub["plot_time"] = _to_plot_time(sub[time_col])
+        sub[profit_col] = pd.to_numeric(sub[profit_col], errors="coerce")
+        sub = sub.dropna(subset=["plot_time", profit_col, group_col])
+        if sub.empty:
+            print("No rows remain after parsing time/profit/group.")
+            return
+
+        fig, ax = plt.subplots(figsize=cfg.figsize)
+
+        if cfg.resample is None:
+            sub = sub.sort_values([group_col, "plot_time"])
+            sub["cum_profit"] = sub.groupby(group_col)[profit_col].cumsum()
+            for grp, g in sub.groupby(group_col):
+                if len(g) < mpl:
+                    continue
+                ax.plot(g["plot_time"], g["cum_profit"], label=str(grp), linewidth=cfg.linewidth)
+        else:
+            res = (
+                sub.set_index("plot_time")
+                .groupby(group_col)[profit_col]
+                .resample(cfg.resample)
+                .sum()
+                .groupby(level=0)
+                .cumsum()
+                .rename("cum_profit")
+                .reset_index()
+            )
+            for grp, g in res.groupby(group_col):
+                if len(g) < mpl:
+                    continue
+                ax.plot(g["plot_time"], g["cum_profit"], label=str(grp), linewidth=cfg.linewidth)
+
+        if cfg.zero_line:
+            ax.axhline(0, color="red", linestyle="--", linewidth=1.5)
+
+        ax.set_title(f"{cfg.title_prefix}ALL FILTERS (by {group_col})", fontsize=13)
+        ax.set_xlabel("Date")
+        ax.set_ylabel("Cumulative Profit ($)")
+        ax.yaxis.set_major_formatter(FuncFormatter(_fmt_dollars))
+
+        locator = AutoDateLocator()
+        ax.xaxis.set_major_locator(locator)
+        ax.xaxis.set_major_formatter(ConciseDateFormatter(locator))
+        fig.autofmt_xdate()
+
+        if cfg.grid:
+            ax.grid(True, linestyle="--", alpha=0.3)
+
+        ax.legend(title=group_col, frameon=False, ncol=cfg.legend_ncol, loc="best")
+        plt.tight_layout()
+        plt.show()
+        return
+
+    # --- filtered mode(s)
+    if filter_col not in df.columns:
+        raise KeyError(f"Missing required column: {filter_col}")
+
+    filters_list = _normalize_filters(df, filters, filter_col=filter_col)
+    if not filters_list:
+        raise ValueError("Provide a filter name or list of filter names when global_view=False.")
 
     sub = df[df[filter_col].isin(filters_list)].copy()
     if sub.empty:
@@ -236,12 +287,9 @@ def plot_cum_profit_by_group(
     sub["plot_time"] = _to_plot_time(sub[time_col])
     sub[profit_col] = pd.to_numeric(sub[profit_col], errors="coerce")
     sub = sub.dropna(subset=["plot_time", profit_col])
-
     if sub.empty:
         print("No rows remain after parsing time/profit.")
         return
-
-    mpl = min_points_per_line if min_points_per_line is not None else cfg.min_points_per_line
 
     for f in filters_list:
         fdf = sub[sub[filter_col] == f].copy()
@@ -253,7 +301,6 @@ def plot_cum_profit_by_group(
         if cfg.resample is None:
             fdf = fdf.sort_values([group_col, "plot_time"])
             fdf["cum_profit"] = fdf.groupby(group_col)[profit_col].cumsum()
-
             for grp, g in fdf.groupby(group_col):
                 if len(g) < mpl:
                     continue
@@ -269,7 +316,6 @@ def plot_cum_profit_by_group(
                 .rename("cum_profit")
                 .reset_index()
             )
-
             for grp, g in res.groupby(group_col):
                 if len(g) < mpl:
                     continue
@@ -294,23 +340,13 @@ def plot_cum_profit_by_group(
         if cfg.grid:
             ax.grid(True, linestyle="--", alpha=0.3)
 
-        lines = ax.get_lines()
-        if lines:
-            ys = np.concatenate([ln.get_ydata() for ln in lines if len(ln.get_ydata())])
-            ymin, ymax = float(np.nanmin(ys)), float(np.nanmax(ys))
-        else:
-            ymin, ymax = 0.0, 0.0
-
-        pad = max(abs(ymin), abs(ymax)) * cfg.y_pad_frac + 1e-9
-        ax.set_ylim(ymin - pad, ymax + pad)
-
         ax.legend(title=group_col, frameon=False, ncol=cfg.legend_ncol, loc="best")
         plt.tight_layout()
         plt.show()
 
 
 # -----------------------------------------------------------------------------
-# Bet distribution over time (one figure per filter)
+# Bet distribution/count over time (ONE FIGURE global; ONE FIGURE per specified filter)
 # -----------------------------------------------------------------------------
 @dataclass(frozen=True)
 class BetDistributionOverTimePlotConfig:
@@ -326,24 +362,27 @@ class BetDistributionOverTimePlotConfig:
 def plot_bet_distribution_over_time(
     df: pd.DataFrame,
     *,
-    filters: list[str] | pd.Index | np.ndarray,
+    filters: object = None,
+    global_view: bool = True,
     cfg: BetDistributionOverTimePlotConfig | None = None,
     filter_col: str = "saved_filter_names",
     time_col: str = "created_at_est",
 ) -> None:
+    """
+    Desired behavior:
+      - Global plot (all filters combined): filters=None, global_view=True -> ONE figure
+      - Single filter plot: filters="Filter A" -> ONE figure
+    """
     cfg = cfg or BetDistributionOverTimePlotConfig()
-    filters_list = _normalize_filters(filters)
-    if not filters_list:
-        raise ValueError("Provide a non-empty list of filters.")
 
-    for c in [filter_col, time_col]:
+    for c in [time_col]:
         if c not in df.columns:
             raise KeyError(f"Missing required column: {c}")
 
-    sub = df[df[filter_col].isin(filters_list)].copy()
-    if sub.empty:
-        print("No rows match provided filters.")
-        return
+    sub = df.copy()
+    if filter_col in sub.columns and filters is not None:
+        filters_list = _normalize_filters(sub, filters, filter_col=filter_col)
+        sub = sub[sub[filter_col].isin(filters_list)].copy()
 
     sub["plot_time"] = _to_plot_time(sub[time_col])
     sub = sub.dropna(subset=["plot_time"])
@@ -351,23 +390,16 @@ def plot_bet_distribution_over_time(
         print("No rows remain after parsing time.")
         return
 
-    for f in filters_list:
-        fdf = sub[sub[filter_col] == f].copy()
-        if fdf.empty:
-            continue
-
-        s = fdf.set_index("plot_time").resample(cfg.resample).size().rename("n_bets").reset_index()
+    if filters is None and global_view:
+        s = sub.set_index("plot_time").resample(cfg.resample).size().rename("n_bets").reset_index()
         if len(s) < cfg.min_points:
-            continue
-
+            return
         fig, ax = plt.subplots(figsize=cfg.figsize)
-
         if cfg.kind == "bar":
             ax.bar(s["plot_time"], s["n_bets"])
         else:
             ax.plot(s["plot_time"], s["n_bets"], linewidth=2.0)
-
-        ax.set_title(f"{cfg.title_prefix}{f} (Resampled: {cfg.resample})", fontsize=12)
+        ax.set_title(f"{cfg.title_prefix}ALL FILTERS (Resampled: {cfg.resample})", fontsize=12)
         ax.set_xlabel("Date")
         ax.set_ylabel(cfg.y_label)
 
@@ -378,43 +410,69 @@ def plot_bet_distribution_over_time(
 
         if cfg.grid:
             ax.grid(True, linestyle="--", alpha=0.3)
-
         plt.tight_layout()
         plt.show()
+        return
+
+    # filtered mode: ONE figure already (either a single filter string, or a list combined by selection above)
+    label = "SELECTED FILTERS" if filters is not None else "ALL FILTERS"
+    if isinstance(filters, str):
+        label = str(filters)
+
+    s = sub.set_index("plot_time").resample(cfg.resample).size().rename("n_bets").reset_index()
+    if len(s) < cfg.min_points:
+        return
+
+    fig, ax = plt.subplots(figsize=cfg.figsize)
+    if cfg.kind == "bar":
+        ax.bar(s["plot_time"], s["n_bets"])
+    else:
+        ax.plot(s["plot_time"], s["n_bets"], linewidth=2.0)
+
+    ax.set_title(f"{cfg.title_prefix}{label} (Resampled: {cfg.resample})", fontsize=12)
+    ax.set_xlabel("Date")
+    ax.set_ylabel(cfg.y_label)
+
+    locator = AutoDateLocator()
+    ax.xaxis.set_major_locator(locator)
+    ax.xaxis.set_major_formatter(ConciseDateFormatter(locator))
+    fig.autofmt_xdate()
+
+    if cfg.grid:
+        ax.grid(True, linestyle="--", alpha=0.3)
+
+    plt.tight_layout()
+    plt.show()
 
 
-# Backwards-compatible public names (your __init__.py expects these)
 BetCountOverTimePlotConfig = BetDistributionOverTimePlotConfig
 
 
 def plot_bet_count_over_time(
     df: pd.DataFrame,
     *,
-    filters: list[str] | pd.Index | np.ndarray,
+    filters: object = None,
+    global_view: bool = True,
     cfg: BetCountOverTimePlotConfig | None = None,
     filter_col: str = "saved_filter_names",
     time_col: str = "created_at_est",
 ) -> None:
     cfg = cfg or BetCountOverTimePlotConfig()
     plot_bet_distribution_over_time(
-        df=df, filters=filters, cfg=cfg, filter_col=filter_col, time_col=time_col
+        df=df,
+        filters=filters,
+        global_view=global_view,
+        cfg=cfg,
+        filter_col=filter_col,
+        time_col=time_col,
     )
 
 
 # -----------------------------------------------------------------------------
-# Average bets by time bucket (dow/month/hour) — one figure per filter
+# Average bets by time bucket (ONE FIGURE global; ONE FIGURE per specified filter)
 # -----------------------------------------------------------------------------
 @dataclass(frozen=True)
 class AvgBetsByTimeBucketPlotConfig:
-    """
-    Plot average number of bets by:
-      - bucket="dow": average daily bet count by day-of-week (Mon..Sun)
-      - bucket="month": average daily bet count by month (YYYY-MM)
-      - bucket="hour": average bet count by hour of day (00:00..23:00)
-
-    Default is bucket="dow".
-    """
-
     bucket: str = "dow"  # "dow", "month", "hour"
     figsize: tuple[int, int] = (10, 4)
     kind: str = "bar"  # "bar" or "line"
@@ -427,18 +485,16 @@ class AvgBetsByTimeBucketPlotConfig:
 def plot_avg_bets_by_time_bucket(
     df: pd.DataFrame,
     *,
-    filters: list[str] | pd.Index | np.ndarray,
+    filters: object = None,
+    global_view: bool = True,
     cfg: AvgBetsByTimeBucketPlotConfig | None = None,
     filter_col: str = "saved_filter_names",
     time_col: str = "created_at_est",
     bucket: str | None = None,
 ) -> None:
     cfg = cfg or AvgBetsByTimeBucketPlotConfig()
-    filters_list = _normalize_filters(filters)
-    if not filters_list:
-        raise ValueError("Provide a non-empty list of filters.")
 
-    for c in [filter_col, time_col]:
+    for c in [time_col]:
         if c not in df.columns:
             raise KeyError(f"Missing required column: {c}")
 
@@ -446,10 +502,15 @@ def plot_avg_bets_by_time_bucket(
     if use_bucket not in {"dow", "month", "hour"}:
         raise ValueError("bucket must be one of: 'dow', 'month', 'hour'")
 
-    sub = df[df[filter_col].isin(filters_list)].copy()
-    if sub.empty:
-        print("No rows match provided filters.")
-        return
+    sub = df.copy()
+    label = "ALL FILTERS"
+    if filter_col in sub.columns and filters is not None:
+        filters_list = _normalize_filters(sub, filters, filter_col=filter_col)
+        sub = sub[sub[filter_col].isin(filters_list)].copy()
+        if isinstance(filters, str):
+            label = str(filters)
+        else:
+            label = "SELECTED FILTERS"
 
     sub["plot_time"] = _to_plot_time(sub[time_col])
     sub = sub.dropna(subset=["plot_time"])
@@ -457,82 +518,68 @@ def plot_avg_bets_by_time_bucket(
         print("No rows remain after parsing time.")
         return
 
-    # FIX: always create day series once (prevents KeyError: 'day')
     sub["day"] = sub["plot_time"].dt.floor("D")
 
-    for f in filters_list:
-        fdf = sub[sub[filter_col] == f].copy()
-        if fdf.empty:
-            continue
+    # Build daily counts (for dow/month) or hourly counts (for hour)
+    if use_bucket in {"dow", "month"}:
+        daily = sub.groupby("day", dropna=False).size().rename("n_bets").reset_index()
 
-        if use_bucket in {"dow", "month"}:
-            daily = fdf.groupby("day", dropna=False).size().rename("n_bets").reset_index()
-
-            if use_bucket == "dow":
-                daily["dow"] = daily["day"].dt.dayofweek  # 0=Mon..6=Sun
-                out = (
-                    daily.groupby("dow", dropna=False)["n_bets"]
-                    .mean()
-                    .reset_index()
-                    .rename(columns={"n_bets": "avg_bets"})
-                )
-                dow_map = {0: "Mon", 1: "Tue", 2: "Wed", 3: "Thu", 4: "Fri", 5: "Sat", 6: "Sun"}
-                out["bucket_label"] = out["dow"].map(dow_map)
-
-                if cfg.sort:
-                    out = out.sort_values("dow")
-
-                x = out["bucket_label"]
-                title = f"{cfg.title_prefix}{f} (bucket=dow)"
-
-            else:
-                daily["month"] = daily["day"].dt.to_period("M").astype(str)
-                out = (
-                    daily.groupby("month", dropna=False)["n_bets"]
-                    .mean()
-                    .reset_index()
-                    .rename(columns={"n_bets": "avg_bets"})
-                )
-                if cfg.sort:
-                    out = out.sort_values("month")
-                out["bucket_label"] = out["month"]
-                x = out["bucket_label"]
-                title = f"{cfg.title_prefix}{f} (bucket=month)"
-
-        else:
-            fdf["hour"] = fdf["plot_time"].dt.hour
-            hourly_counts = fdf.groupby("hour", dropna=False).size().rename("n_bets").reset_index()
-
-            # For hour, "avg bets" is the average number of bets in that hour across the dataset window.
-            # That means: total bets in hour / number of unique days represented.
-            n_days = max(int(fdf["day"].nunique()), 1)
-            out = hourly_counts.copy()
-            out["avg_bets"] = out["n_bets"] / float(n_days)
-            out["bucket_label"] = out["hour"].astype(int).astype(str).str.zfill(2) + ":00"
-
+        if use_bucket == "dow":
+            daily["dow"] = daily["day"].dt.dayofweek
+            out = (
+                daily.groupby("dow", dropna=False)["n_bets"]
+                .mean()
+                .reset_index()
+                .rename(columns={"n_bets": "avg_bets"})
+            )
+            dow_map = {0: "Mon", 1: "Tue", 2: "Wed", 3: "Thu", 4: "Fri", 5: "Sat", 6: "Sun"}
+            out["bucket_label"] = out["dow"].map(dow_map)
             if cfg.sort:
-                out = out.sort_values("hour")
-
+                out = out.sort_values("dow")
             x = out["bucket_label"]
-            title = f"{cfg.title_prefix}{f} (bucket=hour)"
-
-        fig, ax = plt.subplots(figsize=cfg.figsize)
-
-        if cfg.kind == "line":
-            ax.plot(x, out["avg_bets"], linewidth=2.0)
+            title = f"{cfg.title_prefix}{label} (bucket=dow)"
         else:
-            ax.bar(x, out["avg_bets"])
+            daily["month"] = daily["day"].dt.to_period("M").astype(str)
+            out = (
+                daily.groupby("month", dropna=False)["n_bets"]
+                .mean()
+                .reset_index()
+                .rename(columns={"n_bets": "avg_bets"})
+            )
+            if cfg.sort:
+                out = out.sort_values("month")
+            out["bucket_label"] = out["month"]
+            x = out["bucket_label"]
+            title = f"{cfg.title_prefix}{label} (bucket=month)"
 
-        ax.set_title(title, fontsize=12)
-        ax.set_xlabel("Bucket")
-        ax.set_ylabel(cfg.y_label)
+    else:
+        sub["hour"] = sub["plot_time"].dt.hour
+        hourly_counts = sub.groupby("hour", dropna=False).size().rename("n_bets").reset_index()
+        n_days = max(int(sub["day"].nunique()), 1)
+        out = hourly_counts.copy()
+        out["avg_bets"] = out["n_bets"] / float(n_days)
+        out["bucket_label"] = out["hour"].astype(int).astype(str).str.zfill(2) + ":00"
+        if cfg.sort:
+            out = out.sort_values("hour")
+        x = out["bucket_label"]
+        title = f"{cfg.title_prefix}{label} (bucket=hour)"
 
-        if cfg.grid:
-            ax.grid(True, axis="y", linestyle="--", alpha=0.3)
+    fig, ax = plt.subplots(figsize=cfg.figsize)
+    if cfg.kind == "line":
+        ax.plot(x, out["avg_bets"], linewidth=2.0)
+    else:
+        ax.bar(x, out["avg_bets"])
 
-        for label in ax.get_xticklabels():
-            label.set_rotation(45)
-            label.set_ha("right")
+    ax.set_title(title, fontsize=12)
+    ax.set_xlabel("Bucket")
+    ax.set_ylabel(cfg.y_label)
 
-        plt.tight_layout()
-        plt.show()
+    if cfg.grid:
+        ax.grid(True, axis="y", linestyle="--", alpha=0.3)
+
+    for tick in ax.get_xticklabels():
+        tick.set_rotation(45)
+        tick.set_ha("right")
+
+    plt.tight_layout()
+    plt.show()

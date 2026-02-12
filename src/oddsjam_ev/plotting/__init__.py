@@ -1,13 +1,18 @@
 from __future__ import annotations
 
-# EV plots
+# -----------------------------------
+# EV bucket plots
+# -----------------------------------
 from .ev import (
     CombinedEVPlotConfig,
     CombinedEvPlotConfig,  # backwards-compatible alias
     combined_ev_summary_plot,
+    combined_ev_summary_plot_faceted_by_group,
 )
 
-# “Filters” plots (ROI scatter + profit-by-group)
+# -----------------------------------
+# ROI / filter-level plots
+# -----------------------------------
 from .filters import (
     ProfitByGroupPlotConfig,
     ProfitBySportPlotConfig,
@@ -17,10 +22,11 @@ from .filters import (
     plot_profit_by_sport_for_filters,
 )
 
-# Time series plots
+# -----------------------------------
+# Time-series / cumulative plots
+# -----------------------------------
 from .timeseries import (
     AvgBetsByTimeBucketPlotConfig,
-    # Bet activity plots (public names)
     BetCountOverTimePlotConfig,
     BetDistributionOverTimePlotConfig,
     CumProfitByGroupPlotConfig,
@@ -38,11 +44,12 @@ __all__ = [
     # ROI scatter
     "RoiScatterConfig",
     "plot_filter_roi_scatter",
-    # EV bucket chart
+    # EV bucket plots
     "CombinedEVPlotConfig",
     "CombinedEvPlotConfig",
     "combined_ev_summary_plot",
-    # time series
+    "combined_ev_summary_plot_faceted_by_group",
+    # cumulative profit / time series
     "top_n_filters_by_metric",
     "CumProfitPlotConfig",
     "plot_cumulative_profit_over_time",
