@@ -37,9 +37,9 @@ flowchart LR
 
 classDef stage fill:#1f2937,color:#ffffff,stroke:#4b5563,stroke-width:1px;
 
-csv[Raw CSV Export]:::stage --> 
-proc[Processed Parquet + QA Artifacts]:::stage --> 
-eda[EDA + Diagnostics Notebook]:::stage --> 
+csv[Raw CSV Export]:::stage
+proc[Processed Parquet + QA Artifacts]:::stage
+eda[EDA + Diagnostics Notebook]:::stage
 eval[Filter Evaluation + Promotion Decisions]:::stage
 
 csv --> proc --> eda --> eval
