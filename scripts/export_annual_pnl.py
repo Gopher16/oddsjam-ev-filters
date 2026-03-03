@@ -292,6 +292,19 @@ def _parse_date_yyyymmdd(s: str | None) -> pd.Timestamp | None:
     return pd.Timestamp(ts.date(), tz="UTC")
 
 
+def _normalize_sportsbook_token(s: Any) -> str:
+    """
+    Normalize sportsbook strings for robust matching.
+    - lower
+    - strip
+    - remove non-alphanumeric chars (spaces, punctuation)
+    """
+    if s is None or (isinstance(s, float) and pd.isna(s)):
+        return ""
+    raw = str(s).strip().lower()
+    return "".join(ch for ch in raw if ch.isalnum())
+
+
 def apply_oddsjam_sportsbook_include_filter(
     df: pd.DataFrame,
     sportsbook_col: str,
@@ -313,13 +326,19 @@ def apply_oddsjam_sportsbook_include_filter(
 
     If sportsbooks_include is empty/None, df is returned unchanged.
     If date range is required by mode but invalid/missing, falls back to whitelist_global.
+
+    Note:
+    - Matching is robust to punctuation/spacing differences, e.g. "BetUS (Offshore)" will match
+      include token "BetUS" via normalized prefix matching.
     """
     if not sportsbooks_include:
         return df
 
-    include_norm = {s.strip().lower() for s in sportsbooks_include}
-    sb = df[sportsbook_col].astype(str).str.strip().str.lower()
-    is_in_list = sb.isin(include_norm)
+    include_norm = {_normalize_sportsbook_token(s) for s in sportsbooks_include if str(s).strip()}
+    sb_norm = df[sportsbook_col].map(_normalize_sportsbook_token)
+
+    # "BetUS" should match "BetUS (Offshore)" etc.
+    is_in_list = sb_norm.apply(lambda x: any(x == t or x.startswith(t) for t in include_norm))
 
     mode = (mode or "whitelist_global").strip().lower()
     if mode == "whitelist_global":
@@ -949,6 +968,10 @@ def main() -> None:
     # Add source column (must be first column per requirement)
     if "source" not in raw_pikkit_tax.columns:
         raw_pikkit_tax.insert(0, "source", "pikkit")
+    elif list(raw_pikkit_tax.columns)[0] != "source":
+        src = raw_pikkit_tax["source"] if "source" in raw_pikkit_tax.columns else "pikkit"
+        raw_pikkit_tax = raw_pikkit_tax.drop(columns=["source"]).copy()
+        raw_pikkit_tax.insert(0, "source", src)
 
     pikkit_cols = list(raw_pikkit_tax.columns)
     betlog_parts: list[pd.DataFrame] = [raw_pikkit_tax]
