@@ -43,18 +43,18 @@ inputs:
   # REQUIRED: Pikkit must be enabled with a valid csv_path
   pikkit:
     enabled: true
+    # NOTE: you had ".csv.csv" in your example; keep only one ".csv"
     csv_path: "data/raw/pikkit-bet-history-2025.csv"
 
   # OPTIONAL: set to null to disable OddsJam
-  oddsjam: true
   oddsjam:
     enabled: true
     csv_path: "data/raw/oddsjam-bet-tracker-02-06-2026.csv"
-  
+
     # Optional sportsbook whitelist (case-insensitive exact match).
     sportsbooks_include:
       - "BetUS"
-  
+
     # - whitelist_global: always only include sportsbooks_include
     # - whitelist_only: within date range only include sportsbooks_include; outside range include all
     # - whitelist_date_range_only: only include rows in range AND in sportsbooks_include
@@ -62,7 +62,7 @@ inputs:
     sportsbooks_include_date_range:
       start_date: "2025-01-01"
       end_date: "2025-12-31"
-  
+
     # Column detection for OddsJam Bet Tracker exports (schema varies).
     # NOTE: Your file uses `created_at` (included here).
     column_map:
@@ -85,7 +85,7 @@ inputs:
       status: ["Result", "status", "Outcome"]
       bet_type: ["Type", "bet_type", "Bet Type"]
       profit: ["Profit", "profit", "Net Profit", "net_profit", "P/L", "pl"]
-  
+
     status_map:
       win: ["WIN", "WON", "SETTLED_WIN"]
       loss: ["LOSS", "LOST", "SETTLED_LOSS"]

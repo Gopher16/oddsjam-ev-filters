@@ -32,6 +32,11 @@ Key Features
     - Grouped rollups (configurable)
     - Raw Union sheet (optional)
 
+Important Excel Note
+--------------------
+Excel does not support timezone-aware datetimes. We parse timestamps with utc=True
+for correctness, then convert to timezone-naive UTC before writing to Excel.
+
 Run
 ---
 poetry run python scripts/export_annual_pnl.py --config configs/annual_pnl_export.yaml
@@ -64,7 +69,7 @@ from openpyxl.worksheet.worksheet import Worksheet
 NORMALIZED_COLUMNS = [
     "source",  # pikkit | oddsjam | manual
     "bet_id",  # best-effort (pikkit has it; oddsjam/manual may be NA)
-    "created_dt",  # UTC timestamp
+    "created_dt",  # UTC timestamp (timezone-naive before Excel export)
     "created_date",  # YYYY-MM-DD (string)
     "tax_month",  # YYYY-MM (string)
     "sportsbook",
@@ -129,6 +134,31 @@ def _first_present_col(df: pd.DataFrame, candidates: Sequence[str]) -> str | Non
 
 def _to_float(series: pd.Series) -> pd.Series:
     return pd.to_numeric(series, errors="coerce")
+
+
+def _make_excel_safe_datetime(df: pd.DataFrame, col: str = "created_dt") -> pd.DataFrame:
+    """
+    Excel does not support timezone-aware datetimes.
+
+    If df[col] is tz-aware, convert to timezone-naive while preserving UTC clock time:
+      tz-aware UTC -> tz-naive (same timestamps displayed, but tz removed)
+    """
+    if col not in df.columns:
+        return df
+
+    if not pd.api.types.is_datetime64_any_dtype(df[col]):
+        return df
+
+    # If tz-aware, drop tz
+    try:
+        if getattr(df[col].dt, "tz", None) is not None:
+            df[col] = df[col].dt.tz_convert("UTC").dt.tz_localize(None)
+    except Exception:
+        # best-effort fallback
+        s = pd.to_datetime(df[col], utc=True, errors="coerce")
+        df[col] = s.dt.tz_convert("UTC").dt.tz_localize(None)
+
+    return df
 
 
 def american_to_decimal(odds: float) -> float | None:
@@ -322,7 +352,7 @@ def load_config(path: str) -> Config:
 def read_pikkit(
     cfg: SourceCfg, date_field: str, tax_year: int
 ) -> tuple[pd.DataFrame, dict[str, int]]:
-    df = pd.read_csv(cfg.csv_path)
+    df = pd.read_csv(cfg.csv_path, low_memory=False)
 
     required = {
         "bet_id",
@@ -369,7 +399,6 @@ def read_pikkit(
         }
     )
 
-    # Pikkit: compute potential_payout for reference
     odds_dec = out["odds"].apply(american_to_decimal)
     out["potential_payout"] = out["stake"] * odds_dec
 
@@ -377,6 +406,8 @@ def read_pikkit(
     out = out[out["created_dt"].dt.year == tax_year].copy()
     dropped = before - len(out)
 
+    # Make Excel-safe BEFORE generating tax_month to avoid tz warnings
+    out = _make_excel_safe_datetime(out, "created_dt")
     out["created_date"] = out["created_dt"].dt.date.astype(str)
     out["tax_month"] = out["created_dt"].dt.to_period("M").astype(str)
 
@@ -389,7 +420,7 @@ def read_pikkit(
 
 
 def read_oddsjam(cfg: SourceCfg, tax_year: int) -> tuple[pd.DataFrame, dict[str, int]]:
-    df = pd.read_csv(cfg.csv_path)
+    df = pd.read_csv(cfg.csv_path, low_memory=False)
 
     if not cfg.column_map:
         raise ValueError("OddsJam enabled but inputs.oddsjam.column_map is missing in YAML.")
@@ -457,13 +488,13 @@ def read_oddsjam(cfg: SourceCfg, tax_year: int) -> tuple[pd.DataFrame, dict[str,
         }
     )
 
-    # compute potential_payout + fill bet_profit if missing
     out = compute_profit_and_payout_from_status_odds_stake(out)
 
     before_year = len(out)
     out = out[out["created_dt"].dt.year == tax_year].copy()
     dropped_year = before_year - len(out)
 
+    out = _make_excel_safe_datetime(out, "created_dt")
     out["created_date"] = out["created_dt"].dt.date.astype(str)
     out["tax_month"] = out["created_dt"].dt.to_period("M").astype(str)
 
@@ -479,7 +510,7 @@ def read_oddsjam(cfg: SourceCfg, tax_year: int) -> tuple[pd.DataFrame, dict[str,
 
 
 def read_manual(cfg: SourceCfg, tax_year: int) -> tuple[pd.DataFrame, dict[str, int]]:
-    df = pd.read_csv(cfg.csv_path)
+    df = pd.read_csv(cfg.csv_path, low_memory=False)
     required = {
         "created_date",
         "sportsbook",
@@ -522,6 +553,7 @@ def read_manual(cfg: SourceCfg, tax_year: int) -> tuple[pd.DataFrame, dict[str, 
     out = out[out["created_dt"].dt.year == tax_year].copy()
     dropped = before - len(out)
 
+    out = _make_excel_safe_datetime(out, "created_dt")
     out["created_date"] = out["created_dt"].dt.date.astype(str)
     out["tax_month"] = out["created_dt"].dt.to_period("M").astype(str)
 
@@ -691,6 +723,9 @@ def main() -> None:
 
     df_union = pd.concat(parts, ignore_index=True)
 
+    # Final safety: ensure created_dt is Excel-safe (tz-naive) before writing
+    df_union = _make_excel_safe_datetime(df_union, "created_dt")
+
     # Ensure stake exists for rollups
     before = len(df_union)
     df_union = df_union[df_union["stake"].notna()].copy()
@@ -701,9 +736,12 @@ def main() -> None:
         if c in df_union.columns:
             df_union[c] = df_union[c].round(cfg.round_decimals)
 
+    # Render dynamic output path using tax_year template
+    output_rendered = cfg.output_xlsx.format(tax_year=cfg.tax_year)
+
     out_path = write_workbook(
         df_union=df_union,
-        output_xlsx=cfg.output_xlsx,
+        output_xlsx=output_rendered,
         include_raw=cfg.include_raw_union_sheet,
         include_monthly=cfg.include_monthly_sheet,
         groupings=cfg.groupings,
