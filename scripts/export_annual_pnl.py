@@ -6,7 +6,8 @@ export_annual_pnl.py
 Purpose
 -------
 Union multiple bet-history sources into a normalized dataset and export an
-accountant-friendly Excel workbook summarizing annual PnL.
+accountant-friendly Excel workbook summarizing annual PnL, plus a complete
+tax-year bet log aligned to the Pikkit schema.
 
 Required Input
 --------------
@@ -26,17 +27,21 @@ Key Features
 - Tax-year filtering (per source)
 - Optional OddsJam sportsbook whitelist filtering (optionally date-range scoped)
 - Profit computation when profit is not provided (OddsJam/manual)
-- Excel workbook output:
-    - Summary (overall)
-    - By Month (optional)
-    - Grouped rollups (configurable)
-    - Raw Union sheet (optional)
+- Two .xlsx outputs ONLY:
+    1) PnL Summary workbook (no Raw Union tab)
+    2) Complete bet log workbook (Pikkit schema), unioning OddsJam/manual rows
+       with NULLs for missing fields.
 
-Additional Outputs
-------------------
-- Detailed CSV: normalized union used for the Excel report (analysis-friendly)
-- Accountant CSV: tax-year union aligned to the full Pikkit schema
-  (OddsJam/manual rows include NULL for missing Pikkit fields)
+Bet Log Time Estimation (OddsJam/manual)
+----------------------------------------
+For OddsJam/manual rows, we estimate:
+  - time_placed
+  - time_placed_iso
+  - time_settled_iso
+using:
+  1) event_start_date (if present)
+  2) else created_at / created_date (if present)
+  3) else NULL
 
 Important Excel Note
 --------------------
@@ -91,6 +96,9 @@ NORMALIZED_COLUMNS = [
     "bet_profit",  # realized profit
 ]
 
+# Internal: preferred datetime for generating the Pikkit-style bet log time fields
+BETLOG_DT_COL = "__betlog_dt"
+
 
 @dataclass(frozen=True)
 class SourceCfg:
@@ -118,8 +126,7 @@ class Config:
     """
 
     output_xlsx: str
-    output_detailed_csv: str | None
-    output_accountant_csv: str | None
+    output_bet_log_xlsx: str
     tax_year: int
     tax_year_date_field_by_source: dict[str, str]
     inputs: dict[str, SourceCfg | None]  # oddsjam/manual can be None
@@ -165,6 +172,36 @@ def _make_excel_safe_datetime(df: pd.DataFrame, col: str = "created_dt") -> pd.D
         df[col] = s.dt.tz_convert("UTC").dt.tz_localize(None)
 
     return df
+
+
+def _ensure_parent_dir(path_str: str) -> None:
+    p = Path(path_str)
+    p.parent.mkdir(parents=True, exist_ok=True)
+
+
+def _render_output_path(template: str, tax_year: int) -> str:
+    return template.format(tax_year=tax_year)
+
+
+def _detect_betlog_dt_from_raw(
+    df_raw: pd.DataFrame,
+    *,
+    preferred_cols: Sequence[str],
+) -> pd.Series:
+    """
+    Detect a reasonable per-row datetime for bet-log time estimation.
+
+    Preference order:
+      1) event_start_date (or equivalent, if present in preferred_cols)
+      2) created_at / created_date (or equivalent, if present in preferred_cols)
+      3) else NaT
+
+    Returns tz-aware UTC series (may contain NaT). Caller may later strip tz for Excel safety.
+    """
+    chosen = _first_present_col(df_raw, preferred_cols)
+    if chosen is None:
+        return pd.to_datetime(pd.Series([pd.NA] * len(df_raw)), utc=True, errors="coerce")
+    return pd.to_datetime(df_raw[chosen], utc=True, errors="coerce")
 
 
 def american_to_decimal(odds: float) -> float | None:
@@ -291,21 +328,10 @@ def apply_oddsjam_sportsbook_include_filter(
     return df[is_in_list].copy()
 
 
-def _ensure_parent_dir(path_str: str) -> None:
-    p = Path(path_str)
-    p.parent.mkdir(parents=True, exist_ok=True)
-
-
-def _render_output_path(template: str | None, tax_year: int) -> str | None:
-    if not template:
-        return None
-    return template.format(tax_year=tax_year)
-
-
 def _align_to_pikkit_schema(
-    source_name: str,
     pikkit_columns: list[str],
     normalized_df: pd.DataFrame,
+    source_name: str,
 ) -> pd.DataFrame:
     """
     Align a normalized (oddsjam/manual) dataframe to the full Pikkit schema.
@@ -315,10 +341,10 @@ def _align_to_pikkit_schema(
     - Keep all columns from the Pikkit CSV.
     - For oddsjam/manual rows, fill whatever Pikkit fields we can map.
     - Everything else stays NULL.
-
-    Note
-    ----
-    This is a best-effort mapping. Any Pikkit columns not present remain NULL.
+    - time_placed/time_placed_iso/time_settled_iso are estimated from:
+        - __betlog_dt (preferred, derived from event_start_date or created_at/created_date)
+        - else created_dt
+        - else NULL
     """
     out = pd.DataFrame({c: pd.NA for c in pikkit_columns}, index=range(len(normalized_df)))
 
@@ -326,7 +352,6 @@ def _align_to_pikkit_schema(
         if col in out.columns:
             out[col] = values
 
-    # Best-effort mapping into common Pikkit fields
     _set_if_exists("sportsbook", normalized_df.get("sportsbook", pd.Series([pd.NA] * len(out))))
     _set_if_exists("odds", normalized_df.get("odds", pd.Series([pd.NA] * len(out))))
     _set_if_exists("amount", normalized_df.get("stake", pd.Series([pd.NA] * len(out))))
@@ -337,19 +362,24 @@ def _align_to_pikkit_schema(
     _set_if_exists("leagues", normalized_df.get("league", pd.Series([pd.NA] * len(out))))
     _set_if_exists("bet_info", normalized_df.get("bet_name", pd.Series([pd.NA] * len(out))))
 
-    # Time fields: if present in Pikkit, fill with created_dt as ISO string
-    created_dt = normalized_df.get("created_dt")
-    if created_dt is not None:
-        created_iso = pd.to_datetime(created_dt, errors="coerce", utc=True).dt.strftime(
-            "%Y-%m-%dT%H:%M:%SZ"
-        )
-        _set_if_exists("time_placed_iso", created_iso)
-        _set_if_exists("time_settled_iso", created_iso)
+    # Estimate time fields for bet-log workbook
+    dt_src = normalized_df.get(BETLOG_DT_COL)
+    if dt_src is None:
+        dt_src = normalized_df.get("created_dt")
 
-    # Helpful provenance if your Pikkit export already has a "source" column
-    # (If not, we avoid introducing new columns to keep schema exactly Pikkit.)
-    if "source" in out.columns:
-        out["source"] = source_name
+    if dt_src is not None:
+        dt_utc = pd.to_datetime(dt_src, utc=True, errors="coerce")
+        iso = dt_utc.dt.strftime("%Y-%m-%dT%H:%M:%SZ")
+        pretty = dt_utc.dt.strftime("%Y-%m-%d %H:%M:%S")
+
+        _set_if_exists("time_placed", pretty)
+        _set_if_exists("time_settled", pretty)
+        _set_if_exists("time_placed_iso", iso)
+        _set_if_exists("time_settled_iso", iso)
+
+    # Optional provenance if user ever has a "tags" or similar workflow; do not add new columns.
+    if "tags" in out.columns:
+        out["tags"] = out["tags"].fillna(source_name)
 
     return out
 
@@ -386,7 +416,13 @@ def load_config(path: str) -> Config:
     with open(path, encoding="utf-8") as f:
         data = yaml.safe_load(f)
 
-    required_top = ["output_xlsx", "tax_year", "tax_year_date_field_by_source", "inputs"]
+    required_top = [
+        "output_xlsx",
+        "output_bet_log_xlsx",
+        "tax_year",
+        "tax_year_date_field_by_source",
+        "inputs",
+    ]
     for k in required_top:
         if k not in data:
             raise ValueError(f"Config missing required key: {k}")
@@ -404,12 +440,11 @@ def load_config(path: str) -> Config:
 
     return Config(
         output_xlsx=str(data["output_xlsx"]),
-        output_detailed_csv=data.get("output_detailed_csv"),
-        output_accountant_csv=data.get("output_accountant_csv"),
+        output_bet_log_xlsx=str(data["output_bet_log_xlsx"]),
         tax_year=int(data["tax_year"]),
         tax_year_date_field_by_source=dict(data["tax_year_date_field_by_source"]),
         inputs=inputs,
-        include_raw_union_sheet=bool(data.get("include_raw_union_sheet", True)),
+        include_raw_union_sheet=bool(data.get("include_raw_union_sheet", False)),
         include_monthly_sheet=bool(data.get("include_monthly_sheet", True)),
         groupings=groupings,
         round_decimals=int(data.get("round_decimals", 2)),
@@ -524,6 +559,8 @@ def read_oddsjam(cfg: SourceCfg, tax_year: int) -> tuple[pd.DataFrame, dict[str,
         )
 
     before_read = len(df)
+
+    # For sportsbook filtering we rely on created_col-derived dt (as before)
     created_dt_all = pd.to_datetime(df[created_col], utc=True, errors="coerce")
 
     df_f = apply_oddsjam_sportsbook_include_filter(
@@ -538,12 +575,31 @@ def read_oddsjam(cfg: SourceCfg, tax_year: int) -> tuple[pd.DataFrame, dict[str,
 
     created_dt = pd.to_datetime(df_f[created_col], utc=True, errors="coerce")
 
+    # Bet-log time estimation prefers event_start_date if present, else created fields.
+    betlog_dt = _detect_betlog_dt_from_raw(
+        df_f,
+        preferred_cols=[
+            "event_start_date",
+            "Event Start Date",
+            "event_start",
+            "event_start_time",
+            "start_time",
+            "start_date",
+            "created_at",
+            "Created At",
+            "created_date",
+            "Created Date",
+            created_col,
+        ],
+    )
+
     status_map = cfg.status_map or {}
     out = pd.DataFrame(
         {
             "source": "oddsjam",
             "bet_id": pd.NA,
             "created_dt": created_dt,
+            BETLOG_DT_COL: betlog_dt,
             "sportsbook": df_f[sportsbook_col],
             "sport": df_f[sport_col] if sport_col else pd.NA,
             "league": df_f[league_col] if league_col else pd.NA,
@@ -564,18 +620,21 @@ def read_oddsjam(cfg: SourceCfg, tax_year: int) -> tuple[pd.DataFrame, dict[str,
     dropped_year = before_year - len(out)
 
     out = _make_excel_safe_datetime(out, "created_dt")
+    # Keep BETLOG_DT_COL tz-aware for now; it gets formatted later for bet-log workbook.
+
     out["created_date"] = out["created_dt"].dt.date.astype(str)
     out["tax_month"] = out["created_dt"].dt.to_period("M").astype(str)
 
-    out = out.reindex(columns=NORMALIZED_COLUMNS)
+    # Keep BETLOG_DT_COL (do NOT drop) so we can build the Pikkit-schema bet log later
+    out_norm = out.reindex(columns=[*NORMALIZED_COLUMNS, BETLOG_DT_COL])
 
     stats = {
         "rows_read": before_read,
         "rows_after_sportsbook_include_filter": after_sb_filter,
-        "rows_kept_tax_year": len(out),
+        "rows_kept_tax_year": len(out_norm),
         "rows_dropped_bad_or_other_year": dropped_year,
     }
-    return out, stats
+    return out_norm, stats
 
 
 def read_manual(cfg: SourceCfg, tax_year: int) -> tuple[pd.DataFrame, dict[str, int]]:
@@ -596,6 +655,21 @@ def read_manual(cfg: SourceCfg, tax_year: int) -> tuple[pd.DataFrame, dict[str, 
     if missing:
         raise ValueError(f"Manual CSV missing required columns: {sorted(missing)}")
 
+    # Bet-log time estimation prefers event_start_date if present, else created_date.
+    betlog_dt = _detect_betlog_dt_from_raw(
+        df,
+        preferred_cols=[
+            "event_start_date",
+            "Event Start Date",
+            "event_start",
+            "event_start_time",
+            "start_time",
+            "start_date",
+            "created_at",
+            "created_date",
+        ],
+    )
+
     status_map = cfg.status_map or {}
 
     out = pd.DataFrame(
@@ -603,6 +677,7 @@ def read_manual(cfg: SourceCfg, tax_year: int) -> tuple[pd.DataFrame, dict[str, 
             "source": "manual",
             "bet_id": pd.NA,
             "created_dt": pd.to_datetime(df["created_date"], utc=True, errors="coerce"),
+            BETLOG_DT_COL: betlog_dt,
             "sportsbook": df["sportsbook"],
             "sport": df["sport"],
             "league": df["league"],
@@ -626,10 +701,10 @@ def read_manual(cfg: SourceCfg, tax_year: int) -> tuple[pd.DataFrame, dict[str, 
     out["created_date"] = out["created_dt"].dt.date.astype(str)
     out["tax_month"] = out["created_dt"].dt.to_period("M").astype(str)
 
-    out = out.reindex(columns=NORMALIZED_COLUMNS)
-    return out, {
+    out_norm = out.reindex(columns=[*NORMALIZED_COLUMNS, BETLOG_DT_COL])
+    return out_norm, {
         "rows_read": before,
-        "rows_kept_tax_year": len(out),
+        "rows_kept_tax_year": len(out_norm),
         "rows_dropped_bad_or_other_year": dropped,
     }
 
@@ -697,53 +772,66 @@ def apply_number_formats(
                 cell.number_format = "0.00%"
 
 
-def write_workbook(
-    df_union: pd.DataFrame,
+def write_summary_workbook(
+    df_union_norm: pd.DataFrame,
     output_xlsx: str,
-    include_raw: bool,
     include_monthly: bool,
     groupings: list[list[str]],
 ) -> Path:
+    """
+    Write the PnL summary workbook.
+
+    NOTE: This workbook intentionally does NOT include a Raw Union tab.
+    """
     out_path = Path(output_xlsx)
     out_path.parent.mkdir(parents=True, exist_ok=True)
 
-    summary = build_rollup(df_union.assign(_all="All"), ["_all"]).drop(columns=["_all"])
+    summary = build_rollup(df_union_norm.assign(_all="All"), ["_all"]).drop(columns=["_all"])
 
     with pd.ExcelWriter(out_path, engine="openpyxl") as writer:
         summary.to_excel(writer, sheet_name="Summary", index=False)
 
         if include_monthly:
-            monthly = build_rollup(df_union, ["tax_month"])
+            monthly = build_rollup(df_union_norm, ["tax_month"])
             monthly.to_excel(writer, sheet_name="By Month", index=False)
 
         for grouping in groupings:
             sheet_name = ("By " + ", ".join(grouping))[:31]
-            rollup = build_rollup(df_union, grouping)
+            rollup = build_rollup(df_union_norm, grouping)
             rollup.to_excel(writer, sheet_name=sheet_name, index=False)
-
-        if include_raw:
-            df_union.to_excel(writer, sheet_name="Raw Union", index=False)
 
         wb = writer.book
         for name in wb.sheetnames:
             ws = wb[name]
             style_sheet(ws)
-            if name == "Raw Union":
-                apply_number_formats(
-                    ws, currency_cols=["stake", "potential_payout", "bet_profit"], percent_cols=[]
-                )
-            else:
-                apply_number_formats(
-                    ws,
-                    currency_cols=[
-                        "handle",
-                        "net_profit",
-                        "gross_win_profit",
-                        "gross_loss_amount",
-                        "avg_bet",
-                    ],
-                    percent_cols=["roi"],
-                )
+            apply_number_formats(
+                ws,
+                currency_cols=[
+                    "handle",
+                    "net_profit",
+                    "gross_win_profit",
+                    "gross_loss_amount",
+                    "avg_bet",
+                ],
+                percent_cols=["roi"],
+            )
+
+    return out_path
+
+
+def write_bet_log_workbook(df_betlog: pd.DataFrame, output_xlsx: str) -> Path:
+    """
+    Write the complete bet log workbook (Pikkit schema union).
+
+    Single-sheet output to keep accountant-facing output simple.
+    """
+    out_path = Path(output_xlsx)
+    out_path.parent.mkdir(parents=True, exist_ok=True)
+
+    with pd.ExcelWriter(out_path, engine="openpyxl") as writer:
+        df_betlog.to_excel(writer, sheet_name="Bet Log", index=False)
+        ws = writer.book["Bet Log"]
+        style_sheet(ws)
 
     return out_path
 
@@ -770,13 +858,13 @@ def main() -> None:
     parts: list[pd.DataFrame] = []
     stats: dict[str, dict[str, int]] = {}
 
-    # Pikkit (required)
+    # Pikkit (required) - normalized for summary workbook
     pikkit_date_field = cfg.tax_year_date_field_by_source.get("pikkit", "time_settled_iso")
     df_p, st = read_pikkit(pikkit_cfg, pikkit_date_field, cfg.tax_year)
     parts.append(df_p)
     stats["pikkit"] = st
 
-    # OddsJam (optional)
+    # OddsJam (optional) - normalized for summary workbook + betlog dt helper
     oddsjam_cfg = cfg.inputs.get("oddsjam")
     df_o: pd.DataFrame | None = None
     if oddsjam_cfg is not None and oddsjam_cfg.enabled:
@@ -784,7 +872,7 @@ def main() -> None:
         parts.append(df_o)
         stats["oddsjam"] = st
 
-    # Manual (optional)
+    # Manual (optional) - normalized for summary workbook + betlog dt helper
     manual_cfg = cfg.inputs.get("manual")
     df_m: pd.DataFrame | None = None
     if manual_cfg is not None and manual_cfg.enabled:
@@ -794,7 +882,7 @@ def main() -> None:
 
     df_union = pd.concat(parts, ignore_index=True)
 
-    # Ensure created_dt is Excel-safe (tz-naive) before writing
+    # Ensure created_dt is Excel-safe (tz-naive) before writing the summary workbook
     df_union = _make_excel_safe_datetime(df_union, "created_dt")
 
     # Ensure stake exists for rollups
@@ -807,59 +895,47 @@ def main() -> None:
         if c in df_union.columns:
             df_union[c] = df_union[c].round(cfg.round_decimals)
 
-    # Render dynamic output paths using tax_year template
-    output_xlsx = _render_output_path(cfg.output_xlsx, cfg.tax_year)
-    output_detailed_csv = _render_output_path(cfg.output_detailed_csv, cfg.tax_year)
-    output_accountant_csv = _render_output_path(cfg.output_accountant_csv, cfg.tax_year)
+    # Summary workbook uses normalized columns only (excludes BETLOG_DT_COL)
+    df_union_norm = df_union.reindex(columns=NORMALIZED_COLUMNS)
 
-    # 1) Write Excel summary workbook (existing behavior)
-    out_path = write_workbook(
-        df_union=df_union,
-        output_xlsx=output_xlsx,
-        include_raw=cfg.include_raw_union_sheet,
+    # Render dynamic output paths using tax_year template
+    output_summary_xlsx = _render_output_path(cfg.output_xlsx, cfg.tax_year)
+    output_betlog_xlsx = _render_output_path(cfg.output_bet_log_xlsx, cfg.tax_year)
+
+    # 1) Write PnL summary workbook (NO Raw Union tab)
+    out_summary_path = write_summary_workbook(
+        df_union_norm=df_union_norm,
+        output_xlsx=output_summary_xlsx,
         include_monthly=cfg.include_monthly_sheet,
         groupings=cfg.groupings,
     )
 
-    # 2) Write detailed CSV (normalized union used by workbook)
-    if output_detailed_csv:
-        _ensure_parent_dir(output_detailed_csv)
-        df_union.to_csv(output_detailed_csv, index=False)
+    # 2) Build + write complete bet log workbook (Pikkit schema union)
+    raw_pikkit = pd.read_csv(pikkit_cfg.csv_path, low_memory=False)
 
-    # 3) Write accountant CSV: Pikkit-schema union for the tax year
-    if output_accountant_csv:
-        _ensure_parent_dir(output_accountant_csv)
+    dt_col = "time_settled_iso" if pikkit_date_field == "time_settled_iso" else "time_placed_iso"
+    raw_created_dt = pd.to_datetime(raw_pikkit[dt_col], utc=True, errors="coerce")
+    raw_pikkit_tax = raw_pikkit[raw_created_dt.dt.year == cfg.tax_year].copy()
 
-        raw_pikkit = pd.read_csv(pikkit_cfg.csv_path, low_memory=False)
-        dt_col = (
-            "time_settled_iso" if pikkit_date_field == "time_settled_iso" else "time_placed_iso"
-        )
-        raw_created_dt = pd.to_datetime(raw_pikkit[dt_col], utc=True, errors="coerce")
-        raw_pikkit_tax = raw_pikkit[raw_created_dt.dt.year == cfg.tax_year].copy()
+    pikkit_cols = list(raw_pikkit_tax.columns)
+    betlog_parts: list[pd.DataFrame] = [raw_pikkit_tax]
 
-        pikkit_cols = list(raw_pikkit_tax.columns)
+    if df_o is not None and len(df_o) > 0:
+        betlog_parts.append(_align_to_pikkit_schema(pikkit_cols, df_o, "oddsjam"))
 
-        aligned_parts: list[pd.DataFrame] = [raw_pikkit_tax]
+    if df_m is not None and len(df_m) > 0:
+        betlog_parts.append(_align_to_pikkit_schema(pikkit_cols, df_m, "manual"))
 
-        if df_o is not None and len(df_o) > 0:
-            aligned_parts.append(_align_to_pikkit_schema("oddsjam", pikkit_cols, df_o))
-
-        if df_m is not None and len(df_m) > 0:
-            aligned_parts.append(_align_to_pikkit_schema("manual", pikkit_cols, df_m))
-
-        accountant_union = pd.concat(aligned_parts, ignore_index=True)
-        accountant_union.to_csv(output_accountant_csv, index=False)
+    df_betlog = pd.concat(betlog_parts, ignore_index=True)
+    out_betlog_path = write_bet_log_workbook(df_betlog, output_betlog_xlsx)
 
     print("Run stats:")
     for k, v in stats.items():
         print(f"- {k}: {v}")
     print(f"- union_rows_before_stake_filter: {before}")
-    print(f"- union_rows_after_stake_filter: {len(df_union)}")
-    print(f"Wrote PnL workbook: {out_path.resolve()}")
-    if output_detailed_csv:
-        print(f"Wrote detailed CSV: {Path(output_detailed_csv).resolve()}")
-    if output_accountant_csv:
-        print(f"Wrote accountant bet log CSV: {Path(output_accountant_csv).resolve()}")
+    print(f"- union_rows_after_stake_filter: {len(df_union_norm)}")
+    print(f"Wrote PnL summary workbook: {out_summary_path.resolve()}")
+    print(f"Wrote complete bet log workbook: {out_betlog_path.resolve()}")
 
 
 if __name__ == "__main__":

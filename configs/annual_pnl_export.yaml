@@ -12,21 +12,22 @@
 # - OPTIONAL: OddsJam Bet Tracker CSV (inputs.oddsjam may be null)
 # - OPTIONAL: Manual tracker CSV (inputs.manual may be null)
 #
+# Outputs
+# -------
+# Exactly TWO .xlsx files are written:
+#
+# 1) output_xlsx
+#    - PnL summary workbook (Summary, By Month, groupings, etc.)
+#
+# 2) output_bet_log_xlsx
+#    - Complete tax-year bet history aligned to the Pikkit schema (all Pikkit columns).
+#    - OddsJam/manual rows are unioned in; missing Pikkit fields are NULL.
+#    - time_placed/time_placed_iso/time_settled_iso are estimated for OddsJam/manual
+#      using event_start_date (preferred), else created_at/created_date, else NULL.
+#
 # Output Naming
 # -------------
-# output_xlsx supports string templating with {tax_year}.
-# Example:
-#   output_xlsx: "data/processed/pnl_summary_{tax_year}.xlsx"
-# tax_year: 2025
-#   -> data/processed/pnl_summary_2025.xlsx
-#
-# Additional CSV Outputs
-# ----------------------
-# output_detailed_csv:
-#   - Normalized union used to build the Excel workbook (analysis-friendly).
-# output_accountant_csv:
-#   - Tax-year union of all bets while preserving ALL Pikkit columns.
-#   - OddsJam/manual rows are aligned to the Pikkit schema with NULL for missing fields.
+# Paths support string templating with {tax_year}.
 #
 # Run
 # ---
@@ -36,13 +37,8 @@
 # =============================================================================
 
 # Use a template — {tax_year} will be replaced by script
-output_xlsx: "data/processed/pnl_summary_{tax_year}.xlsx"
-
-# Detailed normalized union CSV (same data feeding the Excel)
-output_detailed_csv: "data/processed/pnl-detailed-{tax_year}.csv"
-
-# Accountant-friendly full bet log (Pikkit schema, unioned with optional inputs)
-output_accountant_csv: "data/processed/bet-log-{tax_year}.csv"
+output_xlsx: "data/processed/pnl-summary-{tax_year}.xlsx"
+output_bet_log_xlsx: "data/processed/bet-log-{tax_year}.xlsx"
 
 tax_year: 2025
 
@@ -64,15 +60,16 @@ inputs:
   oddsjam:
     enabled: true
     csv_path: "data/raw/oddsjam-bet-tracker-02-06-2026.csv"
-  
+
     sportsbooks_include:
       - "BetUS"
-  
+
     sportsbooks_include_mode: "whitelist_date_range_only"
     sportsbooks_include_date_range:
       start_date: "2025-01-01"
       end_date: "2025-12-31"
-  
+
+    # Column detection for OddsJam Bet Tracker exports (schema varies).
     column_map:
       created_date_candidates:
         - "created_at"
@@ -93,7 +90,7 @@ inputs:
       status: ["Result", "status", "Outcome"]
       bet_type: ["Type", "bet_type", "Bet Type"]
       profit: ["Profit", "profit", "Net Profit", "net_profit", "P/L", "pl"]
-  
+
     status_map:
       win: ["WIN", "WON", "SETTLED_WIN"]
       loss: ["LOSS", "LOST", "SETTLED_LOSS"]
@@ -112,7 +109,7 @@ inputs:
   #     void: ["VOID", "CANCELLED", "CANCELED", "REFUNDED"]
 
 # Workbook content controls
-include_raw_union_sheet: true
+include_raw_union_sheet: false
 include_monthly_sheet: true
 
 # Summary tabs grouped by these fields
