@@ -20,6 +20,14 @@
 # tax_year: 2025
 #   -> data/processed/pnl_summary_2025.xlsx
 #
+# Additional CSV Outputs
+# ----------------------
+# output_detailed_csv:
+#   - Normalized union used to build the Excel workbook (analysis-friendly).
+# output_accountant_csv:
+#   - Tax-year union of all bets while preserving ALL Pikkit columns.
+#   - OddsJam/manual rows are aligned to the Pikkit schema with NULL for missing fields.
+#
 # Run
 # ---
 # poetry run python scripts/export_annual_pnl.py \
@@ -29,6 +37,13 @@
 
 # Use a template — {tax_year} will be replaced by script
 output_xlsx: "data/processed/pnl_summary_{tax_year}.xlsx"
+
+# Detailed normalized union CSV (same data feeding the Excel)
+output_detailed_csv: "data/processed/pnl-detailed-{tax_year}.csv"
+
+# Accountant-friendly full bet log (Pikkit schema, unioned with optional inputs)
+output_accountant_csv: "data/processed/bet-log-{tax_year}.csv"
+
 tax_year: 2025
 
 # Date field used to attribute bets to the tax year, per source.
@@ -43,28 +58,21 @@ inputs:
   # REQUIRED: Pikkit must be enabled with a valid csv_path
   pikkit:
     enabled: true
-    # NOTE: you had ".csv.csv" in your example; keep only one ".csv"
     csv_path: "data/raw/pikkit-bet-history-2025.csv"
 
   # OPTIONAL: set to null to disable OddsJam
   oddsjam:
     enabled: true
     csv_path: "data/raw/oddsjam-bet-tracker-02-06-2026.csv"
-
-    # Optional sportsbook whitelist (case-insensitive exact match).
+  
     sportsbooks_include:
       - "BetUS"
-
-    # - whitelist_global: always only include sportsbooks_include
-    # - whitelist_only: within date range only include sportsbooks_include; outside range include all
-    # - whitelist_date_range_only: only include rows in range AND in sportsbooks_include
+  
     sportsbooks_include_mode: "whitelist_date_range_only"
     sportsbooks_include_date_range:
       start_date: "2025-01-01"
       end_date: "2025-12-31"
-
-    # Column detection for OddsJam Bet Tracker exports (schema varies).
-    # NOTE: Your file uses `created_at` (included here).
+  
     column_map:
       created_date_candidates:
         - "created_at"
@@ -85,7 +93,7 @@ inputs:
       status: ["Result", "status", "Outcome"]
       bet_type: ["Type", "bet_type", "Bet Type"]
       profit: ["Profit", "profit", "Net Profit", "net_profit", "P/L", "pl"]
-
+  
     status_map:
       win: ["WIN", "WON", "SETTLED_WIN"]
       loss: ["LOSS", "LOST", "SETTLED_LOSS"]
