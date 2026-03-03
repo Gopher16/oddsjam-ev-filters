@@ -204,6 +204,22 @@ def _detect_betlog_dt_from_raw(
     return pd.to_datetime(df_raw[chosen], utc=True, errors="coerce")
 
 
+def _fmt_counts(obj: Any) -> Any:
+    """
+    Recursively format ints in dict/list structures with comma separators for logs.
+
+    This is intentionally used ONLY for printing (logging) so numeric values
+    in dataframes remain numeric.
+    """
+    if isinstance(obj, int):
+        return f"{obj:,}"
+    if isinstance(obj, dict):
+        return {k: _fmt_counts(v) for k, v in obj.items()}
+    if isinstance(obj, list):
+        return [_fmt_counts(v) for v in obj]
+    return obj
+
+
 def american_to_decimal(odds: float) -> float | None:
     """
     Convert American odds to decimal odds. Returns None if invalid.
@@ -931,9 +947,9 @@ def main() -> None:
 
     print("Run stats:")
     for k, v in stats.items():
-        print(f"- {k}: {v}")
-    print(f"- union_rows_before_stake_filter: {before}")
-    print(f"- union_rows_after_stake_filter: {len(df_union_norm)}")
+        print(f"- {k}: {_fmt_counts(v)}")
+    print(f"- union_rows_before_stake_filter: {before:,}")
+    print(f"- union_rows_after_stake_filter: {len(df_union_norm):,}")
     print(f"Wrote PnL summary workbook: {out_summary_path.resolve()}")
     print(f"Wrote complete bet log workbook: {out_betlog_path.resolve()}")
 
