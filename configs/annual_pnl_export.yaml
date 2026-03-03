@@ -1,0 +1,121 @@
+# =============================================================================
+# Annual PnL Export Configuration
+# =============================================================================
+#
+# Purpose
+# -------
+# Drives scripts/export_annual_pnl.py.
+#
+# Required vs Optional Inputs
+# ---------------------------
+# - REQUIRED: Pikkit CSV (inputs.pikkit must be present and enabled=true)
+# - OPTIONAL: OddsJam Bet Tracker CSV (inputs.oddsjam may be null)
+# - OPTIONAL: Manual tracker CSV (inputs.manual may be null)
+#
+# Output Naming
+# -------------
+# output_xlsx supports string templating with {tax_year}.
+# Example:
+#   output_xlsx: "data/processed/pnl_summary_{tax_year}.xlsx"
+# tax_year: 2025
+#   -> data/processed/pnl_summary_2025.xlsx
+#
+# Run
+# ---
+# poetry run python scripts/export_annual_pnl.py \
+#     --config configs/annual_pnl_export.yaml
+#
+# =============================================================================
+
+# Use a template — {tax_year} will be replaced by script
+output_xlsx: "data/processed/pnl_summary_{tax_year}.xlsx"
+tax_year: 2025
+
+# Date field used to attribute bets to the tax year, per source.
+# - Pikkit: "time_settled_iso" (recommended for tax) or "time_placed_iso"
+# - OddsJam/manual: normalized to created_dt from the detected "created" column (e.g., created_at)
+tax_year_date_field_by_source:
+  pikkit: "time_settled_iso"
+  oddsjam: "created_date"
+  manual: "created_date"
+
+inputs:
+  # REQUIRED: Pikkit must be enabled with a valid csv_path
+  pikkit:
+    enabled: true
+    csv_path: "data/raw/pikkit-bet-history-2025.csv"
+
+  # OPTIONAL: set to null to disable OddsJam
+  oddsjam: true
+  oddsjam:
+    enabled: true
+    csv_path: "data/raw/oddsjam-bet-tracker-02-06-2026.csv"
+  
+    # Optional sportsbook whitelist (case-insensitive exact match).
+    sportsbooks_include:
+      - "BetUS"
+  
+    # - whitelist_global: always only include sportsbooks_include
+    # - whitelist_only: within date range only include sportsbooks_include; outside range include all
+    # - whitelist_date_range_only: only include rows in range AND in sportsbooks_include
+    sportsbooks_include_mode: "whitelist_date_range_only"
+    sportsbooks_include_date_range:
+      start_date: "2025-01-01"
+      end_date: "2025-12-31"
+  
+    # Column detection for OddsJam Bet Tracker exports (schema varies).
+    # NOTE: Your file uses `created_at` (included here).
+    column_map:
+      created_date_candidates:
+        - "created_at"
+        - "Created At"
+        - "Created Date"
+        - "created_date"
+        - "Time"
+        - "Placed Time"
+        - "time_placed"
+        - "Date"
+      sportsbook: ["Sportsbook", "sportsbook", "Book"]
+      sport: ["Sport", "sports", "sport"]
+      league: ["League", "leagues", "league"]
+      market_name: ["Market", "market_name", "Market Name"]
+      bet_name: ["Bet", "bet_name", "Selection", "Name"]
+      odds: ["Odds", "odds", "Line"]
+      stake: ["Stake", "stake", "Amount", "amount", "Wager", "wager"]
+      status: ["Result", "status", "Outcome"]
+      bet_type: ["Type", "bet_type", "Bet Type"]
+      profit: ["Profit", "profit", "Net Profit", "net_profit", "P/L", "pl"]
+  
+    status_map:
+      win: ["WIN", "WON", "SETTLED_WIN"]
+      loss: ["LOSS", "LOST", "SETTLED_LOSS"]
+      push: ["PUSH", "TIE", "SETTLED_PUSH"]
+      void: ["VOID", "CANCELLED", "CANCELED", "SETTLED_VOID", "REFUNDED"]
+
+  # OPTIONAL: set to null to disable Manual
+  manual: null
+  # manual:
+  #   enabled: true
+  #   csv_path: "data/raw/manual-bet-tracker-2025.csv"
+  #   status_map:
+  #     win: ["WIN", "WON"]
+  #     loss: ["LOSS", "LOST"]
+  #     push: ["PUSH", "TIE"]
+  #     void: ["VOID", "CANCELLED", "CANCELED", "REFUNDED"]
+
+# Workbook content controls
+include_raw_union_sheet: true
+include_monthly_sheet: true
+
+# Summary tabs grouped by these fields
+groupings:
+  - ["source"]
+  - ["sportsbook"]
+  - ["sportsbook", "sport"]
+  - ["sport"]
+  - ["league"]
+  - ["bet_type"]
+  - ["status"]
+
+# Numeric rounding precision
+round_decimals: 2
