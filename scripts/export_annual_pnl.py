@@ -362,11 +362,24 @@ def _align_to_pikkit_schema(
         - else created_dt
         - else NULL
     """
-    out = pd.DataFrame({c: pd.NA for c in pikkit_columns}, index=range(len(normalized_df)))
+    # Important: when assigning pandas Series into `out`, we MUST avoid index-alignment
+    # issues (OddsJam/manual frames may retain non-0..N-1 indexes after filtering).
+    # We therefore reset/drop index on all Series before assignment.
+    columns = list(pikkit_columns)
+    if "source" not in columns:
+        columns = ["source", *columns]
 
-    def _set_if_exists(col: str, values: pd.Series) -> None:
+    out = pd.DataFrame({c: pd.NA for c in columns}, index=range(len(normalized_df)))
+    out["source"] = source_name
+
+    def _as_values(values: Any) -> Any:
+        if isinstance(values, pd.Series):
+            return values.reset_index(drop=True).to_numpy()
+        return values
+
+    def _set_if_exists(col: str, values: Any) -> None:
         if col in out.columns:
-            out[col] = values
+            out[col] = _as_values(values)
 
     _set_if_exists("sportsbook", normalized_df.get("sportsbook", pd.Series([pd.NA] * len(out))))
     _set_if_exists("odds", normalized_df.get("odds", pd.Series([pd.NA] * len(out))))
@@ -932,6 +945,10 @@ def main() -> None:
     dt_col = "time_settled_iso" if pikkit_date_field == "time_settled_iso" else "time_placed_iso"
     raw_created_dt = pd.to_datetime(raw_pikkit[dt_col], utc=True, errors="coerce")
     raw_pikkit_tax = raw_pikkit[raw_created_dt.dt.year == cfg.tax_year].copy()
+
+    # Add source column (must be first column per requirement)
+    if "source" not in raw_pikkit_tax.columns:
+        raw_pikkit_tax.insert(0, "source", "pikkit")
 
     pikkit_cols = list(raw_pikkit_tax.columns)
     betlog_parts: list[pd.DataFrame] = [raw_pikkit_tax]
