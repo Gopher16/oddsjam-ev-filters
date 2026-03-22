@@ -24,6 +24,8 @@ What this module provides
      - bootstrap ROI confidence intervals
      - duplicate / opportunity-level diagnostics
      - sample tier labels
+     - production-filter tagging
+     - edge capture / survivability metrics
 
 Design Notes
 ------------
@@ -32,8 +34,15 @@ Design Notes
 - Evaluation is execution-level by default:
     duplicate_ratio and n_unique_opportunities are included to help downstream
     compare execution-level vs opportunity-level behavior.
-- This module does not yet enforce promotion thresholds.
+- This module does not enforce promotion thresholds.
   It standardizes the raw evidence those decisions should rely on.
+- Production awareness is config-driven:
+    if a prod_filter column is present, this module can propagate that state into
+    the summary row so downstream notebooks can cleanly separate live filters
+    from test filters.
+- Capture metrics are intended to answer a more practical question than raw EV:
+    not just "does this filter look theoretically good?" but
+    "how much of the theoretical edge is actually realized in execution?"
 
 Typical usage
 -------------
@@ -80,6 +89,8 @@ class FilterEvalConfig:
         Bet placement timestamp column.
     opportunity_col
         Opportunity-level identifier column.
+    prod_filter_col
+        Optional boolean / binary column identifying configured production filters.
     settled_statuses
         Status values considered settled for evaluation.
     status_col
@@ -99,6 +110,7 @@ class FilterEvalConfig:
     clv_col: str = "clv"
     created_col: str = "created_at_et"
     opportunity_col: str = "opportunity_id"
+    prod_filter_col: str = "prod_filter"
     settled_statuses: tuple[str, ...] = ("won", "lost", "refunded")
     status_col: str = "status"
     bootstrap_iterations: int = 2000
@@ -262,6 +274,50 @@ def _sample_tier(n_bets: int) -> str:
     return "robust"
 
 
+def _capture_band(total_ev_roi: float, total_actual_roi: float) -> str:
+    """
+    Map EV-vs-realized relationship into a practical capture label.
+
+    Parameters
+    ----------
+    total_ev_roi
+        Headline EV ROI at the filter level.
+    total_actual_roi
+        Headline realized ROI at the filter level.
+
+    Returns
+    -------
+    str
+        Human-readable capture / survivability label.
+
+    Notes
+    -----
+    This is intentionally heuristic. It exists to create a lightweight
+    operational label for notebooks and scorecards, not a statistically
+    rigorous test.
+    """
+    if pd.isna(total_ev_roi) or pd.isna(total_actual_roi):
+        return "unknown"
+
+    if total_ev_roi <= 0:
+        if total_actual_roi > 0:
+            return "positive_realized_negative_ev"
+        return "negative_ev"
+
+    ratio = total_actual_roi / total_ev_roi if total_ev_roi != 0 else np.nan
+    if pd.isna(ratio):
+        return "unknown"
+    if ratio < 0:
+        return "broken"
+    if ratio < 0.5:
+        return "weak_capture"
+    if ratio < 1.0:
+        return "partial_capture"
+    if ratio < 1.5:
+        return "full_capture"
+    return "outperforming_ev"
+
+
 def _build_filter_opportunity_stats(
     df: pd.DataFrame,
     filter_col: str,
@@ -311,6 +367,52 @@ def _build_filter_opportunity_stats(
     return grouped[[filter_col, regime_col, "n_unique_opportunities", "duplicate_ratio"]]
 
 
+def _build_prod_filter_stats(
+    df: pd.DataFrame,
+    *,
+    filter_col: str,
+    regime_col: str,
+    prod_filter_col: str,
+) -> pd.DataFrame:
+    """
+    Aggregate production-filter tagging by filter and regime.
+
+    Parameters
+    ----------
+    df
+        Bet-level dataframe.
+    filter_col
+        Filter label column.
+    regime_col
+        Regime column.
+    prod_filter_col
+        Source production flag column.
+
+    Returns
+    -------
+    pd.DataFrame
+        One row per filter/regime with boolean production status.
+
+    Notes
+    -----
+    The summary uses `.any()` intentionally:
+    if any execution row for the filter/regime is marked as production,
+    the filter summary is treated as production-aware.
+    """
+    if prod_filter_col not in df.columns:
+        unique_pairs = df[[filter_col, regime_col]].drop_duplicates()
+        unique_pairs["is_prod_filter"] = np.nan
+        return unique_pairs.reset_index(drop=True)
+
+    grouped = (
+        df.groupby([filter_col, regime_col], dropna=False)[prod_filter_col]
+        .agg(lambda s: bool(pd.Series(s).fillna(False).astype(bool).any()))
+        .reset_index()
+        .rename(columns={prod_filter_col: "is_prod_filter"})
+    )
+    return grouped
+
+
 def build_filter_evaluation_table(
     df: pd.DataFrame,
     cfg: FilterEvalConfig | None = None,
@@ -335,6 +437,37 @@ def build_filter_evaluation_table(
     -------
     pd.DataFrame
         Filter-level evaluation table.
+
+    Output fields
+    -------------
+    Core exposure / performance
+      - bet_count
+      - total_stake
+      - total_profit
+      - total_ev
+      - avg_ev_roi
+      - avg_actual_roi
+      - total_ev_roi
+      - total_actual_roi
+      - avg_clv
+      - first_bet_ts
+      - last_bet_ts
+      - active_days
+
+    Diagnostics
+      - max_drawdown
+      - roi_ci_low
+      - roi_ci_high
+      - n_unique_opportunities
+      - duplicate_ratio
+      - sample_tier
+
+    Production / capture extensions
+      - is_prod_filter
+      - profit_minus_ev
+      - ev_realization_gap
+      - edge_capture_ratio
+      - capture_band
     """
     cfg = cfg or FilterEvalConfig()
 
@@ -395,7 +528,19 @@ def build_filter_evaluation_table(
         np.nan,
     )
     grouped["sample_tier"] = grouped["bet_count"].map(_sample_tier)
+
+    # Capture / survivability diagnostics
     grouped["profit_minus_ev"] = grouped["total_profit"] - grouped["total_ev"]
+    grouped["ev_realization_gap"] = grouped["total_actual_roi"] - grouped["total_ev_roi"]
+    grouped["edge_capture_ratio"] = np.where(
+        grouped["total_ev_roi"].abs() > 0,
+        grouped["total_actual_roi"] / grouped["total_ev_roi"],
+        np.nan,
+    )
+    grouped["capture_band"] = grouped.apply(
+        lambda row: _capture_band(row["total_ev_roi"], row["total_actual_roi"]),
+        axis=1,
+    )
 
     drawdown_rows: list[dict[str, object]] = []
     ci_rows: list[dict[str, object]] = []
@@ -443,6 +588,18 @@ def build_filter_evaluation_table(
     )
     grouped = grouped.merge(
         opp_stats,
+        on=[cfg.filter_col, cfg.regime_col],
+        how="left",
+    )
+
+    prod_stats = _build_prod_filter_stats(
+        work,
+        filter_col=cfg.filter_col,
+        regime_col=cfg.regime_col,
+        prod_filter_col=cfg.prod_filter_col,
+    )
+    grouped = grouped.merge(
+        prod_stats,
         on=[cfg.filter_col, cfg.regime_col],
         how="left",
     )
