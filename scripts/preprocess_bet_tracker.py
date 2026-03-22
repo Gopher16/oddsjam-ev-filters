@@ -53,7 +53,7 @@ Liquidity should not be interpreted globally:
 
 Usage
 -----
-python scripts/preprocess_bet_tracker.py --config configs/preprocess.yaml
+poetry run python scripts/preprocess_bet_tracker.py --config configs/preprocess.yaml
 ===============================================================================
 """
 
