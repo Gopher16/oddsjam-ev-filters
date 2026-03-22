@@ -15,6 +15,8 @@ This script:
        - cutoff_date
        - filter-name normalization (fill missing saved_filter_names)
   4) Adds feature engineering:
+       - regime / has_liquidity
+       - opportunity_id
        - liquidity_bucket (optionally condensed by config)
        - time_to_event_bucket
        - EV-related fields (probabilities, multipliers, EV, EV ROI)
@@ -36,6 +38,18 @@ A) Inferring settled statuses (to build df_settled)
 
 B) Excluding unresolved statuses from the processed output too
    - Controlled by: status_settlement.exclude_statuses_from_processed (bool)
+
+Regime / Liquidity Design
+-------------------------
+This script adds:
+  - regime: exchange vs sportsbook
+  - has_liquidity: True only when liquidity is expected by design
+  - opportunity_id: canonical opportunity-level identifier for downstream dedupe
+    and edge analysis
+
+Liquidity should not be interpreted globally:
+  - exchange rows are expected to carry liquidity where available
+  - sportsbook rows are allowed to have null liquidity by design
 
 Usage
 -----
@@ -67,9 +81,11 @@ from oddsjam_ev.metrics.odds import (
     compute_ev_roi,
 )
 from oddsjam_ev.qa import duplicate_audit, validate_core_fields
+from oddsjam_ev.regimes import add_regime_columns
 
 
 def _read_yaml(path: Path) -> dict[str, Any]:
+    """Read YAML config."""
     if not path.exists():
         raise FileNotFoundError(f"Config not found: {path}")
     with path.open("r") as f:
@@ -77,15 +93,18 @@ def _read_yaml(path: Path) -> dict[str, Any]:
 
 
 def _ensure_dir(p: Path) -> Path:
+    """Create directory if needed and return it."""
     p.mkdir(parents=True, exist_ok=True)
     return p
 
 
 def _stamp() -> str:
+    """Return timestamp stamp for run IDs."""
     return datetime.now().strftime("%Y%m%d_%H%M%S")
 
 
 def _safe_lower(x: Any) -> str:
+    """Lowercase safely after stripping."""
     return str(x).strip().lower()
 
 
@@ -162,9 +181,9 @@ def _build_settled_mask(
     df: pd.DataFrame, *, status_col: str, settled_statuses: list[str]
 ) -> pd.Series:
     """
-    Robust settled mask:
-    - handles casing/whitespace
-    - treats NaN as NOT settled
+    Build robust settled mask.
+
+    Handles casing / whitespace and treats NaN as not settled.
     """
     if status_col not in df.columns:
         return pd.Series([False] * len(df), index=df.index)
@@ -236,6 +255,52 @@ def _add_time_to_event_bucket(
     return out
 
 
+def _add_opportunity_id(
+    df: pd.DataFrame,
+    *,
+    out_col: str,
+    identity_cols: list[str],
+) -> pd.DataFrame:
+    """
+    Add an opportunity-level identifier used for downstream dedupe / aggregation.
+
+    The identifier is built by concatenating the available identity columns in
+    order. Missing configured columns are ignored; if none are available, the
+    output column is filled with NaN.
+
+    Parameters
+    ----------
+    df
+        Input dataframe.
+    out_col
+        Output opportunity id column name.
+    identity_cols
+        Ordered identity columns used to define a unique betting opportunity.
+
+    Returns
+    -------
+    pd.DataFrame
+        Copy with added opportunity id column.
+    """
+    out = df.copy()
+
+    available_cols = [col for col in identity_cols if col in out.columns]
+    if not available_cols:
+        out[out_col] = np.nan
+        return out
+
+    def _stringify(value: object) -> str:
+        if pd.isna(value):
+            return ""
+        return str(value).strip()
+
+    out[out_col] = out[available_cols].apply(
+        lambda row: "|".join(_stringify(v) for v in row),
+        axis=1,
+    )
+    return out
+
+
 # -----------------------------------------------------------------------------
 # Liquidity condensation helpers
 # -----------------------------------------------------------------------------
@@ -246,7 +311,11 @@ def _parse_bucket_bounds(label: Any) -> tuple[float | None, float | None]:
       "500-1k", "500 - 1K"
       "10k-25k"
       "> 1M"
-    Returns (lower, upper) in dollars where possible.
+
+    Returns
+    -------
+    tuple[float | None, float | None]
+        (lower, upper) in dollars where possible.
     """
     if label is None or (isinstance(label, float) and np.isnan(label)):
         return None, None
@@ -310,25 +379,26 @@ def _condense_liquidity(
     Strategy
     --------
     1) If numeric liquidity is available, bucket by that.
-    2) Else, attempt to parse the existing bucket label bounds and bucket by mid/lower bound.
+    2) Else, attempt to parse the existing bucket label bounds and bucket by
+       midpoint / lower / upper representative value.
     3) Else, leave as NaN.
 
     Notes
     -----
-    - edges/labels define pd.cut bins. Must satisfy len(edges) == len(labels) + 1.
-    - edges should be increasing (can include -inf/inf).
+    - edges/labels define pd.cut bins and must satisfy
+      len(edges) == len(labels) + 1
+    - edges should be increasing and can include -inf / inf
     """
     if len(edges) != len(labels) + 1:
         raise ValueError(
-            f"Invalid condensed liquidity config: len(edges)={len(edges)} must equal len(labels)+1={len(labels) + 1}"
+            f"Invalid condensed liquidity config: len(edges)={len(edges)} must equal "
+            f"len(labels)+1={len(labels) + 1}"
         )
 
     out = df.copy()
 
-    # numeric liquidity
     liq_num = pd.to_numeric(out.get(liquidity_col), errors="coerce")
 
-    # fallback numeric from existing bucket label
     if in_bucket_col in out.columns:
         bounds = out[in_bucket_col].apply(_parse_bucket_bounds)
         lower = bounds.apply(lambda x: x[0] if x is not None else None)
@@ -337,10 +407,6 @@ def _condense_liquidity(
         lower_num = pd.to_numeric(lower, errors="coerce")
         upper_num = pd.to_numeric(upper, errors="coerce")
 
-        # choose representative value:
-        # - if we have both bounds: midpoint
-        # - if only upper: use upper
-        # - if only lower: use lower
         rep = np.where(
             lower_num.notna() & upper_num.notna(),
             (lower_num + upper_num) / 2.0,
@@ -365,6 +431,7 @@ def _condense_liquidity(
 
 
 def main() -> None:
+    """Main CLI entrypoint."""
     ap = argparse.ArgumentParser(
         description="Preprocess OddsJam Bet Tracker export -> parquet + QA artifacts"
     )
@@ -443,6 +510,33 @@ def main() -> None:
         df.loc[mask, filter_col] = label
 
     # --------------------------
+    # Regime tagging
+    # --------------------------
+    regime_cfg = cfg.get("regime", {})
+    if regime_cfg:
+        df = add_regime_columns(
+            df,
+            sportsbook_col=regime_cfg.get("sportsbook_col", "sportsbook"),
+            regime_col=regime_cfg.get("out_col", "regime"),
+            has_liquidity_col=regime_cfg.get("has_liquidity_col", "has_liquidity"),
+            exchange_books=regime_cfg.get("exchange_books"),
+        )
+
+    # --------------------------
+    # Opportunity-level identity
+    # --------------------------
+    opp_cfg = cfg.get("opportunity", {})
+    if opp_cfg.get("enabled", False):
+        df = _add_opportunity_id(
+            df,
+            out_col=opp_cfg.get("out_col", "opportunity_id"),
+            identity_cols=opp_cfg.get(
+                "identity_cols",
+                ["game_id", "event_name", "market_name", "bet_name"],
+            ),
+        )
+
+    # --------------------------
     # Liquidity bucket (base) + optional condensation
     # --------------------------
     liq_cfg = cfg.get("liquidity", {})
@@ -460,13 +554,12 @@ def main() -> None:
     condensed_cfg = (liq_cfg.get("condensed") or {}) if isinstance(liq_cfg, dict) else {}
     if condensed_cfg.get("enabled", False):
         labels = list(
-            condensed_cfg.get("labels", ["<=500", "500-1k", "1k-2k", "2k-5k", "5k-10k", "> 10k"])
+            condensed_cfg.get("labels", ["<=500", "500-1k", "1k-2k", "2k-5k", "5k-10k", ">10k"])
         )
         edges_raw = list(
             condensed_cfg.get("edges", [-np.inf, 500, 1000, 2000, 5000, 10000, np.inf])
         )
 
-        # normalize YAML inf/-inf tokens
         def _edge(x: Any) -> float:
             if isinstance(x, str):
                 t = x.strip().lower()
@@ -495,6 +588,35 @@ def main() -> None:
                 "edges": edges,
             },
         }
+
+    # --------------------------
+    # Exchange-aware liquidity metadata
+    # --------------------------
+    regime_col = regime_cfg.get("out_col", "regime")
+    apply_to_regimes = set(liq_cfg.get("apply_to_regimes", ["exchange"]))
+
+    if liquidity_col in df.columns and regime_col in df.columns:
+        liquidity_expected_mask = df[regime_col].isin(apply_to_regimes)
+        n_expected = int(liquidity_expected_mask.sum())
+        n_expected_with_value = int(
+            pd.to_numeric(df.loc[liquidity_expected_mask, liquidity_col], errors="coerce")
+            .notna()
+            .sum()
+        )
+        expected_regime_coverage_rate = (
+            n_expected_with_value / n_expected if n_expected > 0 else np.nan
+        )
+
+        liq_meta = {
+            **(liq_meta or {}),
+            "expected_regimes": sorted(apply_to_regimes),
+            "n_rows_liquidity_expected": n_expected,
+            "n_rows_liquidity_present_when_expected": n_expected_with_value,
+            "expected_regime_coverage_rate": expected_regime_coverage_rate,
+        }
+
+        if "has_liquidity" in df.columns:
+            liq_meta["n_rows_has_liquidity_true"] = int(df["has_liquidity"].fillna(False).sum())
 
     # --------------------------
     # Time-to-event bucket
@@ -601,7 +723,7 @@ def main() -> None:
             df_settled = df[settled_mask].copy()
 
     # --------------------------
-    # OPTIONAL: exclude unresolved statuses from *processed* output too
+    # OPTIONAL: exclude unresolved statuses from processed output too
     # --------------------------
     exclude_from_processed = bool(status_cfg.get("exclude_statuses_from_processed", False))
     if exclude_from_processed and status_col in df.columns:
@@ -662,6 +784,7 @@ def main() -> None:
     )
     if not dupe_report.empty:
         dupe_report.to_csv(artifacts_dir / f"duplicate-audit-{as_of_date}.csv", index=False)
+
     (artifacts_dir / f"liquidity-meta-{as_of_date}.json").write_text(json.dumps(liq_meta, indent=2))
 
     if status_enabled:

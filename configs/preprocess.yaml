@@ -7,43 +7,94 @@
 #   - loads an OddsJam Bet Tracker CSV export
 #   - standardizes timestamps to America/New_York
 #   - applies optional date cutoffs and filter-name normalization
-#   - adds feature engineering (liquidity buckets, time-to-event buckets, EV/ROI fields)
-#   - generates QA artifacts (field validation, duplicate audits, status summaries)
+#   - adds regime-aware feature engineering
+#       * regime tagging (exchange vs sportsbook)
+#       * has_liquidity flag (True only where liquidity is expected by design)
+#       * opportunity_id for future opportunity-level dedupe / aggregation
+#       * liquidity buckets (exchange-aware)
+#       * time-to-event buckets
+#       * EV / ROI fields
+#   - generates QA artifacts
+#       * field validation
+#       * duplicate audits
+#       * liquidity metadata
+#       * status / settlement summaries
 #   - writes:
 #       (a) a "processed" parquet (canonical dataset)
-#       (b) an optional "settled-only" parquet (subset inferred by status + profit-known rate)
+#       (b) an optional "settled-only" parquet
 #
 # Key Concepts
 # ------------
-# - "Processed parquet" is the canonical dataset for analysis and (by default) includes
-#   ALL rows (settled + unresolved).
-# - "Settled-only parquet" is a convenience output created by inferring settled statuses.
-# - Status behavior is intentionally split into TWO independent controls:
-#     1) status_settlement.exclude_statuses_for_settled_inference:
-#        statuses excluded ONLY from settlement inference logic
-#     2) status_settlement.exclude_statuses_from_processed:
-#        optional toggle to drop unresolved statuses from the processed output too
+# 1) Canonical Processed Dataset
+#    The processed parquet is the main analysis-ready dataset and, by default,
+#    preserves all rows unless status_settlement.exclude_statuses_from_processed
+#    is enabled.
 #
-# Liquidity Buckets
-# -----------------
-# - The preprocessing script can produce either:
-#     (a) "raw" / source-like liquidity buckets (many small bands), OR
-#     (b) a condensed scheme (recommended for analysis).
-# - The condensed scheme is configured under liquidity.condensed_* and can be changed
-#   without touching code.
+# 2) Regime Tagging
+#    A new "regime" column distinguishes between:
+#      - exchange    -> true market / order-book style platforms
+#      - sportsbook  -> traditional sportsbooks / books without true liquidity depth
 #
-# Backwards Compatibility
-# -----------------------
-# Older configs used status_settlement.exclude_statuses for inference.
-# That key is still supported, but prefer the newer keys for clarity.
+#    This is important because liquidity should NOT be interpreted globally.
+#    Missing liquidity is expected for sportsbook rows and is not a data-quality issue.
+#
+# 3) Liquidity Expectations
+#    Liquidity is only expected for configured exchange regimes.
+#    Therefore:
+#      - exchange rows may be analyzed by liquidity bucket
+#      - sportsbook rows are allowed to have null liquidity by design
+#
+#    Any liquidity metadata / coverage statistics should be interpreted ONLY within
+#    the regimes listed under liquidity.apply_to_regimes.
+#
+# 4) Opportunity-Level Identity
+#    The config can add an "opportunity_id" column, built from a set of identity fields
+#    such as game_id / event_name / market_name / bet_name.
+#
+#    This does NOT deduplicate rows by default.
+#    It exists so downstream notebooks / evaluation code can compare:
+#      - execution-level performance (true bankroll result)
+#      - opportunity-level performance (true edge detection)
+#
+# 5) Status Behavior
+#    Status handling remains intentionally split into TWO independent controls:
+#      (a) status_settlement.exclude_statuses_for_settled_inference
+#          statuses excluded ONLY from settlement inference logic
+#      (b) status_settlement.exclude_statuses_from_processed
+#          optional toggle to drop unresolved statuses from the processed output too
+#
+# 6) Liquidity Buckets
+#    The preprocessing script can produce a condensed liquidity scheme for analysis.
+#    The bucket labels and edges are controlled entirely here, so the scheme can be
+#    changed without touching code.
+#
+# Notes on Backwards Compatibility
+# --------------------------------
+# - Older configs may reference event / market instead of event_name / market_name.
+# - Older configs may reference event_id / event instead of game_id / event_name.
+# - Older configs used status_settlement.exclude_statuses for inference.
+#   That key may still be tolerated in code for backwards compatibility, but the
+#   clearer split keys below are preferred.
+#
+# Commit Context
+# --------------
+# This version corresponds to the commit:
+#
+#   git commit -m "Add regime tagging and exchange-aware preprocessing config"
+#
+# Main additions in this version:
+#   - regime block
+#   - opportunity block
+#   - liquidity.apply_to_regimes
+#   - exchange-aware interpretation of liquidity coverage / QA
 # ==============================================================================
 
 raw_csv_path: data/raw/oddsjam-bet-tracker-03-21-2026.csv
 output_dir: data/processed
 artifacts_dir: data/processed/artifacts
 
-# optional; if omitted script auto-stamps
-# run_id: 2026-02-09
+# Optional; if omitted, script may auto-stamp
+# run_id: 2026-03-21
 
 # Optional: only keep rows on/after this date
 cutoff_date: "2025-03-22"
@@ -51,59 +102,131 @@ cutoff_date: "2025-03-22"
 timestamps:
   src_col: created_at
   out_col: created_at_et
-  # Raw CSV is already EST/ET, so tz-naive timestamps should be localized to ET
+
+  # Raw CSV timestamps are assumed to already represent ET / America/New_York
+  # when tz-naive. The script should localize rather than convert.
   assume_tz_for_naive: America/New_York
+
+  # Optional convenience compatibility column
   also_write_created_at_est: true
 
 filters:
   filter_col: saved_filter_names
   null_label: "No Filter"
+
   fantasy_optimizer_fill:
     enabled: false
     stake_col: stake
     max_stake: 20
     label: "TEST - Fantasy Optimizer"
 
+# ------------------------------------------------------------------------------
+# Regime tagging
+# ------------------------------------------------------------------------------
+# Distinguishes exchange-style market platforms from traditional sportsbooks.
+# This is used downstream for:
+#   - exchange-only liquidity interpretation
+#   - regime-aware evaluation tables
+#   - capacity analysis on exchanges
+regime:
+  sportsbook_col: sportsbook
+  out_col: regime
+  has_liquidity_col: has_liquidity
+
+  # These names should match sportsbook values in the processed dataframe.
+  # Update this list whenever you add a new exchange / market venue.
+  exchange_books:
+    - Novig
+    - Prophet X
+    - Prophet Exchange
+    - 4Cx
+    - Kalshi
+    - Robinhood
+
+# ------------------------------------------------------------------------------
+# Opportunity-level identifier
+# ------------------------------------------------------------------------------
+# Adds an identifier for "the same underlying bet opportunity".
+# This is intended for downstream dedupe / aggregation and does NOT dedupe rows
+# inside preprocessing by default.
+opportunity:
+  enabled: true
+  out_col: opportunity_id
+
+  # The script should concatenate whichever of these fields actually exist.
+  # This list is intentionally resilient to slightly different exports.
+  identity_cols:
+    - game_id
+    - event_name
+    - market_name
+    - bet_name
+
+# ------------------------------------------------------------------------------
+# Liquidity
+# ------------------------------------------------------------------------------
+# Liquidity is only meaningful / expected on exchange-style venues.
+# Sportsbook rows are allowed to have null liquidity without being treated as
+# missing-data failures.
 liquidity:
   liquidity_col: liquidity
   tags_col: tags
   out_bucket_col: liquidity_bucket
 
-  # Condensed bucketing config
+  # Only these regimes are expected to carry liquidity.
+  # QA coverage should be interpreted within these regimes only.
+  apply_to_regimes:
+    - exchange
+
+  # Condensed bucketing config used for analysis notebooks
   condensed:
     enabled: true
-    # The target bucket labels you want
+
+    # Buckets:
+    #   (-inf..500], (500..1000], (1000..2000], (2000..5000],
+    #   (5000..10000], (10000..inf)
     labels: ["<=500", "500-1k", "1k-2k", "2k-5k", "5k-10k", ">10k"]
-    # Boundaries interpreted as dollars. Must be len(labels)+1
-    # Here: (-inf..500], (500..1000], (1000..2000], (2000..5000], (5000..10000], (10000..inf)
     edges: [-inf, 500, 1000, 2000, 5000, 10000, inf]
 
-# Time-to-event bucketing (event_start_date - created_at_et)
+# ------------------------------------------------------------------------------
+# Time-to-event bucketing
+# ------------------------------------------------------------------------------
+# Buckets event_start_date - created_at_et.
 time_to_event:
   enabled: true
-  # created_col defaults to created_at_et in the script, but set explicitly for clarity
   created_col: created_at_et
   event_start_col: event_start_date
   out_col: time_to_event_bucket
   tz: America/New_York
-  # bets placed after event start (negative delta) get this label
+
+  # Bets placed after event start (negative delta) receive this label
   label_after_start: after_start
 
+# ------------------------------------------------------------------------------
+# QA / field validation / duplicate audits
+# ------------------------------------------------------------------------------
 qa:
   stake_col: stake
   odds_col: odds
   profit_col: bet_profit
+
   duplicate_keys:
     - ["id"]
     - ["bet_id"]
     - ["sportsbook", "created_at_et", "stake", "odds", "bet_profit"]
-    - ["sportsbook", "event", "market", "bet_name", "odds", "stake"]
-    - ["sportsbook", "event_id", "market", "bet_name", "odds", "stake"]
-    - ["sportsbook", "league", "sport", "market", "bet_name", "odds", "stake"]
-    - ["sportsbook", "bet_name", "market", "odds", "stake", "created_at_et"]
-    - ["sportsbook", "bet_name", "market", "odds", "stake"]
 
-# Artifact-dedupe switch (OFF by default)
+    # More semantic duplicate schemes; column availability may vary by export
+    - ["sportsbook", "event_name", "market_name", "bet_name", "odds", "stake"]
+    - ["sportsbook", "game_id", "market_name", "bet_name", "odds", "stake"]
+    - ["sportsbook", "league", "sport", "market_name", "bet_name", "odds", "stake"]
+    - ["sportsbook", "bet_name", "market_name", "odds", "stake", "created_at_et"]
+    - ["sportsbook", "bet_name", "market_name", "odds", "stake"]
+
+# ------------------------------------------------------------------------------
+# Artifact-only dedupe controls
+# ------------------------------------------------------------------------------
+# OFF by default.
+# This is for generating optional deduped artifacts later without changing the
+# canonical processed parquet behavior.
 dedupe_artifacts:
   enabled: false
   strategy: earliest        # earliest | latest | max_stake
@@ -111,26 +234,33 @@ dedupe_artifacts:
   time_col: created_at_et
   stake_col: stake
   filter_col: saved_filter_names
+
+  # Identity fields for optional artifact dedupe.
+  # Keep this robust to export differences.
   identity_cols:
     - sportsbook
-    - event_id
-    - event
+    - game_id
+    - event_name
     - league
     - sport
-    - market
+    - market_name
     - bet_name
     - selection
     - odds
     - line
 
+# ------------------------------------------------------------------------------
 # EV feature engineering
+# ------------------------------------------------------------------------------
 ev_features:
   enabled: true
   odds_col: odds
   clv_col: clv
   stake_col: stake
 
-# Status behavior -> infer settled -> build df_settled
+# ------------------------------------------------------------------------------
+# Status / settlement inference
+# ------------------------------------------------------------------------------
 status_settlement:
   enabled: true
   status_col: status
@@ -138,14 +268,16 @@ status_settlement:
   profit_col: bet_profit
   profit_known_threshold: 0.95
 
-  # Used ONLY when inferring settled statuses (recommended)
+  # Used ONLY when inferring settled statuses
   exclude_statuses_for_settled_inference: ["pending", "open", "unsettled"]
 
-  # Optional, affects processed parquet too
-  # - false (default): processed parquet keeps ALL rows
-  # - true: processed parquet excludes the statuses listed in exclude_statuses_for_settled_inference
+  # If true, also exclude unresolved statuses from the processed parquet
+  # If false, processed parquet keeps all rows and only the settled parquet is filtered
   exclude_statuses_from_processed: true
 
+# ------------------------------------------------------------------------------
+# Output stamping
+# ------------------------------------------------------------------------------
 as_of_date: "03-21-2026"  # MM-DD-YYYY
 
 output:
@@ -154,5 +286,6 @@ output:
   # Optional convenience file for notebooks (set null to disable)
   stable_name: "oddsjam-bet-tracker-processed-latest.parquet"
 
-  # Optional settled-only parquet (set null/omit to disable)
+  # Optional settled-only parquet (set null / omit to disable)
   settled_name_template: "oddsjam-bet-tracker-settled-{as_of_date}.parquet"
+  
