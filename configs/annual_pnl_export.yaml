@@ -59,10 +59,11 @@ inputs:
   # OPTIONAL: set to null to disable OddsJam
   oddsjam:
     enabled: true
-    csv_path: "data/raw/oddsjam-bet-tracker-02-06-2026.csv"
+    csv_path: "data/raw/oddsjam-bet-tracker-03-21-2026.csv"
 
     sportsbooks_include:
       - "BetUS"
+      - "Sportzino"
 
     sportsbooks_include_mode: "whitelist_date_range_only"
     sportsbooks_include_date_range:

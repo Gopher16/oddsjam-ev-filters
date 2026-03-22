@@ -38,7 +38,7 @@
 # That key is still supported, but prefer the newer keys for clarity.
 # ==============================================================================
 
-raw_csv_path: data/raw/oddsjam-bet-tracker-02-06-2026.csv
+raw_csv_path: data/raw/oddsjam-bet-tracker-03-21-2026.csv
 output_dir: data/processed
 artifacts_dir: data/processed/artifacts
 
@@ -146,7 +146,7 @@ status_settlement:
   # - true: processed parquet excludes the statuses listed in exclude_statuses_for_settled_inference
   exclude_statuses_from_processed: true
 
-as_of_date: "02-06-2026"  # MM-DD-YYYY
+as_of_date: "03-21-2026"  # MM-DD-YYYY
 
 output:
   name_template: "oddsjam-bet-tracker-processed-{as_of_date}.parquet"
