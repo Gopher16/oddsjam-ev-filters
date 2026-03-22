@@ -16,6 +16,7 @@ This script:
        - filter-name normalization (fill missing saved_filter_names)
   4) Adds feature engineering:
        - regime / has_liquidity
+       - prod_filter (config-driven production filter flag)
        - opportunity_id
        - liquidity_bucket (optionally condensed by config)
        - time_to_event_bucket
@@ -44,12 +45,19 @@ Regime / Liquidity Design
 This script adds:
   - regime: exchange vs sportsbook
   - has_liquidity: True only when liquidity is expected by design
+  - prod_filter: True only for configured production filters
   - opportunity_id: canonical opportunity-level identifier for downstream dedupe
     and edge analysis
 
 Liquidity should not be interpreted globally:
-  - exchange rows are expected to carry liquidity where available
+  - exchange rows are expected to carry liquidity information where available
   - sportsbook rows are allowed to have null liquidity by design
+
+Important current export constraint:
+  - the raw OddsJam Bet Tracker `liquidity` column is currently treated as
+    unusable / untrusted
+  - therefore the derived `liquidity_bucket` column is the canonical downstream
+    liquidity / capacity signal for exchange rows
 
 Usage
 -----
@@ -301,6 +309,44 @@ def _add_opportunity_id(
     return out
 
 
+def _add_prod_filter_flag(
+    df: pd.DataFrame,
+    *,
+    filter_col: str,
+    out_col: str,
+    production_filters: list[str],
+) -> pd.DataFrame:
+    """
+    Add a binary / boolean flag indicating whether a row belongs to a configured
+    production filter.
+
+    Parameters
+    ----------
+    df
+        Input dataframe.
+    filter_col
+        Column containing the canonical filter name.
+    out_col
+        Output boolean column name.
+    production_filters
+        Exact filter names considered production.
+
+    Returns
+    -------
+    pd.DataFrame
+        Copy with added prod-filter flag.
+    """
+    out = df.copy()
+
+    if filter_col not in out.columns:
+        out[out_col] = False
+        return out
+
+    prod_set = {str(x).strip() for x in production_filters if str(x).strip()}
+    out[out_col] = out[filter_col].astype("string").str.strip().isin(prod_set).fillna(False)
+    return out
+
+
 # -----------------------------------------------------------------------------
 # Liquidity condensation helpers
 # -----------------------------------------------------------------------------
@@ -510,6 +556,18 @@ def main() -> None:
         df.loc[mask, filter_col] = label
 
     # --------------------------
+    # Production-filter tagging
+    # --------------------------
+    prod_cfg = cfg.get("prod_filters", {})
+    if prod_cfg.get("enabled", False):
+        df = _add_prod_filter_flag(
+            df,
+            filter_col=prod_cfg.get("filter_col", filter_col),
+            out_col=prod_cfg.get("out_col", "prod_filter"),
+            production_filters=prod_cfg.get("production_filters", []),
+        )
+
+    # --------------------------
     # Regime tagging
     # --------------------------
     regime_cfg = cfg.get("regime", {})
@@ -543,6 +601,7 @@ def main() -> None:
     liquidity_col = liq_cfg.get("liquidity_col", "liquidity")
     tags_col = liq_cfg.get("tags_col", "tags")
     out_bucket_col = liq_cfg.get("out_bucket_col", "liquidity_bucket")
+    raw_liquidity_usable = bool(liq_cfg.get("raw_liquidity_usable", True))
 
     df, liq_meta = add_liquidity_bucket(
         df,
@@ -595,28 +654,49 @@ def main() -> None:
     regime_col = regime_cfg.get("out_col", "regime")
     apply_to_regimes = set(liq_cfg.get("apply_to_regimes", ["exchange"]))
 
-    if liquidity_col in df.columns and regime_col in df.columns:
+    if regime_col in df.columns:
         liquidity_expected_mask = df[regime_col].isin(apply_to_regimes)
         n_expected = int(liquidity_expected_mask.sum())
-        n_expected_with_value = int(
-            pd.to_numeric(df.loc[liquidity_expected_mask, liquidity_col], errors="coerce")
-            .notna()
-            .sum()
+
+        bucket_present_mask = (
+            df[out_bucket_col].notna()
+            if out_bucket_col in df.columns
+            else pd.Series(False, index=df.index)
         )
-        expected_regime_coverage_rate = (
-            n_expected_with_value / n_expected if n_expected > 0 else np.nan
+        n_bucket_present_when_expected = int(bucket_present_mask[liquidity_expected_mask].sum())
+        expected_regime_bucket_coverage_rate = (
+            n_bucket_present_when_expected / n_expected if n_expected > 0 else np.nan
         )
 
         liq_meta = {
             **(liq_meta or {}),
             "expected_regimes": sorted(apply_to_regimes),
+            "raw_liquidity_usable": raw_liquidity_usable,
             "n_rows_liquidity_expected": n_expected,
-            "n_rows_liquidity_present_when_expected": n_expected_with_value,
-            "expected_regime_coverage_rate": expected_regime_coverage_rate,
+            "n_rows_liquidity_bucket_present_when_expected": n_bucket_present_when_expected,
+            "expected_regime_bucket_coverage_rate": expected_regime_bucket_coverage_rate,
         }
+
+        if raw_liquidity_usable and liquidity_col in df.columns:
+            n_numeric_present_when_expected = int(
+                pd.to_numeric(df.loc[liquidity_expected_mask, liquidity_col], errors="coerce")
+                .notna()
+                .sum()
+            )
+            numeric_coverage_rate = (
+                n_numeric_present_when_expected / n_expected if n_expected > 0 else np.nan
+            )
+            liq_meta["n_rows_numeric_liquidity_present_when_expected"] = (
+                n_numeric_present_when_expected
+            )
+            liq_meta["expected_regime_numeric_coverage_rate"] = numeric_coverage_rate
 
         if "has_liquidity" in df.columns:
             liq_meta["n_rows_has_liquidity_true"] = int(df["has_liquidity"].fillna(False).sum())
+
+        bucket_rep_values = liq_cfg.get("bucket_representative_values")
+        if isinstance(bucket_rep_values, dict):
+            liq_meta["bucket_representative_values"] = bucket_rep_values
 
     # --------------------------
     # Time-to-event bucket

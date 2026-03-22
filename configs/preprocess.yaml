@@ -10,8 +10,10 @@
 #   - adds regime-aware feature engineering
 #       * regime tagging (exchange vs sportsbook)
 #       * has_liquidity flag (True only where liquidity is expected by design)
+#       * prod_filter binary flag for configured production filters
 #       * opportunity_id for future opportunity-level dedupe / aggregation
-#       * liquidity buckets (exchange-aware)
+#       * liquidity buckets (exchange-aware; bucket-based because raw liquidity
+#         is currently unusable in the OddsJam Bet Tracker export)
 #       * time-to-event buckets
 #       * EV / ROI fields
 #   - generates QA artifacts
@@ -31,15 +33,31 @@
 #    is enabled.
 #
 # 2) Regime Tagging
-#    A new "regime" column distinguishes between:
+#    A "regime" column distinguishes between:
 #      - exchange    -> true market / order-book style platforms
 #      - sportsbook  -> traditional sportsbooks / books without true liquidity depth
 #
 #    This is important because liquidity should NOT be interpreted globally.
 #    Missing liquidity is expected for sportsbook rows and is not a data-quality issue.
 #
-# 3) Liquidity Expectations
+# 3) Production Filter Tagging
+#    A config-driven "prod_filter" column allows you to explicitly list the
+#    filters that are considered live / production in downstream research.
+#
+#    This makes it easy to:
+#      - separate real-money vs test filters
+#      - slice reports by production status
+#      - build downstream promotion / demotion workflows
+#
+# 4) Liquidity Expectations
 #    Liquidity is only expected for configured exchange regimes.
+#
+#    Important current constraint:
+#      - the raw OddsJam Bet Tracker "liquidity" column is currently treated as
+#        unusable / untrusted
+#      - therefore exchange liquidity interpretation is based on the derived
+#        liquidity_bucket column instead
+#
 #    Therefore:
 #      - exchange rows may be analyzed by liquidity bucket
 #      - sportsbook rows are allowed to have null liquidity by design
@@ -47,7 +65,7 @@
 #    Any liquidity metadata / coverage statistics should be interpreted ONLY within
 #    the regimes listed under liquidity.apply_to_regimes.
 #
-# 4) Opportunity-Level Identity
+# 5) Opportunity-Level Identity
 #    The config can add an "opportunity_id" column, built from a set of identity fields
 #    such as game_id / event_name / market_name / bet_name.
 #
@@ -56,17 +74,25 @@
 #      - execution-level performance (true bankroll result)
 #      - opportunity-level performance (true edge detection)
 #
-# 5) Status Behavior
+# 6) Status Behavior
 #    Status handling remains intentionally split into TWO independent controls:
 #      (a) status_settlement.exclude_statuses_for_settled_inference
 #          statuses excluded ONLY from settlement inference logic
 #      (b) status_settlement.exclude_statuses_from_processed
 #          optional toggle to drop unresolved statuses from the processed output too
 #
-# 6) Liquidity Buckets
+# 7) Liquidity Buckets
 #    The preprocessing script can produce a condensed liquidity scheme for analysis.
-#    The bucket labels and edges are controlled entirely here, so the scheme can be
+#    Because the raw liquidity column is currently unusable, the liquidity bucket is
+#    the canonical downstream capacity signal for exchange rows.
+#
+#    Bucket labels and edges are controlled entirely here, so the scheme can be
 #    changed without touching code.
+#
+# 8) Bucket-Based Capacity Proxy
+#    This config can define representative dollar values for each liquidity bucket.
+#    Downstream exchange-capacity logic may use these representative values as a
+#    capacity proxy in the absence of usable raw numeric liquidity.
 #
 # Notes on Backwards Compatibility
 # --------------------------------
@@ -80,13 +106,13 @@
 # --------------
 # This version corresponds to the commit:
 #
-#   git commit -m "Add regime tagging and exchange-aware preprocessing config"
+#   git commit -m "Add prod filter tagging and bucket-based exchange capacity"
 #
 # Main additions in this version:
-#   - regime block
-#   - opportunity block
-#   - liquidity.apply_to_regimes
-#   - exchange-aware interpretation of liquidity coverage / QA
+#   - prod_filters block
+#   - liquidity.raw_liquidity_usable flag
+#   - liquidity bucket-based coverage semantics
+#   - bucket representative values for downstream exchange-capacity analysis
 # ==============================================================================
 
 raw_csv_path: data/raw/oddsjam-bet-tracker-03-21-2026.csv
@@ -119,6 +145,21 @@ filters:
     stake_col: stake
     max_stake: 20
     label: "TEST - Fantasy Optimizer"
+
+# ------------------------------------------------------------------------------
+# Production filter tagging
+# ------------------------------------------------------------------------------
+# Adds a binary prod/non-prod flag for downstream reporting and decision support.
+# This should reflect your currently live / real-money filters.
+prod_filters:
+  enabled: true
+  filter_col: saved_filter_names
+  out_col: prod_filter
+
+  # Exact filter names considered production.
+  production_filters:
+    - "PROD - Exchanges: Core Exchange Conservative (Low Risk, Slow Build)"
+    - "PROD - Offshore Books: Core & Conservative (Low Risk, Slow Build)"
 
 # ------------------------------------------------------------------------------
 # Regime tagging
@@ -167,12 +208,21 @@ opportunity:
 # Liquidity is only meaningful / expected on exchange-style venues.
 # Sportsbook rows are allowed to have null liquidity without being treated as
 # missing-data failures.
+#
+# Important current export constraint:
+#   - the raw `liquidity` column from OddsJam Bet Tracker is currently treated as
+#     unusable / untrusted
+#   - downstream exchange-capacity logic should therefore rely on the derived
+#     `liquidity_bucket` rather than raw numeric liquidity
 liquidity:
   liquidity_col: liquidity
   tags_col: tags
   out_bucket_col: liquidity_bucket
 
-  # Only these regimes are expected to carry liquidity.
+  # Raw numeric liquidity currently not trusted in the source export.
+  raw_liquidity_usable: false
+
+  # Only these regimes are expected to carry liquidity / liquidity buckets.
   # QA coverage should be interpreted within these regimes only.
   apply_to_regimes:
     - exchange
@@ -186,6 +236,17 @@ liquidity:
     #   (5000..10000], (10000..inf)
     labels: ["<=500", "500-1k", "1k-2k", "2k-5k", "5k-10k", ">10k"]
     edges: [-inf, 500, 1000, 2000, 5000, 10000, inf]
+
+  # Representative values for bucket-based capacity proxy logic downstream.
+  # These do NOT affect bucketing itself; they exist to help downstream analysis
+  # convert liquidity_bucket into a conservative numeric proxy.
+  bucket_representative_values:
+    "<=500": 250
+    "500-1k": 750
+    "1k-2k": 1500
+    "2k-5k": 3500
+    "5k-10k": 7500
+    ">10k": 10000
 
 # ------------------------------------------------------------------------------
 # Time-to-event bucketing
@@ -288,4 +349,3 @@ output:
 
   # Optional settled-only parquet (set null / omit to disable)
   settled_name_template: "oddsjam-bet-tracker-settled-{as_of_date}.parquet"
-  
