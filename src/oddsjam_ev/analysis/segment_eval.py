@@ -31,8 +31,8 @@ Design Notes
 
 from __future__ import annotations
 
+from collections.abc import Sequence
 from dataclasses import dataclass
-from typing import Sequence
 
 import numpy as np
 import pandas as pd
@@ -149,8 +149,12 @@ def build_segment_evaluation(
         result["opportunity_group_count"] = group[cfg.opportunity_key_column].nunique(dropna=True)
     if cfg.ev_amount_column is not None:
         result["total_modeled_ev"] = group[cfg.ev_amount_column].sum(min_count=1)
-        result["modeled_ev_roi"] = result["total_modeled_ev"].div(result["total_stake"].where(result["total_stake"] > 0))
-    result["realized_roi"] = result["total_profit"].div(result["total_stake"].where(result["total_stake"] > 0))
+        result["modeled_ev_roi"] = result["total_modeled_ev"].div(
+            result["total_stake"].where(result["total_stake"] > 0)
+        )
+    result["realized_roi"] = result["total_profit"].div(
+        result["total_stake"].where(result["total_stake"] > 0)
+    )
     result["meets_min_executions"] = result["execution_count"].ge(cfg.min_executions)
     result["dimension"] = dimension
     return result.reset_index().rename(columns={"_segment": "segment"})
