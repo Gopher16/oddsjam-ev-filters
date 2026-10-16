@@ -30,14 +30,16 @@ from oddsjam_ev.analysis.segment_eval import SegmentEvalConfig, build_segment_ev
 
 def _executions():
     """Return a small deterministic execution-level dataset."""
-    return pd.DataFrame({
-        "sportsbook": ["A", "A", "B", None],
-        "odds": [-110, 120, 150, None],
-        "stake": [10.0, 30.0, 20.0, 40.0],
-        "bet_profit": [5.0, -15.0, 10.0, 0.0],
-        "ev_amount": [1.0, 3.0, 2.0, 4.0],
-        "research_opportunity_key": ["x", "x", "y", "z"],
-    })
+    return pd.DataFrame(
+        {
+            "sportsbook": ["A", "A", "B", None],
+            "odds": [-110, 120, 150, None],
+            "stake": [10.0, 30.0, 20.0, 40.0],
+            "bet_profit": [5.0, -15.0, 10.0, 0.0],
+            "ev_amount": [1.0, 3.0, 2.0, 4.0],
+            "research_opportunity_key": ["x", "x", "y", "z"],
+        }
+    )
 
 
 def test_categorical_segments_and_roi():

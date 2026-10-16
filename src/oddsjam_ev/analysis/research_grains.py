@@ -115,12 +115,12 @@ def build_research_grains(
         valid_id, "__missing_opportunity_row_" + executions["execution_row_id"].astype(str)
     ).astype(str)
     # Prefix source IDs to keep them separate from dataset-local surrogate keys.
-    executions.loc[valid_id, "research_opportunity_key"] = (
-        "source:" + raw_id.loc[valid_id].astype(str)
+    executions.loc[valid_id, "research_opportunity_key"] = "source:" + raw_id.loc[valid_id].astype(
+        str
     )
-    executions.loc[~valid_id, "research_opportunity_key"] = (
-        "surrogate:" + executions.loc[~valid_id, "execution_row_id"].astype(str)
-    )
+    executions.loc[~valid_id, "research_opportunity_key"] = "surrogate:" + executions.loc[
+        ~valid_id, "execution_row_id"
+    ].astype(str)
 
     grouped = executions.groupby("research_opportunity_key", sort=False, dropna=False)
     opportunities = grouped.agg(
