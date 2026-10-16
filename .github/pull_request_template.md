@@ -2,7 +2,7 @@
 
 Describe the objective of this pull request and its main changes.
 
-- 
+-
 
 ## Change classification
 
