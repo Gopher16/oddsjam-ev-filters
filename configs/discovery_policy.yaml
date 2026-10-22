@@ -1,0 +1,22 @@
+contract_version: 1
+min_event_groups: 100
+# Deliberately incomplete: formal testing is blocked until explicitly selected.
+min_eligible_stake_usd: null
+confidence_level: 0.95
+bootstrap_resamples: 5000
+seed: 20261022
+alpha: 0.05
+execution_modes: [real_money, paper, unknown]
+views:
+  - [sportsbook]
+  - [sport]
+  - [league]
+  - [market_family]
+  - [odds_band]
+  - [advertised_ev_band]
+  - [sportsbook, market_family]
+  - [league, market_family]
+  - [odds_band, advertised_ev_band]
+# Future temporal validation requires explicit windows and evidence.
+temporal_windows: []
+embargo_days: null
