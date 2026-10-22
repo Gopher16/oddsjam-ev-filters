@@ -265,3 +265,11 @@ families, conditional event-proxy uncertainty, multiple-testing accounting and
 chronological evidence gates. Formal tests remain blocked by the unset stake
 threshold; October temporal validation remains unavailable. Reports are
 exploratory and never promote filters or enable wagering.
+
+### Research proposals and human review
+
+[RECOMMENDATIONS.md](docs/RECOMMENDATIONS.md) describes evidence-linked research
+proposals, reviewed UI translations, observed coverage audits and an append-only
+human decision register. Production filter changes remain prohibited; draft paper
+protocols are not automatically launched or funded. Reports and decisions stay
+under private ignored data paths.
