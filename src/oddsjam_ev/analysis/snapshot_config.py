@@ -22,6 +22,7 @@ Design Notes
 - The default snapshot is explicit and historical, not the latest available.
 - ODDSJAM_SNAPSHOT_DATE can override the default using MM-DD-YYYY format.
 - ODDSJAM_PROJECT_ROOT can identify a nonstandard repository location.
+- ODDSJAM_RESEARCH_MANIFEST selects a verified ingestion-derived research bundle.
 - No filesystem writes occur during configuration resolution.
 - Snapshot filename dates do not establish the actual range of bet timestamps.
 ===============================================================================
@@ -29,10 +30,14 @@ Design Notes
 
 from __future__ import annotations
 
+import json
 import os
 from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
+
+from oddsjam_ev.io.manifests import verify_bytes
+from oddsjam_ev.io.source_csv import fingerprint
 
 DEFAULT_SNAPSHOT_DATE = "03-21-2026"
 
@@ -52,12 +57,15 @@ class SnapshotConfig:
         Path to the processed Bet Tracker Parquet snapshot.
     artifact_dir
         Directory containing preprocessing QA artifacts.
+    provenance_path
+        Explicit research manifest, if selected by ODDSJAM_RESEARCH_MANIFEST.
     """
 
     project_root: Path
     snapshot_date: str
     processed_path: Path
     artifact_dir: Path
+    provenance_path: Path | None = None
 
 
 def resolve_snapshot_config(
@@ -110,6 +118,24 @@ def resolve_snapshot_config(
     processed_dir = root / "data" / "processed"
     if not processed_dir.is_dir():
         raise FileNotFoundError(f"Processed data directory not found: {processed_dir}")
+    research_manifest = os.environ.get("ODDSJAM_RESEARCH_MANIFEST")
+    if research_manifest:
+        manifest_path = Path(research_manifest).expanduser().resolve()
+        manifest = json.loads(manifest_path.read_text())
+        if fingerprint(manifest["preprocessing_config"]) != manifest["preprocessing_config_sha256"]:
+            raise ValueError("Research manifest configuration integrity failure")
+        for name, expected in manifest["output_sha256"].items():
+            relative = Path(name)
+            if relative.is_absolute() or ".." in relative.parts:
+                raise ValueError("Invalid research artifact path")
+            verify_bytes(manifest_path.parent / relative, expected)
+        return SnapshotConfig(
+            project_root=root,
+            snapshot_date=manifest["preprocessing_config"]["as_of_date"],
+            processed_path=manifest_path.parent / manifest["processed_filename"],
+            artifact_dir=manifest_path.parent / "artifacts",
+            provenance_path=manifest_path,
+        )
     return SnapshotConfig(
         project_root=root,
         snapshot_date=selected,
