@@ -250,3 +250,10 @@ Potential roadmap:
 - Bankroll drawdown stress tests
 - Monte Carlo variance simulations
 - PROD vs TEST filter performance tracking dashboard
+
+### Descriptive opportunity atlas
+
+Build a separate atlas from a pinned canonical bundle and explore it in Notebook 03.
+See [OPPORTUNITY_ATLAS.md](docs/OPPORTUNITY_ATLAS.md) for explicit input selection,
+grains, reported-ROI exclusions, and uncertainty limitations. Existing notebook
+inputs and preprocessing defaults remain unchanged.

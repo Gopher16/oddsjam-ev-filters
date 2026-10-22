@@ -2,6 +2,10 @@
 
 ## Purpose
 
+The notebook sequence and data policies below are updated by the canonical facts
+and opportunity atlas contracts. Older research objectives are future work, not
+claims that current outputs establish deployable edges.
+
 This document defines the **objectives, hypotheses, analytical framework, and decision rules** for the `oddsjam-ev-filters` repository.
 
 The goal is to establish a **repeatable, closed-loop research system** for:
@@ -242,7 +246,7 @@ Make explicit, data-backed decisions:
 
 **Checklist**
 - [ ] Deduplicate bets across timestamps
-- [ ] Standardize timestamps (EST)
+- [ ] Preserve unknown timezone; normalize only supported timestamp provenance
 - [ ] Validate stake, odds, and profit
 - [ ] Tag liquidity buckets
 
@@ -265,16 +269,13 @@ Make explicit, data-backed decisions:
 
 ---
 
-### Notebook 03: Timing & Liquidity Analysis
+### Notebook 03: Cross-filter Opportunity Atlas
 
-**Checklist**
-- [ ] Time-to-event buckets
-- [ ] Hour/day effects
-- [ ] Liquidity vs profit
-
-**Decision Outputs**
-- Timing rules
-- Liquidity constraints
+See [OPPORTUNITY_ATLAS.md](OPPORTUNITY_ATLAS.md) for the implemented descriptive
+scope and explicit canonical input selection. Compare sportsbook, market family,
+league, odds, and advertised-EV slices with separate wager/proxy grains and
+real/paper/unknown cohorts. Timing and liquidity analyses require evidence absent
+from the October export. Strategy promotion and formal robustness are later work.
 
 ---
 
@@ -306,12 +307,12 @@ Make explicit, data-backed decisions:
 
 ## Data & Methodology Caveats
 
-- Deduplicate bets placed at multiple timestamps
-- Weight recent data more heavily than older data
+- Preserve repeated wagers; opportunity proxies do not prove duplicate executions
+- Do not weight by recency until chronology is supported and a policy is declared
 - Liquidity fields may be missing or inconsistent in 2025
 - Reported liquidity ≠ true market depth
 - Order book visibility varies by exchange
-- Paper trading stopped ~Jan 20
+- Historical real-money status uses the user-confirmed Core Exchange Conservative assumption; other named historical filters were paper, with unresolved classifications retained as unknown
 - Bankroll increased from $10K → $20K at that time
 
 All conclusions must be interpreted with these constraints in mind.
