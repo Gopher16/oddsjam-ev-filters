@@ -35,7 +35,7 @@ filters:
     name: 'TEST - Onyx Odds Player Props'
     status: TEST
     lifecycle: planned_not_yet_confirmed_created
-    clone_of: prod_dk_pick6_player_props
+    clone_of: test_dk_pick6_player_props
     override: {sportsbooks: ['Onyx Odds']}
     note: 'All settings, including null liquidity and null minimum recommended bet, match the DK Pick6 filter.'
   - id: prod_exchanges_core_conservative
