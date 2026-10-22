@@ -1,0 +1,67 @@
+schema_version: 1
+currency: USD
+currency_evidence: user_confirmed_2026-10-22
+fee_inclusion: unverified
+refunds_in_roi: false
+profit_tolerance_usd: 0.01
+# Exact venue/product mappings. Unlisted products stay unknown, never sportsbook.
+products:
+  fixed_odds:
+    - Action 24/7
+    - BetAnySports
+    - BetDSI
+    - BetDSI (Superbook)
+    - BetOnline
+    - BetUK
+    - BetUS
+    - Betano
+    - Betly (Tennessee)
+    - Bodog
+    - BookMaker
+    - Bovada
+    - Caesars
+    - Everygame
+    - Heritage
+    - MyBookie
+    - Play Eagle
+    - PointsBet (Ohio)
+    - Proline
+    - Sportsbet
+    - WynnBET (Massachusetts)
+    - WynnBET (New York)
+    - Xbet
+    - bet105
+  exchange:
+    - 4Cx
+    - BetOpenly
+    - Kalshi
+    - Novig
+    - Polymarket (USA)
+    - Prophet Exchange
+    - Prophet X
+    - Robinhood
+  pickem:
+    - Betr Picks
+    - Boom Fantasy (5 Pick Insured)
+    - Chalkboard
+    - Dabble (3 or 5 Pick)
+    - DraftKings (Pick 3)
+    - DraftKings (Pick 6)
+    - HotStreak
+    - Jock MKT (5 Pick)
+    - OwnersBox
+    - ParlayPlay
+    - ParlayPlay (6 Pick)
+    - PrizePicks
+    - PrizePicks (5 or 6 Pick Flex)
+    - Sleeper
+    - SportsQuack (5 Pick)
+    - ThriveFantasy
+    - Underdog Fantasy
+    - Underdog Fantasy (2 Pick)
+    - Underdog Fantasy (3 or 5 Pick)
+    - Underdog Fantasy (6 Pick)
+    - Vivid Picks (4 Pick)
+# Negative eligibility evidence only: these labels cannot turn a leg into a wager.
+pickem_filter_ids:
+  - test_dk_pick6_player_props

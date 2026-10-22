@@ -1,0 +1,124 @@
+schema_version: 1
+snapshot_date: '2026-10-22'
+source: 'User-supplied OddsJam UI screenshots and clarifications'
+notes:
+  - 'This is a historical configuration registry, not an execution engine or source of truth for betting returns.'
+  - 'Unselected settings are null, not zero; displayed inactive UI defaults are not enforced.'
+  - 'PROD means currently used for real-money opportunity discovery, not independently validated profitability.'
+  - 'OddsJam Next 24 hours / Next 7 days refer to event horizons, not historical lookback.'
+  - 'Maintain effective-dated snapshots and name aliases rather than overwriting historical settings.'
+filters:
+  - id: test_dk_pick6_player_props
+    name: 'PROD - DK Pick6 Player Props'
+    former_names: ['DK Pick6 Player Props']
+    status: PROD
+    lifecycle: existing_rename_planned
+    recommended_filters: true
+    sportsbooks: ['DraftKings (Pick 3)']
+    market_type: player_prop
+    markets: all_player_props
+    market_count_observed: 404
+    market_count_saved_summary: 400
+    event_horizon: next_7_days
+    min_american_odds: -150
+    max_american_odds: 150
+    min_ev_percent: 2.5
+    max_market_width: 25
+    devig_reference: oddsjam_recommended_book_weights
+    devig_method: worst_case
+    ev_formula_builder: default_100_percent_oddsjam_algorithm
+    minimum_liquidity: null
+    minimum_recommended_bet: null
+    bet_warnings: {show_same_game: true, show_conflicting: true, show_previously_placed: true}
+    caveat: 'Preset odds/EV/width displayed while Recommended Filters is enabled; 400 versus 404 market count differs across screenshots.'
+  - id: test_onyx_odds_player_props
+    name: 'TEST - Onyx Odds Player Props'
+    status: TEST
+    lifecycle: planned_not_yet_confirmed_created
+    clone_of: test_dk_pick6_player_props
+    override: {sportsbooks: ['Onyx Odds']}
+    note: 'All settings, including null liquidity and null minimum recommended bet, match the DK Pick6 filter.'
+  - id: prod_exchanges_core_conservative
+    name: 'PROD - Exchanges: Core Exchange Conservative (Low Risk, Slow Build)'
+    status: PROD
+    lifecycle: existing
+    recommended_filters: unknown
+    sportsbook_count: 10
+    sportsbooks: unknown
+    market_type: main_market
+    market_count: 13
+    event_horizon: next_24_hours
+    min_american_odds: -150
+    max_american_odds: 150
+    min_ev_percent: 2.5
+    max_market_width: 25
+    devig_reference: pinnacle
+    devig_method: worst_case
+    other_settings: not_verified_from_detail_screenshots
+  - id: test_dfs_platforms
+    name: 'TEST - DFS Platforms'
+    status: TEST
+    lifecycle: existing
+    recommended_filters: unknown
+    sportsbook_count: 12
+    sportsbooks: unknown
+    min_american_odds: -150
+    max_american_odds: 250
+    devig_reference: oddsjam
+    devig_method: power
+    other_settings: not_verified_from_detail_screenshots
+  - id: test_dfs_sweepstakes_recommended
+    name: 'TEST - DFS/Sweepstakes: OddsJam Recommended Filters Next 7 Days'
+    status: TEST
+    lifecycle: existing
+    recommended_filters: unknown
+    sportsbook_count: 16
+    sportsbooks: unknown
+    market_type: main_market
+    market_count: 13
+    event_horizon: next_7_days
+    min_american_odds: -150
+    max_american_odds: 150
+    min_ev_percent: 2.5
+    max_market_width: 25
+    devig_reference: oddsjam
+    devig_method: worst_case
+    other_settings: not_verified_from_detail_screenshots
+  - id: test_exchanges_market_lag_circa
+    name: 'TEST - Exchanges: Market Lag Spotter (Circa Devig)'
+    status: TEST
+    lifecycle: existing
+    recommended_filters: false
+    sportsbooks: ['Prophet X', 'Novig', 'Kalshi', 'Robinhood']
+    min_american_odds: -200
+    max_american_odds: 400
+    min_ev_percent: 5.0
+    event_horizon: next_24_hours
+    devig_reference: circa
+    devig_method: power
+    ev_formula_builder: default_100_percent_oddsjam_algorithm
+    minimum_liquidity: null
+    league: null
+    market: null
+    game: null
+    minimum_recommended_bet: null
+    market_width: null
+    bet_warnings: {show_same_game: true, show_conflicting: true, show_previously_placed: true}
+  - id: test_exchanges_market_lag_pinnacle
+    name: 'TEST - Exchanges: Market Lag Spotter (Pinnacle Devig)'
+    status: TEST
+    lifecycle: existing_corrected_2026_10_22
+    clone_of: test_exchanges_market_lag_circa
+    override: {devig_reference: pinnacle}
+    sportsbook_selection_correction: 'Rebet was inadvertently selected, then removed; same four sportsbooks as Circa.'
+  - id: legacy_prod_dfs_platforms
+    name: 'PROD - DFS Platforms'
+    status: LEGACY
+    lifecycle: legacy_or_superseded_per_prior_discussion
+    settings: not_fully_captured
+    note: 'Retain name as a historical attribution alias; do not infer current operational use.'
+  - id: deferred_rebet
+    name: 'Rebet-specific filter'
+    status: DEFERRED
+    lifecycle: not_planned_for_current_phase
+    settings: null

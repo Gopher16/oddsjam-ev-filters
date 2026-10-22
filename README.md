@@ -60,6 +60,11 @@ poetry run pre-commit install
 
 ## Data Workflow
 
+Canonical wager facts can be built separately from a pinned ingestion snapshot.
+See [Canonical facts and economic eligibility](docs/CANONICAL_FACTS.md) for ticket/leg
+grains, USD assumptions, Pick'em exclusions, and reported-return limitations.
+This does not change the existing notebook input or historical metrics.
+
 Historical CSV imports now have an optional immutable ingestion and lineage layer.
 See [Historical ingestion](docs/INGESTION.md) for the CLI, reconciliation policies,
 execution-status assumptions, and reproducible snapshot selection. The existing
