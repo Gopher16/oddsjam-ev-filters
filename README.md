@@ -257,3 +257,11 @@ Build a separate atlas from a pinned canonical bundle and explore it in Notebook
 See [OPPORTUNITY_ATLAS.md](docs/OPPORTUNITY_ATLAS.md) for explicit input selection,
 grains, reported-ROI exclusions, and uncertainty limitations. Existing notebook
 inputs and preprocessing defaults remain unchanged.
+
+### Robust segment research
+
+[ROBUST_DISCOVERY.md](docs/ROBUST_DISCOVERY.md) describes predeclared search
+families, conditional event-proxy uncertainty, multiple-testing accounting and
+chronological evidence gates. Formal tests remain blocked by the unset stake
+threshold; October temporal validation remains unavailable. Reports are
+exploratory and never promote filters or enable wagering.
