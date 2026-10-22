@@ -74,7 +74,9 @@ invalid numeric counts, duplicate counts, and status counts. Raw bounds are
 lexical diagnostics, not a safe acquisition watermark. Optional field loss and
 extra columns are surfaced without dropping data. Required-column loss, repeated
 headers, malformed rows, unsupported encoding, reserved headers, and empty data
-fail. CSV is UTF-8 with optional BOM; XLSX and network acquisition are deferred.
+fail. CSV is UTF-8 with optional BOM; XLSX remains deferred.
+The optional [acquisition adapter](EXPORT_ACQUISITION.md) downloads original bytes
+and calls this same importer without changing reconciliation policies.
 
 Snapshot IDs pin import manifests, explicit identity resolutions, execution
 policy, reconciliation version/code hash, and pandas version. Output hashes detect

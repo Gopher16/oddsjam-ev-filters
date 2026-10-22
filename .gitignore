@@ -19,3 +19,7 @@ data/processed/
 # OS / Editor
 .DS_Store
 .vscode/*.log
+
+# Local authentication profiles and browser request captures
+.local/
+*.har
