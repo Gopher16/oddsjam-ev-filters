@@ -1,0 +1,8 @@
+# Public transport limits only. Authentication and observed request parameters
+# belong in the ignored owner-private .local/oddsjam/request.json file.
+# Endpoint is fixed in code; redirects, proxy settings, and arbitrary hosts
+# are not supported. Neither method nor authentication is guessed.
+download:
+  timeout_seconds: 30
+  max_bytes: 134217728
+  attempts: 3
