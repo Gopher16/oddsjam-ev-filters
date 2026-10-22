@@ -60,6 +60,11 @@ poetry run pre-commit install
 
 ## Data Workflow
 
+Historical CSV imports now have an optional immutable ingestion and lineage layer.
+See [Historical ingestion](docs/INGESTION.md) for the CLI, reconciliation policies,
+execution-status assumptions, and reproducible snapshot selection. The existing
+preprocessing command and default notebook snapshot remain available unchanged.
+
 ### 1️⃣ Add Raw Export
 
 Place your OddsJam Bet Tracker export CSV in:

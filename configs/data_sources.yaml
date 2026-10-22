@@ -1,0 +1,8 @@
+# Private artifacts remain under the existing ignored data/raw tree.
+# Paths are relative to the working directory; run the CLI from repository root.
+store: data/raw/ingestion
+source:
+  namespace: oddsjam_primary
+  exported_at: null
+  timestamp_timezone: unknown
+  scope: unknown

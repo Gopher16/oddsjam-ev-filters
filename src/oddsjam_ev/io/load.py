@@ -46,7 +46,7 @@ def standardize_timestamp_to_et(
     out = df.copy()
     ts = pd.to_datetime(out[src_col], errors="coerce")
 
-    if pd.api.types.is_datetime64tz_dtype(ts):
+    if isinstance(ts.dtype, pd.DatetimeTZDtype):
         out[out_col] = ts.dt.tz_convert("America/New_York")
     else:
         out[out_col] = ts.dt.tz_localize(
@@ -72,6 +72,23 @@ def load_bet_tracker_csv(path: str | Path) -> pd.DataFrame:
 
     df = pd.read_csv(path, low_memory=False)
 
+    return normalize_bet_tracker_frame(df)
+
+
+def normalize_bet_tracker_frame(df: pd.DataFrame) -> pd.DataFrame:
+    """Apply legacy numeric/date coercion to a copy of source records.
+
+    Parameters
+    ----------
+    df : pandas.DataFrame
+        Source records; immutable ingestion observations remain separate.
+
+    Returns
+    -------
+    pandas.DataFrame
+        Typed records using the existing research preprocessing semantics.
+    """
+    df = df.copy()
     # Timestamp (raw parsing only; timezone standardization is a separate explicit step)
     if "created_at" in df.columns:
         df["created_at"] = pd.to_datetime(df["created_at"], errors="coerce")
