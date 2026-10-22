@@ -1,0 +1,7 @@
+contract_version: 1
+allowed_actions: [COLLECT_MORE_DATA, REVIEW_MANUALLY, CREATE_TEST, NO_CHANGE]
+draft_paper_hypotheses: true
+# Explicit targets only; no profit-driven target selection.
+candidate_targets: {}
+# Optional complete protocols are bound into proposal bundle identity.
+paper_protocols: {}

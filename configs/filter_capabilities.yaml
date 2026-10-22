@@ -1,0 +1,11 @@
+schema_version: 1
+# Registry screenshots are historical context, not proof of exact current UI support.
+# Add exact translations only after reviewing current UI labels and semantics.
+evidence_reference: null
+exact_values:
+  sportsbook: {}
+  sport: {}
+  league: {}
+  market_family: {}
+  odds_band: {}
+  advertised_ev_band: {}
