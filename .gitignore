@@ -19,3 +19,6 @@ data/processed/
 # OS / Editor
 .DS_Store
 .vscode/*.log
+
+# Private local credentials; independent of the draft acquisition adapter
+.local/
