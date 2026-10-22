@@ -1,0 +1,19 @@
+contract_version: 1
+odds_edges: [-200, -150, -110, 100, 150, 200]
+ev_edges: [0, 1, 2.5, 5, 10, 20]
+# Exact source labels only. Unmapped labels remain visible.
+market_families:
+  Moneyline: moneyline
+  Point Spread: spread
+  Total Points: total
+  Total Runs: total
+  Total Goals: total
+  Player Points: player_prop
+  Player Rebounds: player_prop
+  Player Assists: player_prop
+  Player Strikeouts: player_prop
+  Player Home Runs: player_prop
+  Player Bases: player_prop
+  Player Made Threes: player_prop
+  Player Receptions: player_prop
+  Player Shots On Goal: player_prop
