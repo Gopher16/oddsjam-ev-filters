@@ -243,3 +243,11 @@ Never commit store contents, resolution files, private reports, raw exports, or
 credentials. Use the default ignored storage locations. Alternate configured
 storage roots require equivalent privacy controls. Existing tracked notebooks can
 contain historical outputs; this PR does not refresh them or publish new data.
+
+## Optional canonical facts
+
+After manual ingestion, the [canonical builder](CANONICAL_FACTS.md) can consume an
+explicit published snapshot without rerunning ingestion or acquisition. It keeps
+unknown timestamps explicit, separates ticket legs, and audits economic eligibility.
+It does not bypass the legacy preprocessing timezone gate or update notebook
+defaults. Canonical outputs remain private under `data/processed/canonical/`.
