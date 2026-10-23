@@ -161,17 +161,20 @@ spreadsheet is an implicit dependency. Cross-namespace links are rejected.
 Classification is explicitly a **user-supplied assumption dated October 22, 2026**,
 not independently verified execution evidence:
 
-- Before October 22, only the exact attribution
+- Through October 22 inclusive, only the exact attribution
   `PROD - Exchanges: Core Exchange Conservative (Low Risk, Slow Build)` is real
   money. Other nonempty historical filter attribution is paper.
 - Missing attribution, or attribution mixing that real filter with other labels,
   is unknown. Filter names containing commas are not split indiscriminately.
 - After October 22, recognizable PROD designations are real money and TEST
   designations are paper; mixed PROD/TEST or unrecognized labels are unknown.
-- On October 22 itself, retain the historical exact-name rule; otherwise classify
-  unknown because the intraday policy/timezone boundary is not established.
+- The clarified historical policy treats other named filters as paper on October 22
+  too, regardless of their PROD/TEST spelling. Published snapshots retain their
+  original policy; rebuilding creates a new version rather than rewriting history.
 - Unparseable dates are unknown. These assumptions do not verify fillability,
-  liquidity, fees, or executable odds. Paper verification is unavailable.
+  liquidity, fees, or executable odds. Historical paper availability is unverified.
+- Core Exchange records reflect selectively chosen funded trades based on liquidity
+  and other factors; they are not the complete scanner opportunity universe.
 
 The original filter string and classification evidence are preserved on every
 observation. `prod_filter` remains the existing research flag; it is not a funded
@@ -251,3 +254,13 @@ explicit published snapshot without rerunning ingestion or acquisition. It keeps
 unknown timestamps explicit, separates ticket legs, and audits economic eligibility.
 It does not bypass the legacy preprocessing timezone gate or update notebook
 defaults. Canonical outputs remain private under `data/processed/canonical/`.
+
+### Exchange order workflow assumption
+
+The user also confirmed on October 22, 2026 that all exchange filters use the
+positive-EV tool only to take existing orders, never to post resting limit orders.
+This taker-only workflow is recorded as an assumption in versioned policy; it is
+not evidence that a quote was available or an order filled. Verification should
+record the offered price and available quantity at the time of the check. No maker
+fills, queue priority, or estimated taker fees are inferred; reported profit is
+preserved and fee inclusion remains unverified.

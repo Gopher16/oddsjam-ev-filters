@@ -259,7 +259,7 @@ def test_corrupt_source_and_snapshot_fail(tmp_path, store):
         ("PROD - Other, TEST - Other", "2026-10-23", "unknown"),
         ("Unrecognized", "2026-10-23", "unknown"),
         ("PROD - Other", "bad", "unknown"),
-        ("PROD - Other", "2026-10-22", "unknown"),
+        ("PROD - Other", "2026-10-22", "paper"),
     ],
 )
 def test_execution_policy(label, created, expected):
