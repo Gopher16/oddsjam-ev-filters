@@ -281,3 +281,11 @@ registration, manual launch evidence, unchecked signal screening, sampled quote
 verification, and pinned outcome reports. Funding and availability are independent;
 Core Exchange history reflects selectively chosen funded trades. No filter is
 launched, funded, or promoted automatically.
+
+### Local research pipeline
+
+[WEEKLY_RESEARCH.md](docs/WEEKLY_RESEARCH.md) describes one explicit command for
+manual-import or pinned-snapshot research, verified stage reuse, run manifests and
+private reports. Missing/stale/undated inputs produce notices rather than fresh-data
+claims. Historical mode preserves unknown metadata. Scheduling remains disabled;
+no acquisition adapter, notebook execution, approval or wagering is performed.

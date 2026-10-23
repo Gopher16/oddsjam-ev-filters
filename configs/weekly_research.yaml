@@ -1,0 +1,13 @@
+contract_version: 1
+# Manual invocation only; scheduling cannot be enabled in this contract.
+scheduling_enabled: false
+max_export_age_days: 8
+transient_retries: 1
+output_root: data/processed/weekly_research
+source_config: configs/data_sources.yaml
+canonical_config: configs/canonical_facts.yaml
+atlas_config: configs/opportunity_atlas.yaml
+discovery_config: configs/discovery_policy.yaml
+recommendation_config: configs/research_policy.yaml
+registry: configs/filter_history/oddsjam_filter_configurations_2026-10-22.yaml
+capabilities: configs/filter_capabilities.yaml
