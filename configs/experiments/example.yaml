@@ -1,0 +1,22 @@
+# Synthetic illustration only; these are not endorsed study thresholds.
+name: Synthetic signal-screening example
+experiment_type: signal_screening
+hypothesis: Investigate a predeclared sportsbook segment prospectively
+primary_metric: reported_roi
+funding: paper_only
+max_funded_stake_usd: 0
+duration_days: 30
+min_event_groups: 100
+review_criteria: Review at the declared end; no automatic promotion
+filter_id: TEST - Synthetic Example
+filter_config:
+  sportsbooks: [Synthetic Book]
+predicate:
+  sportsbook: Synthetic Book
+planned_start_utc: '2099-01-01T00:00:00Z'
+planned_end_utc: '2099-01-31T00:00:00Z'
+comparison_plan: No causal control; descriptive screening only
+overlap_policy: Disclose shared observations and overlapping experiments
+expected_liquidity: Unknown; no fillability claim
+stop_rules: Pause on configuration deviation; no early stopping for profit
+settlement_followup_days: 7

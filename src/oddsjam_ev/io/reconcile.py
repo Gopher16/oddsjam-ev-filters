@@ -41,11 +41,15 @@ IDENTITY_FIELDS = (
     "parlay_id",
 )
 POLICY = {
-    "version": 1,
-    "provenance": "user_supplied_assumption_2026-10-22",
+    "version": 2,
+    "provenance": "user_clarified_historical_funding_2026-10-22",
     "historical_real_filter": REAL_FILTER,
     "future_designations_effective": "2026-10-22",
     "unknown_timestamp_policy": "historical_only_unless_date_clearly_after_boundary",
+    "core_selection": "selectively_chosen_funded_trades_not_scanner_universe",
+    "historical_other_named_filters": "paper_regardless_of_designation",
+    "exchange_order_behavior": "take_existing_orders_only",
+    "exchange_order_behavior_provenance": "user_confirmed_2026-10-22",
 }
 
 
@@ -57,8 +61,8 @@ def classify_execution(label: str, created_at: str) -> str:
     label : str
         Original attribution; never split on commas inside filter names.
     created_at : str
-        Original source timestamp. Boundary-day records remain uncertain unless
-        covered by the historical exact-name rule.
+        Original source timestamp. Historical non-Core named filters are paper,
+        regardless of PROD/TEST spelling; mixed Core attribution stays unknown.
 
     Returns
     -------
@@ -74,7 +78,7 @@ def classify_execution(label: str, created_at: str) -> str:
     if day <= date(2026, 10, 22):
         if label == REAL_FILTER:
             return "real_money"
-        if REAL_FILTER in label or day == date(2026, 10, 22):
+        if REAL_FILTER in label:
             return "unknown"
         return "paper"
     designations = set(re.findall(r"(?:^|[,;|]\s*)(PROD|TEST)\s*-", label))

@@ -1,0 +1,5 @@
+contract_version: 1
+funding: paper_only
+max_funded_stake_usd: 0
+allowed_types: [signal_screening, execution_verification]
+exchange_order_behavior: take_existing_orders_only
