@@ -273,3 +273,11 @@ proposals, reviewed UI translations, observed coverage audits and an append-only
 human decision register. Production filter changes remain prohibited; draft paper
 protocols are not automatically launched or funded. Reports and decisions stay
 under private ignored data paths.
+
+### Prospective paper experiments
+
+[EXPERIMENT_PROTOCOL.md](docs/EXPERIMENT_PROTOCOL.md) documents approval-bound
+registration, manual launch evidence, unchecked signal screening, sampled quote
+verification, and pinned outcome reports. Funding and availability are independent;
+Core Exchange history reflects selectively chosen funded trades. No filter is
+launched, funded, or promoted automatically.
