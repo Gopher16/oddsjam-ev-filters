@@ -54,6 +54,6 @@ unless contemporaneous evidence establishes them. Deleted filters can still have
 analyzable recorded membership. Missing labels cannot be recovered from current
 filter parameters or sportsbook/EV similarity.
 
-The next step is a separate proposed name/alias mapping for review, with questions
+The next step is a separate [proposed name/alias mapping](FILTER_MAPPING_PROPOSALS.md) for review, with questions
 limited to ambiguous cases. Approved changes can then publish a new versioned
 attribution report while retaining existing snapshots and reports.
