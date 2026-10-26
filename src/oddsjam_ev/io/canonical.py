@@ -35,6 +35,7 @@ from oddsjam_ev.analysis.filter_attribution import build_filter_attribution, val
 from oddsjam_ev.analysis.opportunity_facts import build_opportunity_facts
 from oddsjam_ev.analysis.payouts import qualify_economics, summarize_economics
 from oddsjam_ev.io.manifests import verify_bytes, write_json, writer_lock
+from oddsjam_ev.io.parquet import read_parquet_file
 from oddsjam_ev.io.snapshots import load_snapshot
 from oddsjam_ev.io.source_csv import fingerprint
 
@@ -63,6 +64,7 @@ def _code_hashes() -> dict[str, str]:
     ]
     files = [analysis / f"{name}.py" for name in names] + [
         Path(__file__),
+        Path(__file__).with_name("parquet.py"),
         Path(__file__).with_name("source_csv.py"),
         Path(__file__).resolve().parents[1] / "metrics/odds.py",
     ]
@@ -92,7 +94,7 @@ def build_canonical_bundle(
     """
     current = load_snapshot(snapshot)
     source_manifest = json.loads((snapshot / "manifest.json").read_text())
-    observations = pd.read_parquet(snapshot / "observations.parquet")
+    observations = read_parquet_file(snapshot / "observations.parquet")
     selected = observations[observations._ingest_is_current.eq(True)].reset_index(drop=True)
     try:
         assert_frame_equal(current, selected)
@@ -209,7 +211,7 @@ def load_canonical_bundle(path: Path) -> dict[str, pd.DataFrame]:
     for name in TABLE_NAMES:
         file = f"{name}.parquet"
         verify_bytes(path / file, manifest["output_sha256"][file])
-        result[name] = pd.read_parquet(path / file)
+        result[name] = read_parquet_file(path / file)
         if len(result[name]) != manifest["summary"]["table_rows"][name]:
             raise ValueError("Canonical row count integrity failure")
     return result

@@ -29,6 +29,7 @@ from oddsjam_ev.analysis.experiment_outcomes import build_experiment_outcomes
 from oddsjam_ev.io.canonical import load_canonical_bundle
 from oddsjam_ev.io.experiment_register import read_experiment_events
 from oddsjam_ev.io.manifests import verify_bytes, write_json, writer_lock
+from oddsjam_ev.io.parquet import read_parquet_file
 from oddsjam_ev.io.source_csv import fingerprint
 
 TABLES = (
@@ -64,7 +65,7 @@ def load_experiment_report(path: Path) -> dict[str, pd.DataFrame]:
     for name in TABLES:
         file = name + ".parquet"
         verify_bytes(path / file, manifest["output_sha256"][file])
-        result[name] = pd.read_parquet(path / file)
+        result[name] = read_parquet_file(path / file)
         if len(result[name]) != manifest["table_rows"][name]:
             raise ValueError("Experiment report count mismatch")
     return result
@@ -98,6 +99,7 @@ def publish_experiment_report(
         analysis / (n + ".py") for n in ["experiment_config", "experiments", "experiment_outcomes"]
     ] + [
         Path(__file__),
+        Path(__file__).with_name("parquet.py"),
         Path(__file__).with_name("experiment_register.py"),
         Path(__file__).with_name("reconcile.py"),
     ]

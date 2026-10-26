@@ -164,3 +164,17 @@ platform breakdowns at this grain, not their intersections or sport/EV combinati
 Unsupported combinations return no-published-evidence notices. Membership slices have
 no published subgroup confidence intervals; the UI labels these unavailable. They
 are descriptive context, not statistically ranked filter-edit recommendations.
+
+## Parquet reader shutdown compatibility
+
+Immutable source and research bundle loaders use the shared native single-file
+Parquet reader. It disables read prefetch and threaded conversion, and closes the
+reader explicitly before returning a materialized DataFrame. This avoids the
+Python-backed file/dataset worker lifetime involved in Arrow's reported exit-time
+abort after successful CLI output. Integrity checks, return-code assertions and
+existing metric definitions remain unchanged. New research manifests include the
+reader's code hash; existing published reports remain readable and unmodified.
+
+Reference: [Apache Arrow interpreter-shutdown issue](https://github.com/apache/arrow/issues/54536).
+The regression suite exercises fresh subprocess exits and both affected CLIs; Linux
+GitHub Actions must still pass before merging.

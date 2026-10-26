@@ -34,6 +34,7 @@ from oddsjam_ev.analysis.segment_search import enumerate_segments
 from oddsjam_ev.analysis.walk_forward import build_walk_forward
 from oddsjam_ev.io.atlas import load_atlas
 from oddsjam_ev.io.manifests import verify_bytes, write_json, writer_lock
+from oddsjam_ev.io.parquet import read_parquet_file
 from oddsjam_ev.io.source_csv import fingerprint
 
 TABLES = (
@@ -115,7 +116,7 @@ def load_discovery(path: Path) -> dict[str, pd.DataFrame]:
     for name in TABLES:
         file = name + ".parquet"
         verify_bytes(path / file, manifest["output_sha256"][file])
-        tables[name] = pd.read_parquet(path / file)
+        tables[name] = read_parquet_file(path / file)
         if len(tables[name]) != manifest["table_rows"][name]:
             raise ValueError("Discovery count integrity failure")
     return tables
@@ -155,6 +156,7 @@ def publish_discovery(
             "walk_forward",
         ]
     ] + [Path(__file__)]
+    files.append(Path(__file__).with_name("parquet.py"))
     spec = {
         "atlas_id": manifest["atlas_id"],
         "atlas_manifest_sha256": hashlib.sha256((atlas / "manifest.json").read_bytes()).hexdigest(),
