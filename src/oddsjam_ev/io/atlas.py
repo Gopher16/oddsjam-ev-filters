@@ -29,6 +29,7 @@ from oddsjam_ev.analysis.atlas_config import AtlasConfig
 from oddsjam_ev.analysis.opportunity_atlas import build_atlas
 from oddsjam_ev.io.canonical import load_canonical_bundle
 from oddsjam_ev.io.manifests import verify_bytes, write_json, writer_lock
+from oddsjam_ev.io.parquet import read_parquet_file
 from oddsjam_ev.io.source_csv import fingerprint
 
 TABLES = (
@@ -61,7 +62,7 @@ def load_atlas(path: Path) -> dict[str, pd.DataFrame]:
     for name in TABLES:
         file = name + ".parquet"
         verify_bytes(path / file, manifest["output_sha256"][file])
-        result[name] = pd.read_parquet(path / file)
+        result[name] = read_parquet_file(path / file)
         if len(result[name]) != manifest["table_rows"][name]:
             raise ValueError("Atlas count integrity failure")
     return result
@@ -88,6 +89,7 @@ def publish_atlas(bundle: Path, output_root: Path, cfg: AtlasConfig) -> Path:
     manifest = json.loads((bundle / "manifest.json").read_text())
     module = Path(__file__).resolve().parents[1] / "analysis"
     files = [module / "atlas_config.py", module / "opportunity_atlas.py", Path(__file__)]
+    files.append(Path(__file__).with_name("parquet.py"))
     spec = {
         "canonical_manifest_sha256": hashlib.sha256(
             (bundle / "manifest.json").read_bytes()

@@ -53,3 +53,10 @@ ignore = ["E501"]
 [tool.ruff.format]
 quote-style = "double"
 indent-style = "space"
+
+[tool.poetry.group.dashboard]
+optional = true
+
+[tool.poetry.group.dashboard.dependencies]
+streamlit = ">=1.66.1,<2"
+altair = ">=6,<7"

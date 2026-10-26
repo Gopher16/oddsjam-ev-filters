@@ -289,3 +289,11 @@ manual-import or pinned-snapshot research, verified stage reuse, run manifests a
 private reports. Missing/stale/undated inputs produce notices rather than fresh-data
 claims. Historical mode preserves unknown metadata. Scheduling remains disabled;
 no acquisition adapter, notebook execution, approval or wagering is performed.
+
+### Local research dashboard
+
+[RESEARCH_DASHBOARD.md](docs/RESEARCH_DASHBOARD.md) describes the optional read-only
+Streamlit viewer. Install with `poetry install --with dashboard`, then run
+`poetry run streamlit run dashboard/app.py` from the repository root. Select a
+published run explicitly; the viewer verifies its artifact chain and keeps funding
+populations separate. No research build, scheduling, approval or wagering is run.

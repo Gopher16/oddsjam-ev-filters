@@ -28,6 +28,7 @@ import pandas as pd
 
 from oddsjam_ev.io.ingestion import load_observations, utc_time
 from oddsjam_ev.io.manifests import verify_bytes, write_json, writer_lock
+from oddsjam_ev.io.parquet import read_parquet_file
 from oddsjam_ev.io.reconcile import POLICY, reconcile
 from oddsjam_ev.io.source_csv import fingerprint
 
@@ -92,7 +93,7 @@ def materialize_snapshot(
             from pandas.testing import assert_frame_equal
 
             assert_frame_equal(current, load_snapshot(destination))
-            assert_frame_equal(audit, pd.read_parquet(destination / "observations.parquet"))
+            assert_frame_equal(audit, read_parquet_file(destination / "observations.parquet"))
             return destination
         with tempfile.TemporaryDirectory(prefix=".stage-", dir=root) as staging:
             stage = Path(staging)
@@ -133,4 +134,4 @@ def load_snapshot(path: Path) -> pd.DataFrame:
         raise ValueError("Snapshot specification integrity failure")
     for name in ("current.parquet", "observations.parquet"):
         verify_bytes(path / name, manifest["output_sha256"][name])
-    return pd.read_parquet(path / "current.parquet")
+    return read_parquet_file(path / "current.parquet")

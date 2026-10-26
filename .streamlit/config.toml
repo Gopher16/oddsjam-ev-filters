@@ -1,0 +1,20 @@
+[server]
+address = "127.0.0.1"
+headless = true
+enableStaticServing = false
+enableCORS = true
+enableXsrfProtection = true
+fileWatcherType = "none"
+
+[browser]
+gatherUsageStats = false
+
+[client]
+showErrorDetails = "none"
+
+[theme]
+base = "dark"
+primaryColor = "#51B8B2"
+backgroundColor = "#0E1721"
+secondaryBackgroundColor = "#192635"
+textColor = "#EDF2F7"

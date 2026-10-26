@@ -32,7 +32,7 @@ jobs:
         run: python -m pip install 'poetry>=2,<3'
 
       - name: Install locked dependencies
-        run: poetry install --no-interaction --no-ansi --sync
+        run: poetry install --with dashboard --no-interaction --no-ansi --sync
 
       - name: Validate dependency lock
         run: poetry check --lock
@@ -60,7 +60,7 @@ jobs:
         run: python -m pip install 'poetry>=2,<3'
 
       - name: Install locked dependencies
-        run: poetry install --no-interaction --no-ansi --sync
+        run: poetry install --with dashboard --no-interaction --no-ansi --sync
 
       - name: Run unit tests
         run: poetry run pytest -q

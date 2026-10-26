@@ -1,0 +1,5 @@
+contract_version: 1
+artifact_root: data/processed/weekly_research
+max_display_rows: 200
+display_timezone: America/Chicago
+min_analyzed_wagers: 100

@@ -31,6 +31,7 @@ from oddsjam_ev.io.atlas import load_atlas
 from oddsjam_ev.io.canonical import load_canonical_bundle
 from oddsjam_ev.io.discovery import load_discovery
 from oddsjam_ev.io.manifests import verify_bytes, write_json, writer_lock
+from oddsjam_ev.io.parquet import read_parquet_file
 from oddsjam_ev.io.source_csv import fingerprint
 
 TABLES = ("proposals", "candidate_evidence", "coverage_audit")
@@ -56,7 +57,7 @@ def load_recommendations(path: Path) -> dict[str, pd.DataFrame]:
     for name in TABLES:
         file = name + ".parquet"
         verify_bytes(path / file, manifest["output_sha256"][file])
-        result[name] = pd.read_parquet(path / file)
+        result[name] = read_parquet_file(path / file)
         if len(result[name]) != manifest["table_rows"][name]:
             raise ValueError("Recommendation count integrity failure")
     if result["proposals"].proposal_id.duplicated().any():
@@ -116,6 +117,7 @@ def publish_recommendations(
         analysis / (n + ".py")
         for n in ["recommendation_config", "recommendations", "filter_actions"]
     ] + [analysis / "filter_attribution.py", Path(__file__)]
+    files.append(Path(__file__).with_name("parquet.py"))
     spec = {
         "source_report_id": manifests["report"]["report_id"],
         "atlas_id": manifests["atlas"]["atlas_id"],
