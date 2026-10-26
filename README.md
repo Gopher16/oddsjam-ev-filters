@@ -292,6 +292,10 @@ no acquisition adapter, notebook execution, approval or wagering is performed.
 
 ### Local research dashboard
 
+[FILTER_LABEL_INVENTORY.md](docs/FILTER_LABEL_INVENTORY.md) documents the explicit,
+verified historical-label inventory, separate count grains, lineage and overlap
+audits used before reviewing new identity mappings.
+
 [RESEARCH_DASHBOARD.md](docs/RESEARCH_DASHBOARD.md) describes the optional read-only
 Streamlit viewer. Install with `poetry install --with dashboard`, then run
 `poetry run streamlit run dashboard/app.py` from the repository root. Select a
