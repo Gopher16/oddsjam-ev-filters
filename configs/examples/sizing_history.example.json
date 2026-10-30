@@ -1,0 +1,26 @@
+{
+  "contract_version": 1,
+  "knowledge_as_of": "2026-01-01T00:00:00Z",
+  "previous_history_id": null,
+  "policies": [
+    {
+      "policy_id": "example_unknown_settings",
+      "namespace": "synthetic_example",
+      "effective_from": null,
+      "effective_to": null,
+      "open_ended": false,
+      "timezone": "unknown",
+      "recorded_at": "2026-01-01T00:00:00Z",
+      "bankroll_amount": null,
+      "currency": "USD",
+      "kelly_multiplier": null,
+      "evidence_type": "unknown",
+      "confidence": "unknown",
+      "source_reference": "Template only; replace with a local evidence reference",
+      "effective_interval_verified": false,
+      "scope": {"product": null, "execution_status": null},
+      "constraints": []
+    }
+  ],
+  "wager_evidence": []
+}

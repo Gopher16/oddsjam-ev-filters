@@ -292,6 +292,9 @@ no acquisition adapter, notebook execution, approval or wagering is performed.
 
 ### Local research dashboard
 
+[SIZING_HISTORY.md](docs/SIZING_HISTORY.md) describes optional private bankroll/Kelly
+history, verified temporal linkage, ambiguity audits and explicit replay blockers.
+
 [CONTINUOUS_EV_CONTRACT.md](docs/CONTINUOUS_EV_CONTRACT.md) documents source EV
 precision, percent-point units, exact thresholds and optional verified EV tables.
 
