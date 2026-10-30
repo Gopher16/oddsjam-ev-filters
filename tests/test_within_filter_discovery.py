@@ -143,3 +143,60 @@ def test_missing_categories_remain_in_complement_and_regimes_retained():
     assert audit["usage"]["excluded_missing_category_groups"] == 1
     assert "verified_policy" in set(tables["signal_evidence"].sizing_regime.dropna())
     assert tables["signal_comparisons"].partition_reconciles.all()
+
+
+def test_greater_equal_boundary_four_dimensions_and_source_preservation():
+    source, dims, data, cfg = fixture()
+    originals = {k: v.copy(deep=True) for k, v in source.items()}
+    dimensions_before = dims.copy(deep=True)
+    diagnostics_before = data.copy(deep=True)
+    policy = MultidimensionalConfig(
+        views=[["sportsbook", "sport", "market_family", "advertised_ev_percent"]],
+        ev_thresholds=[{"operator": ">=", "endpoint": "3", "units": "percentage_points"}],
+    )
+    tables, _ = build_within_filter_discovery(
+        source, dims, data, policy, cfg, {"source": "synthetic"}
+    )
+    assert tables["signal_candidates"].predicate_depth.eq(4).all()
+    a = (
+        tables["signal_candidates"]
+        .loc[lambda f: f.filter_id.eq("a") & f.predicate_json.str.contains("Novig")]
+        .iloc[0]
+    )
+    assert a.observed_subgroup_count == 1  # exactly 3 matches >=3, unlike >3
+    for key in source:
+        assert_frame_equal(source[key], originals[key])
+    assert_frame_equal(dims, dimensions_before)
+    assert_frame_equal(data, diagnostics_before)
+
+
+def test_missing_ev_and_unknown_only_categories_never_create_matches():
+    source, dims, data, cfg = fixture()
+    source["bet_facts"]["percentage"] = ["", "<conflict>", "bad", "4"]
+    data["percentage"] = source["bet_facts"].percentage
+    tables, audit = build_within_filter_discovery(
+        source,
+        dims,
+        data,
+        MultidimensionalConfig(views=[["advertised_ev_percent"]]),
+        cfg,
+        {"source": "missing-ev"},
+    )
+    assert set(audit["ev_input_status_counts_all_candidates"]) == {
+        "valid",
+        "missing",
+        "conflict",
+        "invalid",
+    }
+    a = tables["signal_comparisons"].loc[lambda f: f.filter_id.eq("a")].iloc[0]
+    assert a.subgroup_count == 1 and a.complement_count == 3
+    dims["sportsbook"] = "<missing>"
+    with pytest.raises(ValueError, match="No observed predicates"):
+        build_within_filter_discovery(
+            source,
+            dims,
+            data,
+            MultidimensionalConfig(views=[["sportsbook"]]),
+            cfg,
+            {"source": "empty-category"},
+        )

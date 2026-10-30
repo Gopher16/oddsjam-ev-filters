@@ -292,6 +292,9 @@ no acquisition adapter, notebook execution, approval or wagering is performed.
 
 ### Local research dashboard
 
+[WITHIN_FILTER_DISCOVERY.md](docs/WITHIN_FILTER_DISCOVERY.md) documents bounded
+predicates and descriptive parent/subgroup/complement comparisons within saved filters.
+
 [SIZING_DIAGNOSTICS.md](docs/SIZING_DIAGNOSTICS.md) describes paired weighted and
 equal-stake returns, concentration, verified-regime splits and conditional intervals.
 
