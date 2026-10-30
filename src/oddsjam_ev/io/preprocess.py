@@ -594,7 +594,9 @@ def _run_preprocessing(cfg: dict[str, Any], *, source_frame: pd.DataFrame | None
         # derived research view. Lossless observations remain in ingestion.
         source_columns = [c for c in source_frame if not c.startswith("_ingest_")]
         inferred = pd.read_csv(
-            io.StringIO(source_frame[source_columns].to_csv(index=False)), low_memory=False
+            io.StringIO(source_frame[source_columns].to_csv(index=False)),
+            low_memory=False,
+            converters={"percentage": str},
         )
         df = normalize_bet_tracker_frame(inferred)
         for column in source_frame:

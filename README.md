@@ -292,6 +292,9 @@ no acquisition adapter, notebook execution, approval or wagering is performed.
 
 ### Local research dashboard
 
+[CONTINUOUS_EV_CONTRACT.md](docs/CONTINUOUS_EV_CONTRACT.md) documents source EV
+precision, percent-point units, exact thresholds and optional verified EV tables.
+
 [FILTER_LABEL_INVENTORY.md](docs/FILTER_LABEL_INVENTORY.md) documents the explicit,
 verified historical-label inventory, separate count grains, lineage and overlap
 audits used before reviewing new identity mappings.
