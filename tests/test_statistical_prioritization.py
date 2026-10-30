@@ -4,6 +4,7 @@ import copy
 from dataclasses import replace
 
 import numpy as np
+import pandas as pd
 import pytest
 from pandas.testing import assert_frame_equal
 from test_sizing_diagnostics import inputs
@@ -149,3 +150,37 @@ def test_budgets_fail_before_family_publication():
         build_prioritization(family, data, replace(cfg, max_pair_comparisons=1))
     with pytest.raises(PrioritizationBudgetExceeded):
         build_prioritization(family, data, replace(cfg, max_bootstrap_cells=1))
+
+
+def test_shared_event_shocks_cancel_in_paired_contrast():
+    family, data, cfg = prepared()
+    arm_a = data.bet_id.str[1:].astype(int).mod(2).eq(0)
+    baseline, _ = paired_comparison(data.loc[arm_a], data.loc[~arm_a], cfg, 42)
+    noisy = data.copy()
+    shocks = np.where(data.game_id.str[1:].astype(int).mod(2), 1.0, -1.0)
+    noisy["unit_return"] += shocks
+    noisy["profit"] += noisy.stake * shocks
+    paired, _ = paired_comparison(noisy.loc[arm_a], noisy.loc[~arm_a], cfg, 42)
+    assert paired["weighted_standard_error"] == pytest.approx(baseline["weighted_standard_error"])
+    assert paired["weighted_ci_low"] == pytest.approx(baseline["weighted_ci_low"])
+    assert paired["weighted_ci_high"] == pytest.approx(baseline["weighted_ci_high"])
+
+
+def test_cross_parent_equivalence_is_audited_not_suppressed_together():
+    family, data, cfg = prepared()
+    family = copy.deepcopy(family)
+    for key in ("signal_candidates", "signal_comparisons"):
+        clone = family[key].copy()
+        clone["candidate_id"] += ":other"
+        clone["parent_id"] += ":other"
+        clone["filter_id"] = "other"
+        family[key] = pd.concat([family[key], clone], ignore_index=True)
+    clone = family["signal_membership"].copy()
+    clone["scope_id"] += ":other"
+    family["signal_membership"] = pd.concat([family["signal_membership"], clone], ignore_index=True)
+    tables, audit = build_prioritization(family, data, cfg)
+    assert audit["hypothesis_count"] == 32
+    assert tables["signal_overlap"].same_parent.eq(False).any()
+    lookup = tables["signal_priorities"].set_index("candidate_id")
+    for row in tables["signal_priorities"].itertuples():
+        assert lookup.loc[row.representative_id, "parent_id"] == row.parent_id
