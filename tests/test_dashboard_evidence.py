@@ -241,3 +241,44 @@ def test_frozen_definition_visibility_and_corruption(attached, tmp_path, monkeyp
     (published / "definitions.json").write_bytes(b"bad")
     app.run(timeout=30)
     assert app.error and not app.exception and not app.dataframe
+
+
+def test_complete_parameter_sheets_and_definition_binding(attached, tmp_path, monkeypatch):
+    from dataclasses import asdict, replace
+
+    from test_decision_records import STAMP, configuration
+
+    from oddsjam_ev.dashboard.evidence import load_decision_sheets
+    from oddsjam_ev.io.decision_records import publish_decisions
+
+    run, cfg, discovery, priority = attached
+    evidence = load_evidence(run, cfg)
+    candidate = evidence["family"]["signal_candidates"].iloc[0].to_dict()
+    output = publish_decisions(
+        discovery,
+        priority,
+        configuration(candidate),
+        tmp_path / "decision-publications",
+        STAMP,
+        STAMP,
+    )
+    cfg = replace(cfg, decision_records_publication=str(output))
+    assert load_decision_sheets(run, cfg, evidence)["records"]
+    config = tmp_path / "configuration-dashboard.yaml"
+    config.write_text(yaml.safe_dump(asdict(cfg)))
+    monkeypatch.setenv("ODDSJAM_DASHBOARD_CONFIG", str(config))
+    app = AppTest.from_file(str(Path(__file__).resolve().parents[1] / "dashboard/app.py")).run(
+        timeout=30
+    )
+    app.sidebar.radio(key="page").set_value("Within-filter evidence").run(timeout=30)
+    assert not app.exception and not app.error
+    assert any("Baseline state" in frame.value.columns for frame in app.dataframe)
+    app.selectbox(key="config-design-" + candidate["candidate_id"]).set_value(
+        "exclusion_comparison"
+    ).run(timeout=30)
+    assert not app.exception and not app.error
+    assert any("Independent control inversions" in x.value for x in app.info)
+    (output / "decisions.json").write_bytes(b"bad")
+    app.run(timeout=30)
+    assert app.error and not app.exception
+    assert "decision_sheet_snapshot" not in app.session_state
