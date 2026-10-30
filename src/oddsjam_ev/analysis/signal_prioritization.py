@@ -123,18 +123,23 @@ def build_prioritization(
                         "maximum": cfg.max_bootstrap_cells,
                     }
                 )
-            cache[key] = {"sub": sub, "comp": comp, "seed": seed, "preflight": preflight}
+            cache[key] = {
+                "sub_ids": sorted(selected),
+                "comp_ids": sorted(complement),
+                "seed": seed,
+                "preflight": preflight,
+            }
         plans.append((row, key))
     for value in cache.values():
         value["evidence"], value["tests"] = paired_comparison(
-            value["sub"], value["comp"], cfg, value["seed"]
+            data.loc[value["sub_ids"]], data.loc[value["comp_ids"]], cfg, value["seed"]
         )
     evidence = []
     hypotheses = []
     for row, key in plans:
         value = cache[key]
         result = value["evidence"]
-        sub = value["sub"].loc[lambda f: f.diagnostic_eligible]
+        sub = data.loc[value["sub_ids"]].loc[lambda f: f.diagnostic_eligible]
         evidence.append(
             {
                 "candidate_id": row.candidate_id,
