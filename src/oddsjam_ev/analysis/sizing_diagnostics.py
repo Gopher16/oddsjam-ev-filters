@@ -172,7 +172,7 @@ def _prepare(bets, linkage):
     return data.sort_values("bet_id").reset_index(drop=True)
 
 
-def _summary(group, cfg, cache):
+def _summary(group, cfg, cache, include_intervals=True):
     e = group.loc[group.diagnostic_eligible].sort_values("bet_id")
     n = len(e)
     stake = float(e.stake.sum()) if n else np.nan
@@ -196,11 +196,15 @@ def _summary(group, cfg, cache):
     )
     cohort = fingerprint(sorted(e.bet_id.tolist()))
     interval_cohort = fingerprint(sorted(covered.bet_id.tolist()))
-    key = interval_cohort
+    key = (interval_cohort, include_intervals)
     if key not in cache:
         bounds = (np.nan,) * 4
-        status = "insufficient_event_proxy_groups"
-        if len(groups) >= cfg.min_event_groups:
+        status = (
+            "insufficient_event_proxy_groups"
+            if include_intervals
+            else "comparison_inference_deferred"
+        )
+        if include_intervals and len(groups) >= cfg.min_event_groups:
             policy = DiscoveryConfig(
                 min_event_groups=cfg.min_event_groups,
                 bootstrap_resamples=cfg.bootstrap_resamples,
@@ -345,3 +349,23 @@ def build_sizing_diagnostics(
         *_summary(data.iloc[:0], cfg, {}).keys(),
     ]
     return {"candidate_diagnostics": data, "cohort_metrics": pd.DataFrame(metrics, columns=columns)}
+
+
+def summarize_sizing_cohort(group: pd.DataFrame, cfg: SizingDiagnosticsConfig) -> dict:
+    """Reuse paired descriptive economics without performing comparison inference.
+
+    Parameters
+    ----------
+    group : pandas.DataFrame
+        Unique prepared candidate rows from a verified sizing diagnostics table.
+    cfg : SizingDiagnosticsConfig
+        Original diagnostic policy; preserves the declared notional unit.
+
+    Returns
+    -------
+    dict
+        Identical point estimands and coverage fields with intervals unavailable.
+    """
+    if group.bet_id.isna().any() or group.bet_id.duplicated().any():
+        raise ValueError("Unique cohort wager identities required")
+    return _summary(group, cfg, {}, include_intervals=False)
