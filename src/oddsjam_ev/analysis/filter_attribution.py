@@ -44,6 +44,17 @@ def validate_registry(registry: dict) -> dict[str, str]:
         raise ValueError("Registry IDs must be unique nonempty strings")
     mapping = {}
     parents = {}
+    targets = {row["id"]: row.get("attribution_target_id", row["id"]) for row in rows}
+    for ident, target in targets.items():
+        if not isinstance(target, str) or target not in ids:
+            raise ValueError("Dangling registry attribution target")
+        visited = set()
+        while target != targets[target]:
+            if target in visited:
+                raise ValueError("Registry attribution target cycle")
+            visited.add(target)
+            target = targets[target]
+        targets[ident] = target
     for row in rows:
         parent = row.get("clone_of")
         if parent:
@@ -54,10 +65,10 @@ def validate_registry(registry: dict) -> dict[str, str]:
             if (
                 not isinstance(name, str)
                 or not name
-                or (name in mapping and mapping[name] != row["id"])
+                or (name in mapping and mapping[name] != targets[row["id"]])
             ):
                 raise ValueError("Registry names/aliases must be unambiguous nonempty strings")
-            mapping[name] = row["id"]
+            mapping[name] = targets[row["id"]]
     for ident in ids:
         visited = set()
         while ident in parents:
