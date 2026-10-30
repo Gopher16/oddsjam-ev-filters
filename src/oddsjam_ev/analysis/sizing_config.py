@@ -19,7 +19,7 @@ was applied to a wager; plans and reconstructed assumptions never establish it.
 import re
 from datetime import datetime
 from decimal import Decimal, InvalidOperation
-from zoneinfo import ZoneInfo
+from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
 from oddsjam_ev.io.source_csv import fingerprint
 
@@ -185,7 +185,12 @@ def validate_history(history: dict, previous: dict | None = None) -> str:
         for key in ("open_ended", "effective_interval_verified"):
             if type(policy[key]) is not bool:
                 raise ValueError("Sizing verification flags must be booleans")
-        zone = ZoneInfo(policy["timezone"])
+        try:
+            zone = None if policy["timezone"] in (None, "unknown") else ZoneInfo(policy["timezone"])
+        except (ZoneInfoNotFoundError, TypeError, ValueError):
+            raise ValueError("Unknown sizing timezone") from None
+        if policy["effective_interval_verified"] and zone is None:
+            raise ValueError("Verified sizing intervals require a known timezone")
         if aware(policy["recorded_at"]) > cutoff:
             raise ValueError("Sizing record is beyond knowledge cutoff")
         start, end = policy["effective_from"], policy["effective_to"]
@@ -201,7 +206,7 @@ def validate_history(history: dict, previous: dict | None = None) -> str:
             for text in (policy["effective_from"], end):
                 if text is not None:
                     stamp = aware(text)
-                    if stamp.utcoffset() != stamp.astimezone(zone).utcoffset():
+                    if zone is not None and stamp.utcoffset() != stamp.astimezone(zone).utcoffset():
                         raise ValueError("Sizing timestamp offset disagrees with named timezone")
         amount(policy["bankroll_amount"], positive=True)
         amount(policy["kelly_multiplier"], maximum=Decimal("1"))
