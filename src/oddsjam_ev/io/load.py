@@ -70,7 +70,8 @@ def load_bet_tracker_csv(path: str | Path) -> pd.DataFrame:
     if not path.exists():
         raise FileNotFoundError(f"CSV not found: {path}")
 
-    df = pd.read_csv(path, low_memory=False)
+    # Keep EV's lexical precision before the legacy numeric preview is computed.
+    df = pd.read_csv(path, low_memory=False, converters={"percentage": str})
 
     return normalize_bet_tracker_frame(df)
 
@@ -89,6 +90,8 @@ def normalize_bet_tracker_frame(df: pd.DataFrame) -> pd.DataFrame:
         Typed records using the existing research preprocessing semantics.
     """
     df = df.copy()
+    if "percentage" in df and "percentage_source_raw" not in df:
+        df["percentage_source_raw"] = df["percentage"].copy()
     # Timestamp (raw parsing only; timezone standardization is a separate explicit step)
     if "created_at" in df.columns:
         df["created_at"] = pd.to_datetime(df["created_at"], errors="coerce")
