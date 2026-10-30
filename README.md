@@ -292,6 +292,9 @@ no acquisition adapter, notebook execution, approval or wagering is performed.
 
 ### Local research dashboard
 
+[SIZING_DIAGNOSTICS.md](docs/SIZING_DIAGNOSTICS.md) describes paired weighted and
+equal-stake returns, concentration, verified-regime splits and conditional intervals.
+
 [SIZING_HISTORY.md](docs/SIZING_HISTORY.md) describes optional private bankroll/Kelly
 history, verified temporal linkage, ambiguity audits and explicit replay blockers.
 
