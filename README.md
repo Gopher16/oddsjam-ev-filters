@@ -316,3 +316,6 @@ populations separate. No research build, scheduling, approval or wagering is run
 
 For opt-in paired subgroup/complement testing, approved support gates, complete-family
 Holm correction, and overlap audits, see [Statistical prioritization](docs/STATISTICAL_PRIORITIZATION.md).
+
+To freeze candidate rules, baseline settings, future dates, paper sizing and review
+criteria, see [Prospective paper-test definitions](docs/PROSPECTIVE_PAPER_DEFINITIONS.md).

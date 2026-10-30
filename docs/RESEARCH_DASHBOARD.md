@@ -228,3 +228,16 @@ An empty corrected shortlist remains explicit. Passing support gates does not ma
 candidate a recommended filter. Chronology remains unverified and no candidate is
 validated or production-authorized. Intervals are pointwise; the t approximation
 and Holm correction retain the limitations in `STATISTICAL_PRIORITIZATION.md`.
+
+## Prospective paper-test intent
+
+Use **Download paper-test definition draft** on a selected within-filter candidate
+for a local, intentionally incomplete draft. Complete and save it using the explicit
+CLI, then publish and link a frozen snapshot via `paper_definitions_publication`
+(relative to `evidence_root`). **Paper-test definitions** shows matching versions,
+exact rules, baseline, dates, paper sizing and review criteria. It does not read live
+registers or infer a launch/review from elapsed dates. Source funding controls refer
+to historical provenance; all prospective definitions remain paper only.
+
+See [Prospective paper-test definitions](PROSPECTIVE_PAPER_DEFINITIONS.md) for required
+fields, versioning, commands and the boundary with operational experiment tracking.
