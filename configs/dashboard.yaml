@@ -3,3 +3,9 @@ artifact_root: data/processed/weekly_research
 max_display_rows: 200
 display_timezone: America/Chicago
 min_analyzed_wagers: 100
+# Explicit optional evidence for the matching historical report; no latest inference.
+evidence_root: data/processed
+evidence_publications:
+  a5d1070494285b648f452222f004b4f6f5ed96217112860fb1d83c96519aeffd:
+    discovery: within_filter_discovery/6c4bc2c6093bb5d9871044b7fb47bbe14f3573dc5f44a09179e0d37db409479b
+    prioritization: signal_prioritization/c2949c6ddb02818cd7453e5011635de32ad145bbc519aec3950bc8a544c6606d
