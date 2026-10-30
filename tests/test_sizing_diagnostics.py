@@ -171,3 +171,50 @@ def test_empty_and_invalid_config():
     ):
         with pytest.raises(ValueError):
             SizingDiagnosticsConfig(**kwargs)
+
+
+def test_half_settlements_unsupported_products_and_partial_bankroll():
+    tables, link = inputs((10.0, 10.0, 10.0), (5.0, -5.0, 10.0))
+    tables["bet_facts"].loc[2, "product"] = "pickem"
+    link.loc[2, "product"] = "pickem"
+    tables["bet_facts"].loc[2, "reported_roi_eligible"] = False
+    link.loc[0, ["applied_policy_id", "linkage_status"]] = ["p1", "application_verified"]
+    result, row = overall(tables, link)
+    assert row.diagnostic_eligible_count == 2
+    assert row.equal_stake_mean_return == 0
+    assert row.stake_weighted_roi == 0
+    assert row.bankroll_relative_available_count == 0
+    assert (
+        result["candidate_diagnostics"].loc[0, "bankroll_relative_status"]
+        == "bankroll_or_eligible_stake_unavailable"
+    )
+    assert (
+        "unsupported_product"
+        in result["candidate_diagnostics"].loc[2, "diagnostic_exclusions_json"]
+    )
+
+
+def test_degenerate_intervals_and_fixed_unit_does_not_change_returns():
+    tables, link = inputs((10.0, 20.0), (5.0, 10.0))
+    _, row = overall(tables, link)
+    assert row.uncertainty_status == "conditional_event_proxy_degenerate_interval"
+    assert np.isnan(row.weighted_roi_ci_low) and np.isnan(row.equal_stake_ci_low)
+    _, scaled = overall(
+        tables,
+        link,
+        SizingDiagnosticsConfig(fixed_unit_usd=5, min_event_groups=2, bootstrap_resamples=100),
+    )
+    assert scaled.fixed_unit_notional_profit_usd == row.fixed_unit_notional_profit_usd * 5
+    assert scaled.equal_stake_mean_return == row.equal_stake_mean_return
+
+
+def test_funding_partitions_and_missing_namespace_do_not_get_fake_clusters():
+    tables, link = inputs((10.0, 10.0), (5.0, -5.0))
+    tables["bet_facts"].loc[1, "execution_status"] = "paper"
+    link.loc[1, "execution_status"] = "paper"
+    tables["bet_facts"]["namespace"] = ""
+    result = build_sizing_diagnostics(tables, link, SizingDiagnosticsConfig())
+    metrics = result["cohort_metrics"].query("view == 'overall'")
+    assert set(metrics.execution_status) == {"real_money", "paper"}
+    assert metrics.event_proxy_count.sum() == 0
+    assert metrics.diagnostic_eligible_count.sum() == 2
