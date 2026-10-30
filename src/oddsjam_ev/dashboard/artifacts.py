@@ -39,12 +39,18 @@ class DashboardConfig:
     contract_version: int = 1
     display_timezone: str = "America/Chicago"
     evidence_root: str = "data/processed"
+    paper_definitions_publication: str | None = None
     evidence_publications: dict = field(default_factory=dict)
 
     def __post_init__(self):
         from zoneinfo import ZoneInfo
 
         ZoneInfo(self.display_timezone)
+        if self.paper_definitions_publication is not None and (
+            not isinstance(self.paper_definitions_publication, str)
+            or not self.paper_definitions_publication
+        ):
+            raise ValueError("Explicit paper definition publication required")
         if not isinstance(self.evidence_root, str) or not self.evidence_root:
             raise ValueError("Explicit evidence root required")
         if ".local" in Path(self.evidence_root).resolve().parts:

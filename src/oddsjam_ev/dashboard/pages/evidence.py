@@ -294,6 +294,22 @@ def evidence_page(run, mode, limit):
             ],
             hide_index=True,
         )
+    from oddsjam_ev.analysis.paper_definitions import draft_definition
+
+    draft = draft_definition(
+        family["signal_candidates"].set_index("candidate_id").loc[selected_id].to_dict()
+        | {"candidate_id": selected_id}
+    )
+    st.download_button(
+        "Download paper-test definition draft",
+        json.dumps(draft, indent=2),
+        file_name="paper-test-definition.json",
+        mime="application/json",
+        on_click="ignore",
+    )
+    st.caption(
+        "Draft only: complete future dates, baseline settings, paper sizing and review rules before saving. Source rules are pinned; this download does not register or launch a test."
+    )
     with st.expander("Publication policy and provenance"):
         st.json(evidence["manifests"]["prioritization"]["specification"])
         st.json(

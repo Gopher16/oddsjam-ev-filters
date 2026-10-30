@@ -111,3 +111,58 @@ def candidate_rows(evidence, mode="all", product="all", minimum=100):
     if product != "all":
         rows = rows.loc[rows["product"].eq(product)]
     return rows.loc[rows.subgroup_eligible_count.ge(minimum)].copy()
+
+
+def load_paper_definitions(run, cfg, evidence):
+    """Read a pinned definition snapshot and retain exact selected-evidence versions.
+
+    Parameters
+    ----------
+    run : PublishedRun
+        Selected verified research report.
+    cfg : DashboardConfig
+        Trusted optional publication path under evidence_root.
+    evidence : dict or None
+        Verified discovery and prioritization attachment.
+
+    Returns
+    -------
+    dict or None
+        Matching versions and publication metadata. No live register is read.
+    """
+    from oddsjam_ev.io.paper_definitions import load_definition_publication
+
+    if cfg.paper_definitions_publication is None:
+        return None
+    root = Path(cfg.evidence_root).resolve()
+    path = within(root, root / cfg.paper_definitions_publication)
+    within(root, path / "manifest.json")
+    within(root, path / "definitions.json")
+    publication = load_definition_publication(path)
+    if evidence is None:
+        return {"manifest": publication["manifest"], "events": []}
+    dm, pm = (evidence["manifests"][k] for k in ("discovery", "prioritization"))
+    events = [
+        event
+        for event in publication["events"]
+        if (
+            event["source"]["canonical_bundle_id"] == run.manifests["canonical"]["bundle_id"]
+            and event["source"]["discovery_publication_id"] == dm["publication_id"]
+            and event["source"]["prioritization_publication_id"] == pm["publication_id"]
+            and event["source"]["discovery_manifest_sha256"] == fingerprint_manifest(dm)
+            and event["source"]["prioritization_manifest_sha256"] == fingerprint_manifest(pm)
+        )
+    ]
+    # Preserve supersession across report boundaries; an older matching version
+    # cannot become current just because its successor references other evidence.
+    latest = {e["test_key"]: e["version_id"] for e in publication["events"]}
+    return {"manifest": publication["manifest"], "events": events, "latest": latest}
+
+
+def fingerprint_manifest(manifest):
+    """Hash the canonical persisted manifest representation used by publication writers."""
+    import hashlib
+
+    return hashlib.sha256(
+        (json.dumps(manifest, indent=2, sort_keys=True, ensure_ascii=False) + "\n").encode()
+    ).hexdigest()

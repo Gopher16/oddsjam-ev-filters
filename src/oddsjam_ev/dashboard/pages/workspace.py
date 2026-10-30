@@ -16,6 +16,7 @@ from oddsjam_ev.dashboard.labels import (
     segment_label,
 )
 from oddsjam_ev.dashboard.pages.evidence import evidence_page
+from oddsjam_ev.dashboard.pages.paper_tests import paper_tests
 from oddsjam_ev.dashboard.pages.research import confidence
 from oddsjam_ev.dashboard.presentation import plot, table
 from oddsjam_ev.dashboard.signal_filters import filter_signals, minimum_support, signal_specificity
@@ -379,5 +380,6 @@ PAGES = {
     "Signals & leaks": signals,
     "Filter health": health,
     "Within-filter evidence": evidence_page,
+    "Paper-test definitions": paper_tests,
     "Evidence & methodology": confidence,
 }

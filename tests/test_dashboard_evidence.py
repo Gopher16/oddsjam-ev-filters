@@ -174,3 +174,70 @@ evidence_page(st.session_state.test_run, "all", 20)
     app.multiselect(key="evidence_term_sport").set_value(["== sportB"]).run(timeout=30)
     assert not app.exception
     assert any("No published candidates" in x.value for x in app.info)
+
+
+def test_frozen_definition_visibility_and_corruption(attached, tmp_path, monkeypatch):
+    from dataclasses import asdict, replace
+
+    from test_paper_definitions import complete
+
+    import oddsjam_ev.io.paper_definitions as module
+    from oddsjam_ev.dashboard.evidence import load_paper_definitions
+    from oddsjam_ev.io.paper_definitions import publish_definitions, register_definition
+
+    run, cfg, discovery, priority = attached
+    evidence = load_evidence(run, cfg)
+    candidate = evidence["family"]["signal_candidates"].iloc[0].to_dict()
+    protocol = complete(candidate)["protocol"]
+    monkeypatch.setattr(module, "utc_now", lambda: "2030-01-01T00:00:00Z")
+    register = tmp_path / "definition-register"
+    first = register_definition(
+        register,
+        discovery,
+        priority,
+        candidate["candidate_id"],
+        "test-example",
+        protocol,
+        "synthetic",
+        "Prospective intent only",
+    )
+    protocol["name"] = "Changed version"
+    second = register_definition(
+        register,
+        discovery,
+        priority,
+        candidate["candidate_id"],
+        "test-example",
+        protocol,
+        "synthetic",
+        "Versioned revision",
+        first["version_id"],
+    )
+    published = publish_definitions(
+        register, tmp_path / "definition-publications", "2030-01-01T00:00:00Z"
+    )
+    cfg = replace(cfg, paper_definitions_publication=str(published))
+    snapshot = load_paper_definitions(run, cfg, evidence)
+    assert len(snapshot["events"]) == 2
+    assert snapshot["latest"]["test-example"] == second["version_id"]
+    assert load_paper_definitions(run, cfg, None)["events"] == []
+    assert (
+        load_paper_definitions(run, replace(cfg, paper_definitions_publication=None), evidence)
+        is None
+    )
+    config = tmp_path / "paper-dashboard.yaml"
+    config.write_text(yaml.safe_dump(asdict(cfg)))
+    monkeypatch.setenv("ODDSJAM_DASHBOARD_CONFIG", str(config))
+    app = AppTest.from_file(str(Path(__file__).resolve().parents[1] / "dashboard/app.py")).run(
+        timeout=30
+    )
+    app.sidebar.radio(key="page").set_value("Paper-test definitions").run(timeout=30)
+    assert not app.error and not app.exception
+    assert len(app.dataframe[0].value) == 2
+    assert any("Superseded definition" in x.value for x in app.warning)
+    (register / "00000001.json").write_bytes(b"bad")
+    app.run(timeout=30)
+    assert not app.error and not app.exception  # Live register is never read.
+    (published / "definitions.json").write_bytes(b"bad")
+    app.run(timeout=30)
+    assert app.error and not app.exception and not app.dataframe

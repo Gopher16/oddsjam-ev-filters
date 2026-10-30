@@ -11,7 +11,7 @@ from oddsjam_ev.dashboard.artifacts import (
     operational_attempts,
     read_dashboard_config,
 )
-from oddsjam_ev.dashboard.evidence import load_evidence
+from oddsjam_ev.dashboard.evidence import load_evidence, load_paper_definitions
 from oddsjam_ev.dashboard.labels import PRODUCTS, report_dates
 from oddsjam_ev.dashboard.pages.workspace import PAGES, sidebar_signal_filters
 from oddsjam_ev.dashboard.queries import MODE_LABELS, MODES, validate_display_contract
@@ -104,6 +104,15 @@ def main():
     except Exception:
         st.error(
             "Linked within-filter evidence could not be verified. It has been cleared; descriptive results remain separate. No fallback evidence was loaded."
+        )
+    st.session_state.pop("paper_definition_snapshot", None)
+    try:
+        st.session_state.paper_definition_snapshot = load_paper_definitions(
+            run, cfg, st.session_state.get("verified_evidence")
+        )
+    except Exception:
+        st.error(
+            "The paper definition snapshot could not be verified. Definition results were cleared; no live register or fallback was loaded."
         )
     dates = report_dates(run, cfg.display_timezone)
     with st.container(border=True):
