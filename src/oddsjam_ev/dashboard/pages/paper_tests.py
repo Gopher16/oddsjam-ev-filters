@@ -63,6 +63,13 @@ def paper_tests(run, mode, limit):
         st.warning(
             "Superseded definition: do not pool future observations with the replacement version."
         )
+    if "configuration_reference" not in protocol:
+        st.info(
+            "Legacy untyped baseline settings: preserved as recorded, but not verified as a complete scanner setup."
+        )
+    else:
+        st.caption("Configuration-bound definition · pinned parameter sheet reference")
+        st.json(protocol["configuration_reference"])
     st.write("**Hypothesis:** " + protocol["hypothesis"])
     st.write("**Trial arm:** " + source["trial_arm"].replace("_", " "))
     st.write("**Baseline:** unchanged parent filter; exact prospective settings recorded below.")

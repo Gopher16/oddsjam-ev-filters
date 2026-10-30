@@ -241,3 +241,14 @@ to historical provenance; all prospective definitions remain paper only.
 
 See [Prospective paper-test definitions](PROSPECTIVE_PAPER_DEFINITIONS.md) for required
 fields, versioning, commands and the boundary with operational experiment tracking.
+
+## Complete prospective configuration sheets
+
+Optionally link `decision_records_publication` under `evidence_root`. The selected
+candidate on **Within-filter evidence** gains a complete before/change/after parameter
+sheet with explicit setting states, baseline provenance, lifecycle evidence and setup
+blockers. Historical subgroup JSON is not a full scanner configuration. A complete
+setup does not imply statistical approval or deployment.
+
+See [Decision configuration records](DECISION_CONFIGURATION_RECORDS.md) for evidence
+input, typed states, exact scanner translations and configuration-bound paper drafts.

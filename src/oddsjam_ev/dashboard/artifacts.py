@@ -40,12 +40,18 @@ class DashboardConfig:
     display_timezone: str = "America/Chicago"
     evidence_root: str = "data/processed"
     paper_definitions_publication: str | None = None
+    decision_records_publication: str | None = None
     evidence_publications: dict = field(default_factory=dict)
 
     def __post_init__(self):
         from zoneinfo import ZoneInfo
 
         ZoneInfo(self.display_timezone)
+        if self.decision_records_publication is not None and (
+            not isinstance(self.decision_records_publication, str)
+            or not self.decision_records_publication
+        ):
+            raise ValueError("Explicit decision publication path required")
         if self.paper_definitions_publication is not None and (
             not isinstance(self.paper_definitions_publication, str)
             or not self.paper_definitions_publication

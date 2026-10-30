@@ -166,3 +166,45 @@ def fingerprint_manifest(manifest):
     return hashlib.sha256(
         (json.dumps(manifest, indent=2, sort_keys=True, ensure_ascii=False) + "\n").encode()
     ).hexdigest()
+
+
+def load_decision_sheets(run, cfg, evidence):
+    """Verify optional configuration sheets against exact selected report evidence.
+
+    Parameters
+    ----------
+    run : PublishedRun
+        Selected verified dashboard run.
+    cfg : DashboardConfig
+        Trusted publication path under evidence_root.
+    evidence : dict or None
+        Verified within-filter evidence for this report.
+
+    Returns
+    -------
+    dict or None
+        Matching immutable records; None means no configured publication.
+    """
+    from oddsjam_ev.io.decision_records import load_decisions
+
+    if cfg.decision_records_publication is None:
+        return None
+    root = Path(cfg.evidence_root).resolve()
+    path = within(root, root / cfg.decision_records_publication)
+    for file in ("manifest.json", "decisions.json", "audit.json"):
+        within(root, path / file)
+    publication = load_decisions(path)
+    spec = publication["manifest"]["specification"]
+    if evidence is None:
+        return {**publication, "records": []}
+    _require(spec["canonical_bundle_id"] == run.manifests["canonical"]["bundle_id"])
+    for stage in ("canonical", "atlas"):
+        _require(
+            spec[stage + "_manifest_sha256"] == run.result["outputs"][stage]["manifest_sha256"]
+        )
+    for stage in ("discovery", "prioritization"):
+        _require(spec[stage + "_publication_id"] == evidence["manifests"][stage]["publication_id"])
+        _require(
+            spec[stage + "_manifest_sha256"] == fingerprint_manifest(evidence["manifests"][stage])
+        )
+    return publication

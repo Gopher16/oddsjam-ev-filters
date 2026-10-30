@@ -106,6 +106,7 @@ def register_definition(
     actor: str,
     rationale: str,
     expected_version_id: str | None = None,
+    decision_publication: Path | None = None,
 ) -> dict:
     """Freeze a new future definition or append a version with explicit concurrency.
 
@@ -121,6 +122,8 @@ def register_definition(
         Human attribution, including reasons for an exploratory test or revision.
     expected_version_id : str, optional
         Required current version when revising an existing test key.
+    decision_publication : pathlib.Path, optional
+        Exact verified configuration sheet for a configuration-bound definition.
 
     Returns
     -------
@@ -183,6 +186,52 @@ def register_definition(
         else "parent_minus_subgroup",
         "baseline_arm": "unchanged_parent",
     }
+    reference = protocol.get("configuration_reference")
+    if reference is not None:
+        from oddsjam_ev.io.decision_records import load_decisions
+
+        if decision_publication is None:
+            raise ValueError(
+                "Configuration-bound definitions require the exact decision publication"
+            )
+        publication = load_decisions(decision_publication)
+        match = [r for r in publication["records"] if r["decision_id"] == reference["decision_id"]]
+        spec = publication["manifest"]["specification"]
+        if (
+            len(match) != 1
+            or publication["manifest"]["publication_id"] != reference["publication_id"]
+        ):
+            raise ValueError("Configuration publication identity mismatch")
+        record = match[0]
+        if (
+            record["record_sha256"] != reference["record_sha256"]
+            or record["candidate_id"] != candidate_id
+            or record["design"] != protocol["design"]
+            or record["setup_status"] != "ready_for_operator_configuration_review"
+            or spec["discovery_manifest_sha256"] != _digest(discovery / "manifest.json")
+            or spec["prioritization_manifest_sha256"] != _digest(prioritization / "manifest.json")
+            or aware(spec["as_of"]) > aware(utc_now())
+        ):
+            raise ValueError("Configuration binding is blocked or has different source evidence")
+        baseline = record["baseline"]
+        if (
+            protocol["baseline"]["filter_config"]
+            != {r["control"]: r["baseline_value"] for r in record["settings"]}
+            or protocol["baseline"]["evidence_reference"] != baseline["evidence_reference"]
+            or aware(protocol["planned_start_utc"]) < aware(baseline["effective_from"])
+            or (
+                baseline["effective_until"] is not None
+                and aware(protocol["planned_end_utc"]) > aware(baseline["effective_until"])
+            )
+        ):
+            raise ValueError("Protocol baseline differs from the pinned configuration window")
+        sizing = next(
+            r["final_value"] for r in record["settings"] if r["control"] == "paper_sizing"
+        )
+        if sizing != protocol["sizing"]:
+            raise ValueError("Paper sizing differs from configuration evidence")
+    elif decision_publication is not None:
+        raise ValueError("Decision publication requires an explicit configuration reference")
     with writer_lock(root):
         events = read_definitions(root)
         previous = _replay(events).get(test_key)

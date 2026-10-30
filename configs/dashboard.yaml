@@ -12,3 +12,6 @@ evidence_publications:
 
 # Optional frozen intent snapshot, relative to evidence_root; never a live register.
 paper_definitions_publication: null
+
+# Optional complete setup sheets, relative to evidence_root.
+decision_records_publication: decision_records/0c227e1ec061da391a29afabf4cbee143f398799c4263d2c53a0592982fcf579

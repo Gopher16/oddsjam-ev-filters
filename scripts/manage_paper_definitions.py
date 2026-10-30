@@ -33,6 +33,7 @@ def main():
     create.add_argument("--actor", required=True)
     create.add_argument("--rationale", required=True)
     create.add_argument("--expected-version-id")
+    create.add_argument("--decision-publication", type=Path)
     publish = commands.add_parser("publish")
     publish.add_argument("--as-of", required=True)
     publish.add_argument(
@@ -68,6 +69,7 @@ def main():
                 args.actor,
                 args.rationale,
                 args.expected_version_id,
+                decision_publication=args.decision_publication,
             )
             print(
                 json.dumps(

@@ -123,3 +123,12 @@ promotion is claimed here.
 Registers, completed definitions, baseline settings and generated publications belong
 under ignored `data/processed`, not in Git. No acquisition, scheduling, notebook
 execution or live scanner changes are introduced.
+
+## Optional typed configuration binding
+
+New drafts may include `protocol.configuration_reference` from a verified complete
+decision sheet. Supply `--decision-publication <directory>` when saving these drafts;
+registration verifies exact source/design, baseline values/window and paper sizing.
+Old unbound definitions remain readable and writable under the legacy contract and
+are labeled untyped rather than silently upgraded to complete setup evidence.
+See [Decision configuration records](DECISION_CONFIGURATION_RECORDS.md).

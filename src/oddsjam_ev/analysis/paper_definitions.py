@@ -58,8 +58,22 @@ def validate_definition(protocol: dict) -> None:
         "funding",
         "max_funded_stake_usd",
     }
-    if not isinstance(protocol, dict) or set(protocol) != required:
+    if not isinstance(protocol, dict) or set(protocol) - {"configuration_reference"} != required:
         raise ValueError("Exact definition fields required; unknown fields are not ignored")
+    if "configuration_reference" in protocol:
+        reference = protocol["configuration_reference"]
+        if (
+            not isinstance(reference, dict)
+            or set(reference)
+            != {"contract_version", "publication_id", "decision_id", "record_sha256"}
+            or type(reference["contract_version"]) is not int
+            or reference["contract_version"] != 1
+            or not all(
+                isinstance(reference[k], str) and reference[k].strip()
+                for k in ("publication_id", "decision_id", "record_sha256")
+            )
+        ):
+            raise ValueError("Exact versioned configuration reference required")
     for field in ("name", "hypothesis", "overlap_policy", "quote_availability_policy"):
         if not isinstance(protocol[field], str) or not protocol[field].strip():
             raise ValueError(field + " must be explicit")

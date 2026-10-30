@@ -1,0 +1,6 @@
+# Explicitly empty evidence: no current PROD status, defaults or baseline inferred.
+# Copy into ignored data/processed and fill with operator-supported evidence.
+contract_version: 1
+baselines: []
+lifecycle: []
+translations: []
