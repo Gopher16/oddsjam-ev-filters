@@ -138,3 +138,43 @@ def test_dst_offsets_and_half_open_adjacent_intervals():
     p["effective_to"] = "2026-03-08T03:30:00-05:00"
     with pytest.raises(ValueError, match="timezone"):
         validate_history(data)
+
+
+def test_safe_unknown_template_and_append_only_wager_evidence():
+    import json
+    from pathlib import Path
+
+    template = json.loads(
+        (
+            Path(__file__).resolve().parents[1] / "configs/examples/sizing_history.example.json"
+        ).read_text()
+    )
+    validate_history(template)
+    assert template["policies"][0]["bankroll_amount"] is None
+    assert template["policies"][0]["kelly_multiplier"] is None
+    old = history()
+    old["wager_evidence"] = [evidence()]
+    new = copy.deepcopy(old)
+    new["previous_history_id"] = validate_history(old)
+    new["wager_evidence"][0]["source_reference"] = "edited old record"
+    with pytest.raises(ValueError, match="append-only"):
+        validate_history(new, old)
+
+
+@pytest.mark.parametrize(
+    "change",
+    [
+        {"accepted_verified": True},
+        {"placement_verified": True, "placement_at": None},
+        {"application_verified": True, "applied_policy_id": "missing"},
+        {"suggested_stake": "-1"},
+        {"recorded_at": "2026-04-01T00:00:00Z"},
+    ],
+)
+def test_invalid_wager_evidence(change):
+    data = history()
+    record = evidence()
+    record.update(change)
+    data["wager_evidence"] = [record]
+    with pytest.raises(ValueError):
+        validate_history(data)

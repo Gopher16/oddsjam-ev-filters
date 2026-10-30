@@ -183,3 +183,18 @@ def test_immutable_publication_revision_replay_cli_and_unknown_history(tmp_path)
     (revised / "history.json").write_text("{}")
     with pytest.raises(ValueError, match="integrity"):
         load_sizing_history(revised)
+
+
+def test_equivalent_stake_evidence_and_unverified_acceptance_stays_unaccepted():
+    data = history()
+    first = evidence()
+    first.update(suggested_stake="10.00", accepted_stake="9", accepted_verified=False)
+    second = evidence("b1", "e2")
+    second["suggested_stake"] = "10"
+    data["wager_evidence"] = [first, second]
+    validate_history(data)
+    frame, audit = build_sizing_linkage(bets(), data)
+    assert audit["stake_evidence_conflicts"] == 0
+    assert frame.stake_evidence_status.iloc[0] == "suggested_only"
+    assert frame.accepted_stake_verified.iloc[0] is None
+    assert frame.source_reported_stake_usd.tolist() == bets().reported_stake_usd.tolist()
