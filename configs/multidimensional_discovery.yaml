@@ -1,0 +1,14 @@
+contract_version: 1
+# Outcome-independent descriptive views, not a validated search/optimization policy.
+views:
+  - [sportsbook, market_family]
+  - [league, market_family, advertised_ev_percent]
+  - [sportsbook, sport, market_family, advertised_ev_percent]
+ev_thresholds:
+  - {operator: '>', endpoint: '3', units: percentage_points}
+max_depth: 4
+# Operational fail-closed budgets; not research support or promotion gates.
+max_parents: 200
+max_candidates: 5000
+max_memberships: 1000000
+max_scan_rows: 50000000

@@ -22,7 +22,7 @@ from dataclasses import asdict
 import numpy as np
 import pandas as pd
 
-from oddsjam_ev.analysis.continuous_ev import ev_threshold
+from oddsjam_ev.analysis.continuous_ev import ev_threshold, parse_ev
 from oddsjam_ev.analysis.multidimensional_config import EV_DIMENSION, MultidimensionalConfig
 from oddsjam_ev.analysis.sizing_diagnostics import SizingDiagnosticsConfig, summarize_sizing_cohort
 from oddsjam_ev.io.source_csv import fingerprint
@@ -141,6 +141,7 @@ def build_within_filter_discovery(
     if resolved.filter_id.isna().any() or resolved.duplicated().any():
         raise ValueError("Duplicate within-filter membership")
     parents = []
+    exclusions = []
     members = []
     ledger = []
     plans = []
@@ -172,6 +173,18 @@ def build_within_filter_discovery(
                 values = (values,) if len(cats) == 1 and not isinstance(values, tuple) else values
                 if any(pd.isna(v) or str(v).strip() in MISSING for v in values):
                     usage["excluded_missing_category_groups"] += 1
+                    exclusions.append(
+                        {
+                            "parent_id": parent_id,
+                            **scope_dict,
+                            "view_json": json.dumps(view),
+                            "category_values_json": json.dumps(
+                                [None if pd.isna(v) else str(v) for v in values]
+                            ),
+                            "affected_candidate_count": len(group),
+                            "reason": "missing_invalid_or_unmapped_positive_category_retained_in_parent_complement",
+                        }
+                    )
                     continue
                 terms = [
                     {"dimension": d, "operator": "==", "value": str(v)}
@@ -301,6 +314,9 @@ def build_within_filter_discovery(
         "blockers": BLOCKS,
         "outcome_screening_performed": False,
         "family_correction_applied": False,
+        "ev_input_status_counts_all_candidates": {
+            str(k): int(v) for k, v in parse_ev(data.percentage).ev_status.value_counts().items()
+        },
     }
     return {
         "signal_candidates": pd.DataFrame(ledger)
@@ -313,4 +329,17 @@ def build_within_filter_discovery(
         "signal_membership": pd.DataFrame(members)
         .sort_values(["scope_id", "bet_id"])
         .reset_index(drop=True),
+        "signal_exclusions": pd.DataFrame(
+            exclusions,
+            columns=[
+                "parent_id",
+                "filter_id",
+                "execution_status",
+                "product",
+                "view_json",
+                "category_values_json",
+                "affected_candidate_count",
+                "reason",
+            ],
+        ),
     }, audit
