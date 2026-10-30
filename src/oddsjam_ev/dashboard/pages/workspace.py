@@ -15,6 +15,7 @@ from oddsjam_ev.dashboard.labels import (
     sample_label,
     segment_label,
 )
+from oddsjam_ev.dashboard.pages.evidence import evidence_page
 from oddsjam_ev.dashboard.pages.research import confidence
 from oddsjam_ev.dashboard.presentation import plot, table
 from oddsjam_ev.dashboard.signal_filters import filter_signals, minimum_support, signal_specificity
@@ -173,6 +174,9 @@ def sidebar_signal_filters(run, mode, product):
 
 def signals(run, mode, limit):
     st.header("Signals & leaks")
+    st.caption(
+        "Descriptive historical cards · corrected comparisons are available separately on Within-filter evidence."
+    )
     st.caption(
         "Find TEST ideas and loss pockets across your published history. Optional controls narrow the evidence shown."
     )
@@ -371,4 +375,9 @@ def health(run, mode, limit):
     )
 
 
-PAGES = {"Signals & leaks": signals, "Filter health": health, "Evidence & methodology": confidence}
+PAGES = {
+    "Signals & leaks": signals,
+    "Filter health": health,
+    "Within-filter evidence": evidence_page,
+    "Evidence & methodology": confidence,
+}

@@ -11,6 +11,7 @@ from oddsjam_ev.dashboard.artifacts import (
     operational_attempts,
     read_dashboard_config,
 )
+from oddsjam_ev.dashboard.evidence import load_evidence
 from oddsjam_ev.dashboard.labels import PRODUCTS, report_dates
 from oddsjam_ev.dashboard.pages.workspace import PAGES, sidebar_signal_filters
 from oddsjam_ev.dashboard.queries import MODE_LABELS, MODES, validate_display_contract
@@ -61,7 +62,7 @@ def main():
     if st.session_state.get("last_selection") != selected:
         st.session_state.pop("published_run", None)
         for key in list(st.session_state):
-            if key.startswith("filter_") or key in {"mode", "page"}:
+            if key.startswith(("filter_", "evidence_term_")) or key in {"mode", "page"}:
                 del st.session_state[key]
         st.session_state.last_selection = selected
     if selected is not None:
@@ -97,6 +98,13 @@ def main():
             "The published files changed or are no longer verifiable. Cached results were cleared. Review the files, then explicitly reopen the report."
         )
         return
+    st.session_state.pop("verified_evidence", None)
+    try:
+        st.session_state.verified_evidence = load_evidence(run, cfg)
+    except Exception:
+        st.error(
+            "Linked within-filter evidence could not be verified. It has been cleared; descriptive results remain separate. No fallback evidence was loaded."
+        )
     dates = report_dates(run, cfg.display_timezone)
     with st.container(border=True):
         a, b, c = st.columns(3)

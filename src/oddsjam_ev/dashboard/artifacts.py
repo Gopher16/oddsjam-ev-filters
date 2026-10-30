@@ -3,7 +3,7 @@
 import hashlib
 import json
 import re
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
 
 import pandas as pd
@@ -38,11 +38,26 @@ class DashboardConfig:
     min_analyzed_wagers: int = 100
     contract_version: int = 1
     display_timezone: str = "America/Chicago"
+    evidence_root: str = "data/processed"
+    evidence_publications: dict = field(default_factory=dict)
 
     def __post_init__(self):
         from zoneinfo import ZoneInfo
 
         ZoneInfo(self.display_timezone)
+        if not isinstance(self.evidence_root, str) or not self.evidence_root:
+            raise ValueError("Explicit evidence root required")
+        if ".local" in Path(self.evidence_root).resolve().parts:
+            raise ValueError("Credential directories are not evidence roots")
+        if not isinstance(self.evidence_publications, dict):
+            raise ValueError("Evidence publications must be a run-ID mapping")
+        for run_id, links in self.evidence_publications.items():
+            if not ID.fullmatch(str(run_id)) or not isinstance(links, dict):
+                raise ValueError("Invalid evidence report mapping")
+            if set(links) != {"discovery", "prioritization"} or not all(
+                isinstance(v, str) and v for v in links.values()
+            ):
+                raise ValueError("Explicit discovery and prioritization paths required")
         if type(self.contract_version) is not int or self.contract_version != 1:
             raise ValueError("Unsupported dashboard contract")
         if not isinstance(self.artifact_root, str) or not self.artifact_root:

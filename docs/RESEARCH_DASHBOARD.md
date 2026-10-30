@@ -178,3 +178,53 @@ reader's code hash; existing published reports remain readable and unmodified.
 Reference: [Apache Arrow interpreter-shutdown issue](https://github.com/apache/arrow/issues/54536).
 The regression suite exercises fresh subprocess exits and both affected CLIs; Linux
 GitHub Actions must still pass before merging.
+
+## Within-filter evidence
+
+**Within-filter evidence** is a separate page for corrected exploratory comparisons.
+**Signals & leaks** retains its descriptive cards and labels them accordingly; those
+cards are not substitutes for corrected shortlist entries.
+
+Optional links are explicit trusted configuration, keyed by the selected dashboard
+report ID. The default configuration links the existing October report to its
+published evidence. Other reports remain usable with an unavailable state. No
+publication is inferred from directory timestamps or built during a dashboard visit.
+
+```yaml
+evidence_root: data/processed
+evidence_publications:
+  <64-character-dashboard-run-id>:
+    discovery: within_filter_discovery/<publication-id>
+    prioritization: signal_prioritization/<publication-id>
+```
+
+The discovery publication must reference the selected report's exact canonical and
+atlas manifest bytes. Prioritization must reference that exact discovery manifest
+and the same diagnostic manifest. Paths and symlinks are confined to the trusted
+evidence root. All linked tables, audit files and manifests are verified again on
+each rerun; invalid evidence is cleared without substituting another publication.
+Descriptive reports remain separate and available when an optional attachment fails.
+
+The page shows full-family candidate/hypothesis/shortlist counts, then supports
+funding, product, saved-filter, category and simultaneous exact-definition selectors.
+Selections within a field use OR; fields combine with AND over published predicates.
+Minimum wagers hides subgroup rows only, including empty subgroups; lower it to
+inspect smaller observations. It does not change either arm's approved testing gates,
+p-values, correction family, category, or published shortlist membership.
+
+Select a candidate to inspect:
+
+- Parent, subgroup and complement economics, with stake-weighted ROI and equal-stake
+  returns on the diagnostic eligible population. These may differ from older
+  canonical cards with broader economic eligibility.
+- Paired contrast intervals, confidence level, directional raw/Holm p-values and
+  the original full-family denominator. Missing p-values remain unavailable.
+- Event-ID coverage, support, wager/event concentration and unknown sizing regimes.
+- Failed gates, test status, equivalent-membership suppression and overlaps against
+  the complete published family, including other parents and hidden candidates.
+- Exact predicates and immutable publication policy/provenance.
+
+An empty corrected shortlist remains explicit. Passing support gates does not make a
+candidate a recommended filter. Chronology remains unverified and no candidate is
+validated or production-authorized. Intervals are pointwise; the t approximation
+and Holm correction retain the limitations in `STATISTICAL_PRIORITIZATION.md`.
