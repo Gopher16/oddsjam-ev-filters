@@ -1,0 +1,13 @@
+contract_version: 1
+# Freeze feature-only searches before examining ranked outcomes.
+global_views:
+  - [market_family, sportsbook]
+  - [league, market_family]
+  - [advertised_ev_band, odds_band]
+ev_edges: [0, 2.5, 3, 5, 10, 20]
+odds_edges: [-250, -150, -100, 100, 150, 250]
+headline_limit: 4
+overlap_limit: 0.8
+max_candidates: 3000
+max_memberships: 3000000
+max_pairs: 2000000
