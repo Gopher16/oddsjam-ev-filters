@@ -60,6 +60,10 @@ poetry run pre-commit install
 
 ## Data Workflow
 
+Publish reproducible opportunity and production-change research queues from explicit
+verified inputs. See [All-history review queues](docs/REVIEW_QUEUES.md) for evidence
+tiers, overlap-aware priorities, full setup sheets and production safeguards.
+
 Reusable datasets for notebook-inspired charts can be published from explicit verified
 canonical, atlas and sizing inputs. See [Visual diagnostics](docs/VISUAL_DIAGNOSTICS.md)
 for matched-cohort economics, chart readiness and source-evidence blockers.
