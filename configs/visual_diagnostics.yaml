@@ -1,0 +1,20 @@
+contract_version: 1
+# Display bins are left closed/right open; original continuous EV remains available.
+ev_edges: [0, 2.5, 3, 3.5, 4, 5, 7.5, 10, 20]
+liquidity_edges: [0, 500, 1000, 2000, 5000, 10000]
+time_edges_hours: [0, 1, 2, 4, 12, 24, 48, 72, 168, 336]
+# Never inherit the legacy notebook's assumed timezone or untrusted liquidity proxy.
+naive_timezone: null
+placement_time_verified: false
+event_time_verified: false
+chronology_evidence: null
+liquidity_usd_verified: false
+liquidity_evidence: null
+closing_fair_american_verified: false
+closing_sources: []
+closing_evidence: null
+min_performance_wagers: 100
+fixed_unit_usd: 1.0
+max_scope_links: 1000000
+max_rows: 2000000
+max_calendar_days: 7305
