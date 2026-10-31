@@ -108,10 +108,13 @@ def _card(row, *, loss=False):
             if low <= 0 <= high:
                 badge += " · includes zero"
         st.caption(badge + " · Historical signal, not PROD approval.")
-        with st.expander("Evidence and exact definition"):
+        with st.expander("Historical evidence and subgroup definition"):
             _, _, detail, _ = queries.research_finding(row)
             st.write(detail)
             st.write(json.loads(row.predicate_json))
+            st.caption(
+                "Analytical subgroup only. Omitted scanner settings are not confirmed defaults or unrestricted controls. A prospective test needs a separate complete baseline and parameter sheet."
+            )
             st.caption(
                 "Signals overlap. Group breadth determines reading order, not expected future profit. Fees and execution availability are not independently verified."
             )

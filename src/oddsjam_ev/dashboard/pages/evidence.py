@@ -294,6 +294,11 @@ def evidence_page(run, mode, limit):
             ],
             hide_index=True,
         )
+    from oddsjam_ev.dashboard.pages.configuration import candidate_sheet
+
+    st.subheader("Complete prospective setup")
+    candidate_sheet(selected_id)
+
     from oddsjam_ev.analysis.paper_definitions import draft_definition
 
     draft = draft_definition(

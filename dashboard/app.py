@@ -11,7 +11,11 @@ from oddsjam_ev.dashboard.artifacts import (
     operational_attempts,
     read_dashboard_config,
 )
-from oddsjam_ev.dashboard.evidence import load_evidence, load_paper_definitions
+from oddsjam_ev.dashboard.evidence import (
+    load_decision_sheets,
+    load_evidence,
+    load_paper_definitions,
+)
 from oddsjam_ev.dashboard.labels import PRODUCTS, report_dates
 from oddsjam_ev.dashboard.pages.workspace import PAGES, sidebar_signal_filters
 from oddsjam_ev.dashboard.queries import MODE_LABELS, MODES, validate_display_contract
@@ -113,6 +117,15 @@ def main():
     except Exception:
         st.error(
             "The paper definition snapshot could not be verified. Definition results were cleared; no live register or fallback was loaded."
+        )
+    st.session_state.pop("decision_sheet_snapshot", None)
+    try:
+        st.session_state.decision_sheet_snapshot = load_decision_sheets(
+            run, cfg, st.session_state.get("verified_evidence")
+        )
+    except Exception:
+        st.error(
+            "Configuration sheets could not be verified. They were cleared; no baseline or lifecycle evidence was substituted."
         )
     dates = report_dates(run, cfg.display_timezone)
     with st.container(border=True):
