@@ -60,6 +60,10 @@ poetry run pre-commit install
 
 ## Data Workflow
 
+Reusable datasets for notebook-inspired charts can be published from explicit verified
+canonical, atlas and sizing inputs. See [Visual diagnostics](docs/VISUAL_DIAGNOSTICS.md)
+for matched-cohort economics, chart readiness and source-evidence blockers.
+
 Canonical wager facts can be built separately from a pinned ingestion snapshot.
 See [Canonical facts and economic eligibility](docs/CANONICAL_FACTS.md) for ticket/leg
 grains, USD assumptions, Pick'em exclusions, and reported-return limitations.
