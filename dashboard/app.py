@@ -11,12 +11,14 @@ from oddsjam_ev.dashboard.artifacts import (
     operational_attempts,
     read_dashboard_config,
 )
+from oddsjam_ev.dashboard.decision_artifacts import load_workspace
 from oddsjam_ev.dashboard.evidence import (
     load_decision_sheets,
     load_evidence,
     load_paper_definitions,
 )
 from oddsjam_ev.dashboard.labels import PRODUCTS, report_dates
+from oddsjam_ev.dashboard.pages.decision_workspace import sidebar as workspace_sidebar
 from oddsjam_ev.dashboard.pages.workspace import PAGES, sidebar_signal_filters
 from oddsjam_ev.dashboard.queries import MODE_LABELS, MODES, validate_display_contract
 
@@ -36,9 +38,7 @@ def main():
         unsafe_allow_html=True,
     )
     st.title("Betting research")
-    st.caption(
-        "Understand the recorded results. Explore the evidence. Keep the limitations in view."
-    )
+    st.caption("Find the next paper study. Review production concerns. Follow the evidence.")
     try:
         cfg = read_dashboard_config(
             Path(os.environ.get("ODDSJAM_DASHBOARD_CONFIG", "configs/dashboard.yaml"))
@@ -52,9 +52,7 @@ def main():
         )
         return
     st.sidebar.header("Choose your report")
-    st.sidebar.caption(
-        "Newest recorded publication opens automatically. Generation time is separate from source-data freshness."
-    )
+    st.sidebar.caption("Verified publications · generation time is not data freshness.")
     selected = st.sidebar.selectbox(
         "Research report",
         list(labels),
@@ -70,10 +68,7 @@ def main():
                 del st.session_state[key]
         st.session_state.last_selection = selected
     if selected is not None:
-        st.sidebar.write(labels[selected])
-        st.sidebar.caption(
-            "Times come from recorded successful processing attempts. A replay does not make source data newer. Missing generation times use a labeled analysis cutoff."
-        )
+        st.sidebar.caption("Replays do not make source data newer.")
     if selected is not None and "published_run" not in st.session_state:
         st.session_state.pop("published_run", None)
         try:
@@ -127,8 +122,21 @@ def main():
         st.error(
             "Configuration sheets could not be verified. They were cleared; no baseline or lifecycle evidence was substituted."
         )
+    old_workspace = st.session_state.pop("decision_workspace", None)
+    try:
+        st.session_state.decision_workspace = load_workspace(
+            run,
+            cfg,
+            st.session_state.get("verified_evidence"),
+            st.session_state.get("decision_sheet_snapshot"),
+            old_workspace,
+        )
+    except Exception:
+        st.error(
+            "Decision workspace could not be verified. Cached queues/charts were cleared; no other publication or descriptive shortlist was substituted."
+        )
     dates = report_dates(run, cfg.display_timezone)
-    with st.container(border=True):
+    with st.expander("Source snapshot & scope"):
         a, b, c = st.columns(3)
         a.caption("ANALYSIS CUTOFF")
         a.write(dates["Analysis cutoff"])
@@ -136,6 +144,9 @@ def main():
         b.write(dates["Data last received"])
         c.caption("EXPORT DATE")
         c.write(dates["Export date"])
+    if st.session_state.get("page") not in [None, *PAGES]:
+        st.session_state.pop("page", None)
+    page = st.sidebar.selectbox("Explore", list(PAGES), key="page")
     st.sidebar.divider()
     mode = st.sidebar.selectbox(
         "Funding",
@@ -162,9 +173,10 @@ def main():
         key="filter_min_wagers",
         help="Display threshold for signal and saved-filter cohorts, not a statistical validation gate.",
     )
-    if st.session_state.get("page", "Signals & leaks") == "Signals & leaks":
+    if st.session_state.get("decision_workspace") is not None:
+        workspace_sidebar(st.session_state.decision_workspace, run)
+    else:
         sidebar_signal_filters(run, mode, st.session_state.get("filter_product", "all"))
-    page = st.sidebar.radio("Explore", list(PAGES), key="page")
     st.sidebar.caption(
         "Read-only historical research. No filters, tests or trades are changed here."
     )
