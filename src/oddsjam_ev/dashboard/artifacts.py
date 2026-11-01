@@ -42,6 +42,7 @@ class DashboardConfig:
     paper_definitions_publication: str | None = None
     decision_records_publication: str | None = None
     evidence_publications: dict = field(default_factory=dict)
+    workspace_publications: dict = field(default_factory=dict)
 
     def __post_init__(self):
         from zoneinfo import ZoneInfo
@@ -70,6 +71,16 @@ class DashboardConfig:
                 isinstance(v, str) and v for v in links.values()
             ):
                 raise ValueError("Explicit discovery and prioritization paths required")
+        if not isinstance(self.workspace_publications, dict):
+            raise ValueError("Workspace publications must be a report mapping")
+        for run_id, links in self.workspace_publications.items():
+            if (
+                not ID.fullmatch(str(run_id))
+                or not isinstance(links, dict)
+                or set(links) != {"queues", "visuals"}
+                or not all(isinstance(v, str) and v for v in links.values())
+            ):
+                raise ValueError("Explicit queue and visual publication links required")
         if type(self.contract_version) is not int or self.contract_version != 1:
             raise ValueError("Unsupported dashboard contract")
         if not isinstance(self.artifact_root, str) or not self.artifact_root:
