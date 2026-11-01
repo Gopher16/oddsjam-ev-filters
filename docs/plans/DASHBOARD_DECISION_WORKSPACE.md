@@ -485,6 +485,8 @@ charts show their actionable source blocker; they are not silently omitted.
 
 ### PR E — Feature contracts, explanatory models and frozen SHAP publications
 
+Implementation contract and offline build guide: [EXPLANATORY_MODELS.md](../EXPLANATORY_MODELS.md).
+
 - `feat: publish decision-time feature eligibility and model evaluation contracts`
 - `feat: fit versioned return models and publish stable SHAP explanations`
 - `test: guard explanation leakage dependence and unsupported predictive claims`
