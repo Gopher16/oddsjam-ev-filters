@@ -102,7 +102,7 @@ def test_dashboard_render_empty_shortlist_and_reverify(attached, tmp_path, monke
     app = AppTest.from_file(str(Path(__file__).resolve().parents[1] / "dashboard/app.py")).run(
         timeout=30
     )
-    app.sidebar.radio(key="page").set_value("Within-filter evidence").run(timeout=30)
+    app.sidebar.selectbox(key="page").set_value("Within-filter evidence").run(timeout=30)
     assert not app.exception and not app.error, [e.value for e in app.error]
     assert any("No candidate qualified" in x.value for x in app.info)
     assert any("Blocked gates" in x.value for x in app.markdown)
@@ -231,7 +231,7 @@ def test_frozen_definition_visibility_and_corruption(attached, tmp_path, monkeyp
     app = AppTest.from_file(str(Path(__file__).resolve().parents[1] / "dashboard/app.py")).run(
         timeout=30
     )
-    app.sidebar.radio(key="page").set_value("Paper-test definitions").run(timeout=30)
+    app.sidebar.selectbox(key="page").set_value("Paper-test definitions").run(timeout=30)
     assert not app.error and not app.exception
     assert len(app.dataframe[0].value) == 2
     assert any("Superseded definition" in x.value for x in app.warning)
@@ -270,7 +270,7 @@ def test_complete_parameter_sheets_and_definition_binding(attached, tmp_path, mo
     app = AppTest.from_file(str(Path(__file__).resolve().parents[1] / "dashboard/app.py")).run(
         timeout=30
     )
-    app.sidebar.radio(key="page").set_value("Within-filter evidence").run(timeout=30)
+    app.sidebar.selectbox(key="page").set_value("Within-filter evidence").run(timeout=30)
     assert not app.exception and not app.error
     assert any("Baseline state" in frame.value.columns for frame in app.dataframe)
     app.selectbox(key="config-design-" + candidate["candidate_id"]).set_value(

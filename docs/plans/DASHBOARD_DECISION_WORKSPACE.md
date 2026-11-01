@@ -467,6 +467,9 @@ no raw-ROI sorting as proof, no forced winners, no inferred current PROD from na
 
 ### PR D — Redesign the default dashboard and deliver interactive charts
 
+Implementation guide and acceptance contract: [Decision dashboard](../DASHBOARD_DECISION_WORKSPACE.md).
+The default now consumes the published A–C records; blocked source series remain explicit.
+
 - `feat: make opportunity and production review the default dashboard`
 - `feat: add linked notebook-inspired charts and complete setup drill-through`
 - `test: verify visual interaction scope empty states and accessible layouts`

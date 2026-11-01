@@ -27,10 +27,10 @@ def test_auto_open_all_data_and_read_only_navigation(dashboard_run, tmp_path, mo
     assert app.sidebar.selectbox(key="mode").value == "all"
     assert app.sidebar.selectbox(key="filter_product").value == "all"
     assert {b.label for b in app.button} == {"Reset signal filters"}
-    for page in ("Signals & leaks", "Filter health", "Evidence & methodology"):
-        app.sidebar.radio(key="page").set_value(page).run(timeout=30)
+    for page in ("Explore history", "Filter health", "Evidence & methodology"):
+        app.sidebar.selectbox(key="page").set_value(page).run(timeout=30)
         assert not app.exception and not app.error, [e.value for e in app.error]
-    app.sidebar.radio(key="page").set_value("Signals & leaks").run(timeout=30)
+    app.sidebar.selectbox(key="page").set_value("Explore history").run(timeout=30)
     app.sidebar.selectbox(key="mode").select("paper").run(timeout=30)
     app.sidebar.selectbox(key="filter_product").select("fixed_odds").run(timeout=30)
     assert not app.exception and not app.error
@@ -64,6 +64,7 @@ def test_missing_and_incomplete_reports_do_not_load_fallback(dashboard_run, tmp_
 
 def test_simultaneous_signal_controls_and_reset(dashboard_run, tmp_path, monkeypatch):
     app = app_for(dashboard_run[0], tmp_path, monkeypatch)
+    app.sidebar.selectbox(key="page").set_value("Explore history").run(timeout=30)
     platform = app.sidebar.multiselect(key="filter_signal_sportsbook")
     sport = app.sidebar.multiselect(key="filter_signal_sport")
     assert platform.options and sport.options
@@ -82,6 +83,9 @@ def test_minimum_wager_control_defaults_and_small_sample_empty_state(
     dashboard_run, tmp_path, monkeypatch
 ):
     app = app_for(dashboard_run[0], tmp_path, monkeypatch)
+    assert app.sidebar.selectbox(key="page").value == "Overview"
+    assert any("No verified review queue is linked" in v.value for v in app.info)
+    app.sidebar.selectbox(key="page").set_value("Explore history").run(timeout=30)
     assert app.sidebar.number_input(key="filter_min_wagers").value == 100
     assert any("No published signal cohorts meet the minimum" in value.value for value in app.info)
     app.sidebar.number_input(key="filter_min_wagers").set_value(1).run(timeout=30)
@@ -93,6 +97,7 @@ def test_minimum_wager_control_defaults_and_small_sample_empty_state(
 
 def test_saved_filter_selector_keeps_scope_explicit(dashboard_run, tmp_path, monkeypatch):
     app = app_for(dashboard_run[0], tmp_path, monkeypatch)
+    app.sidebar.selectbox(key="page").set_value("Explore history").run(timeout=30)
     selector = app.sidebar.selectbox(key="filter_signal_saved")
     assert selector.value == "all"
     if len(selector.options) > 1:

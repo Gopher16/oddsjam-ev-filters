@@ -316,6 +316,11 @@ precision, percent-point units, exact thresholds and optional verified EV tables
 verified historical-label inventory, separate count grains, lineage and overlap
 audits used before reviewing new identity mappings.
 
+[Decision dashboard guide](docs/DASHBOARD_DECISION_WORKSPACE.md) covers the new default
+opportunity/production workspace, shared selectors, linked interactive diagnostics,
+complete setup sheets and candidate-to-paper-study actions. Restart Streamlit after
+pulling updates because file watching is disabled.
+
 [RESEARCH_DASHBOARD.md](docs/RESEARCH_DASHBOARD.md) describes the optional read-only
 Streamlit viewer. Install with `poetry install --with dashboard`, then run
 `poetry run streamlit run dashboard/app.py` from the repository root. Select a
