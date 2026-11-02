@@ -1,5 +1,8 @@
 # Local research pipeline
 
+Shared semantics: [authoritative contract reference](reference/LINEAGE_REPRODUCIBILITY.md).
+This component guide retains its schema, commands and stage-specific requirements.
+
 The pipeline connects manual ingestion, canonical facts, the descriptive atlas,
 discovery, research proposals and optional experiment follow-up. It never acquires
 exports, edits filters, approves proposals, enrolls observations, launches experiments,

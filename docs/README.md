@@ -18,9 +18,18 @@ define/approve/launch a paper study, review a TEST modification and refresh from
 export. Use the [configuration/publication map](CONFIGURATION_PUBLICATION_MAP.md) and
 [troubleshooting/remediation guide](TROUBLESHOOTING.md) alongside the commands.
 
-## Current reference library
+## Shared research and data contracts
 
-| Area | Authoritative implementation guides |
+The [authoritative contract reference](reference/README.md) defines grains,
+economics, EV/settings, chronology, statistical evidence, model explanations,
+prospective lifecycle and lineage. Approved [exploratory policies](reference/policies/EXPLORATORY.md)
+and [prospective promotion policy](reference/policies/PROMOTION.md) remain separate.
+Use these explanations across components; the guides below retain commands,
+artifact schemas and stage-specific behavior.
+
+## Component implementation guides
+
+| Area | Component guides |
 | --- | --- |
 | Source selection and grains | [Ingestion](INGESTION.md), [canonical facts](CANONICAL_FACTS.md), [opportunity atlas](OPPORTUNITY_ATLAS.md) |
 | Historical identity | [Label inventory](FILTER_LABEL_INVENTORY.md), [mapping proposals](FILTER_MAPPING_PROPOSALS.md), [versioned attribution](VERSIONED_FILTER_ATTRIBUTION.md) |

@@ -1,5 +1,8 @@
 # Visual diagnostic publications
 
+Shared semantics: [authoritative contract reference](reference/CHRONOLOGY.md).
+This component guide retains its schema, commands and stage-specific requirements.
+
 PR B provides reusable data for the requested notebook visuals. It does not render
 new dashboard charts; that is PR D in the decision-workspace sequence. Publications
 are descriptive evidence, not a new shortlist, corrected test, or strategy approval.

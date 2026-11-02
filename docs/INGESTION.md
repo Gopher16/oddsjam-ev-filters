@@ -1,5 +1,8 @@
 # Historical Bet Tracker ingestion
 
+Shared semantics: [authoritative contract reference](reference/DATA_GRAINS.md).
+This component guide retains its schema, commands and stage-specific requirements.
+
 PR 1 adds a local, CSV-first lineage layer before the existing research transform.
 It does not change live filters, acquire account data, calculate new profitability
 metrics, or execute notebooks. Future authorized acquisition adapters can download

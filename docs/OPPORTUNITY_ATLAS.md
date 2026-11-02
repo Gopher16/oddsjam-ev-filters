@@ -1,5 +1,8 @@
 # Cross-filter opportunity atlas
 
+Shared semantics: [authoritative contract reference](reference/DATA_GRAINS.md).
+This component guide retains its schema, commands and stage-specific requirements.
+
 The atlas describes logged records from an explicit canonical bundle. It does not
 estimate scanner coverage, establish executable opportunities, promote strategies,
 change filters, or schedule jobs. The draft acquisition adapter is not required.

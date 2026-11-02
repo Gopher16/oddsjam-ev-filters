@@ -1,5 +1,8 @@
 # Sizing-history provenance
 
+Shared semantics: [authoritative contract reference](reference/CHRONOLOGY.md).
+This component guide retains its schema, commands and stage-specific requirements.
+
 This optional contract records historical bankroll references and fractional Kelly
 settings without altering recorded portfolio ROI or assuming they governed every
 wager. Account history stays local/ignored. No account-specific amount or screenshot
@@ -110,6 +113,6 @@ Kelly stakes, bankroll growth or drawdown. Every row reports `sizing_replay_bloc
 with missing evidence for settlement order, exposure, cash flows, source algorithm,
 fees and fillability. Evidence recorded here is not sufficient for exact replay.
 
-The next research change can add weighted/equal-stake and concentration diagnostics
-on reconciled eligible cohorts. Unknown regimes must remain a separate population;
+[Sizing diagnostics](SIZING_DIAGNOSTICS.md) now provides weighted/equal-stake and
+concentration diagnostics on reconciled eligible cohorts. Unknown regimes must remain a separate population;
 current settings must never fill those gaps.

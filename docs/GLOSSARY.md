@@ -2,7 +2,8 @@
 
 These terms describe current contracts. A record at one grain or lifecycle stage
 does not establish a record at another. See [architecture](ARCHITECTURE.md) for how
-the terms connect.
+the terms connect. This glossary is a short navigation aid; the
+[contract reference](reference/README.md) owns detailed semantics and policy scope.
 
 ## Source and research grains
 
@@ -70,7 +71,7 @@ Sources: [paper definitions](PROSPECTIVE_PAPER_DEFINITIONS.md),
 | **Unset** | Evidence/design explicitly records an unset control. It is not an omitted field or permission to assume a platform default. |
 | **Unknown** | Evidence does not establish the setting/value. It remains unresolved rather than becoming zero, unrestricted or today's default. |
 
-The [configuration contract](DECISION_CONFIGURATION_RECORDS.md) also validates whether
+The [setting-state reference](reference/EV_SETTINGS.md#states-and-provenance) also validates whether
 an analytical restriction has a supported scanner translation. A complete sheet
 contains an explicit state for each control; completeness does not mean every value
 is known or the setup is executable.
@@ -88,7 +89,8 @@ is known or the setup is executable.
 | **Fixed-model filtered explanation** | Selects rows from frozen model outputs/background. It does not fit a model on the selected subset. |
 | **Separately fitted subset model** | Explicit offline build with its own scope, model, background, splits and publication identity. |
 
-Sources: [continuous EV](CONTINUOUS_EV_CONTRACT.md), [sizing diagnostics](SIZING_DIAGNOSTICS.md),
-[prioritization](STATISTICAL_PRIORITIZATION.md), [models](EXPLANATORY_MODELS.md).
+Sources: [EV/settings](reference/EV_SETTINGS.md), [economics](reference/ECONOMICS.md),
+[statistical evidence](reference/STATISTICAL_EVIDENCE.md),
+[models/explanations](reference/MODELS_EXPLANATIONS.md).
 
 [Documentation home](README.md)

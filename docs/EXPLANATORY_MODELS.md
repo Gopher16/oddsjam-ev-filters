@@ -3,74 +3,21 @@
 These models describe recorded unit returns. Their SHAP values explain a fitted
 prediction relative to a training background. They do not prove why a bet wins,
 identify a causal intervention, supply missing OddsJam settings or authorize a
-production change. Dashboard explanation views follow in PR F.
+production change. Current interactive views are documented in [dashboard explanations](DASHBOARD_EXPLANATIONS.md).
 
 ## Approved exploratory contract
 
-The owner approved this initial policy on November 1, 2026:
-
-- Separate each source `execution_status` / `product` population. All-history means
-  reviewing every population, not blending hypothetical and funded economics.
-- One canonical wager per example. Use the existing diagnostic-eligible economics:
-  finite reported profit divided by positive stake, with equal-wager training and
-  evaluation weights. Reconcile the target before fitting; no stake predictor.
-- At least 500 eligible wagers and 200 namespace/event groups, complete event IDs,
-  and at least 100/40/40 train/validation/test events. These are operational support
-  gates, not guarantees of power or out-of-sample usefulness.
-- Stable, seeded event-grouped 60/20/20 splits. Event keys cannot cross splits in a
-  population. Chronology is unverified, so this is **exploratory non-temporal
-  evaluation**, never forward validation. Source calendar plots do not fix this.
-- Constant training-mean and advertised-EV references; Ridge alpha 10 and one random
-  forest with 64 trees, depth 4, minimum leaf 25 and one worker. Select constant,
-  Ridge or forest by validation MSE only, with no hyperparameter search. The EV
-  reference is a comparison, not an outcome-derived prediction. Missing EV falls
-  back to the training mean and is disclosed in coverage.
-- Keep the selected training model frozen; do not refit on the held-out test set.
-  Every predicted row retains train/validation/test identity. Training predictions
-  are not held-out evidence. Test error must beat **both** references to receive the
-  limited `test_improves_both_references` utility flag; this is not a significance
-  test, corrected discovery result, or production approval.
-- Use deterministic, training-only background selection (16 rows by default,
-  maximum 128), with model and background identities. Report output and SHAP in
-  **unit-return fractions**, not percentages, dollars, probabilities or log odds.
+Use the [approved exploratory model policy](reference/policies/EXPLORATORY.md#explanatory-models)
+for support gates, splits, frozen-model selection, references and background bounds.
+No model-utility flag is prospective or production authorization.
 
 ## Features and interpretation
 
-`feature_inventory.parquet` reviews every column in the verified canonical tables
-and derived model candidates, with source grain, dtype, coverage, units and explicit
-exclusion reasons. The original canonical feature catalogue remains the authority
-for raw field semantics. Counts from `source_features` are observations, not extra
-independent wagers. Source hashes pin both the canonical and visual publications.
-
-Initial predictors are platform, sport, league, market family, original continuous
-advertised EV as a fraction, and offered American odds converted to decimal payout.
-Categories are encoded using training data only, with at most 24 categories per
-field and explicit unseen-category audits. Numeric missing values use training
-medians plus indicators; standardization is fit only on training rows. Missing
-categories have a visible sentinel, not a fabricated platform or league.
-
-Forest explanations use seeded antithetic **grouped permutation SHAP**, two feature
-orders per training-background row. The original six features are the coalitions;
-one-hot blocks stay together. This is an approximation, not exact Tree SHAP. Each
-row includes trajectory sampling SD (not a confidence interval), and contributions
-must reconstruct its prediction to 1e-6. Ridge explanations are analytic
-interventional linear SHAP with encoded contributions summed to original features.
-The initial historical check exposed a TreeExplainer additivity mismatch; the build
-rejected it rather than disabling the check. The bounded permutation estimator uses
-the frozen estimator's predictions directly and preserves the additivity guard.
-
-Outcomes, settlement, payouts, profit, CLV, actual stake, IDs and free-text labels
-cannot enter predictors. Exact market names remain linkage/context in this initial
-bounded feature specification; market family is the supported representation.
-Timing, weekdays, liquidity, market width, historical devig/formula and historical
-configuration features require better decision-time evidence before inclusion.
-Current settings or saved-filter names cannot establish past settings.
-
-One-hot contributions and missing indicators are summed to their original feature.
-Sport and league remain related predictors; grouping encoded levels does not remove
-correlation or make feature effects causal. Test-set marginal permutation sensitivity
-provides a complementary check, with three deterministic repeats, not confidence
-intervals or significance. Residual/cohort and calibration tables expose limitations.
+The [model/explanation reference](reference/MODELS_EXPLANATIONS.md) is authoritative
+for feature exclusions, preprocessing, approximate grouped forest SHAP, analytic
+linear SHAP, output units, additivity and interpretation. Build and artifact details
+remain below; the dashboard consumes these outputs through
+[interactive explanations](DASHBOARD_EXPLANATIONS.md).
 
 ## Build and inspect
 
@@ -143,8 +90,9 @@ cannot be supported declines with reasons instead of a fabricated model.
 
 The model does not alter Holm-corrected comparisons, recommendation queues, saved
 filters, prospective launches or production lifecycle evidence. Future chronological
-validation, timing provenance, independent prospective confirmation and interactive
-SHAP presentation remain separate work.
+validation, timing provenance and independent prospective confirmation remain
+separate work. Interactive presentation is implemented in
+[dashboard explanations](DASHBOARD_EXPLANATIONS.md).
 
 Method references: [SHAP permutation explanations](https://shap.readthedocs.io/en/latest/generated/shap.PermutationExplainer.html),
 [TreeExplainer output and additivity](https://shap.readthedocs.io/en/latest/generated/shap.TreeExplainer.html),

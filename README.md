@@ -17,7 +17,7 @@ changes.
 | Review candidates, inspect settings and prepare a paper study | [Operator guide](docs/guides/OPERATOR.md) |
 | Build publications and interpret research evidence | [Analyst guide](docs/guides/ANALYST.md) |
 | Understand modules, run checks and extend contracts | [Contributor guide](docs/guides/CONTRIBUTOR.md) |
-| Find a reference or understand a term | [Documentation home](docs/README.md) · [Glossary](docs/GLOSSARY.md) |
+| Find a reference or understand a term | [Documentation home](docs/README.md) · [Contract reference](docs/reference/README.md) · [Glossary](docs/GLOSSARY.md) |
 | Understand what is implemented and what remains | [Discovery implementation status](docs/plans/MULTIDIMENSIONAL_IMPLEMENTATION_STATUS.md) |
 
 ## Open the dashboard
