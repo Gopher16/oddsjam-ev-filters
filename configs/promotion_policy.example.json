@@ -2,7 +2,7 @@
   "policy_key": "prospective-bounded-pilot-review",
   "version": 1,
   "scope": "bounded_prod_pilot_review",
-  "error_control": "Descriptive human review only. Existing exploratory Holm/bootstrap results are not prospective production evidence. No repeated-look pass or significance claim is authorized.",
+  "error_control": "One predeclared terminal prospective family: 5,000 paired event bootstrap draws for marginal intervals; approximate event-cluster influence t directional p-values; Holm 0.05 across eight claims per definition. No repeated evaluations, automatic promotion, or production-profit/fill guarantee.",
   "support_interpretation": "Definition and monitoring support gates are operational checks, not a power guarantee or permission to promote.",
   "review_rules": {
     "continue": "Freeze a new future definition; review both return measures, quote availability and dependence. Never reopen the old version.",

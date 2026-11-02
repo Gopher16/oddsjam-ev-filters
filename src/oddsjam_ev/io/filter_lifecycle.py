@@ -310,8 +310,11 @@ def _prepare(state, kind, p, now):
         if p["version"] != (max(versions) + 1 if versions else 1):
             raise ValueError("Policy versions must advance without replacement")
     elif kind == "EVALUATE_PROMOTION":
+        import numpy as np
         import pandas as pd
+        import scipy
 
+        from oddsjam_ev.analysis import promotion
         from oddsjam_ev.analysis.promotion import evaluate_family
 
         policy_event = state["policies"].get(p.get("policy_event_id"))
@@ -367,6 +370,17 @@ def _prepare(state, kind, p, now):
         p.update(
             source_anchors=sources,
             assessment=evaluate_family(policy, populations, blockers),
+            evaluation_code_sha256={
+                "analysis/promotion.py": hashlib.sha256(
+                    Path(promotion.__file__).read_bytes()
+                ).hexdigest(),
+                "io/filter_lifecycle.py": hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
+            },
+            runtime_versions={
+                "numpy": np.__version__,
+                "pandas": pd.__version__,
+                "scipy": scipy.__version__,
+            },
             external_execution_performed=False,
         )
     elif kind == "DECISION":
@@ -487,9 +501,17 @@ def _prepare(state, kind, p, now):
         if action in {"new_test", "modify", "promote"}:
             followup = decision["followup"]
             values = {k: v["value"] for k, v in after.items()}
+            # A pilot runs the tested trial; companion paper capture must retain
+            # the unchanged parent to observe the complement prospectively.
+            expected_parent = (
+                decision["source"]["definition"]["protocol"]["baseline"]["filter_config"]
+                if p["target_status"] == "PROD"
+                else values
+            )
             if (
                 not followup
-                or followup["definition"]["protocol"]["baseline"]["filter_config"] != values
+                or followup["definition"]["protocol"]["baseline"]["filter_config"]
+                != expected_parent
             ):
                 blockers.append("followup_definition_settings_mismatch_or_incomplete")
             elif aware(followup["definition"]["protocol"]["planned_start_utc"]) <= aware(now):
@@ -914,6 +936,7 @@ def publish_lifecycle_report(root: Path, output_root: Path, as_of: str) -> Path:
         Path(__file__),
         Path(filter_lifecycle.__file__),
         Path(__file__).parents[1] / "analysis" / "decision_config.py",
+        Path(__file__).parents[1] / "analysis" / "promotion.py",
     )
     spec = {
         "contract_version": 1,

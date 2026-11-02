@@ -239,7 +239,10 @@ poetry run python scripts/build_filter_lifecycle_report.py \
 ```
 
 Publications pin policies, source/report hashes, all human events, exact settings,
-application intervals, monitoring observations/settlements and code hashes. Future
+application intervals, monitoring observations/settlements and code hashes.
+Promotion assessments additionally pin the evaluation code hashes and NumPy/pandas/
+SciPy versions at evaluation time; publishing a later report does not relabel that
+statistical provenance. Future
 cutoffs are rejected and old outputs are preserved. A `MONITOR_REVIEW` names the
 exact current `monitoring_report`, `application_id`, one of
 continue/pause/investigate/rollback/retest, and explicit human evidence/reason. It

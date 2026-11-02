@@ -269,6 +269,8 @@ def test_complete_verified_prospective_pilot_path_and_recorded_cap_breaches(
         "2030-02-04T00:20:00Z",
     )
     assert assessment["payload"]["assessment"]["results"][0]["eligible_for_human_pilot_review"]
+    assert set(assessment["payload"]["runtime_versions"]) == {"numpy", "pandas", "scipy"}
+    assert "analysis/promotion.py" in assessment["payload"]["evaluation_code_sha256"]
     with pytest.raises(ValueError, match="already evaluated"):
         event(
             c,
@@ -277,8 +279,8 @@ def test_complete_verified_prospective_pilot_path_and_recorded_cap_breaches(
             {"policy_event_id": pe["event_id"], "sources": [source]},
             "2030-02-04T00:20:00Z",
         )
-    # Freeze the proposed trial settings as a distinct future definition, without
-    # reusing the older parent-baseline reference for a changed parent universe.
+    # Continue paper capture from the unchanged parent (both books), while the
+    # funded pilot applies only the independently verified trial settings (Book).
     after = {}
     for r in sheet["settings"]:
         state = r["baseline_state"] if r["state"] == "inherited" else "observed"
@@ -289,8 +291,6 @@ def test_complete_verified_prospective_pilot_path_and_recorded_cap_breaches(
             "reason": "Exact tested scanner setting",
         }
     next_plan = copy.deepcopy(p)
-    next_plan.pop("configuration_reference")
-    next_plan["baseline"]["filter_config"] = {k: v["value"] for k, v in after.items()}
     next_plan.update(
         planned_start_utc="2030-02-05T00:00:00Z",
         planned_end_utc="2030-03-05T00:00:00Z",
@@ -307,6 +307,7 @@ def test_complete_verified_prospective_pilot_path_and_recorded_cap_breaches(
         "synthetic",
         "new prospective version",
         expected_version_id=definition["version_id"],
+        decision_publication=sheets,
     )
     next_pub = publish_definitions(
         definitions_root, tmp_path / "definitions", "2030-02-04T00:21:00Z"
@@ -346,6 +347,10 @@ def test_complete_verified_prospective_pilot_path_and_recorded_cap_breaches(
         "2030-02-04T01:01:00Z",
     )
     assert not change["payload"]["approval_blockers"]
+    assert decision["payload"]["followup"]["definition"]["protocol"]["baseline"]["filter_config"][
+        "sportsbooks"
+    ] == ["Book", "Other"]
+    assert change["payload"]["after_settings"]["sportsbooks"]["value"] == ["Book"]
     approved = event(
         c,
         monkeypatch,
