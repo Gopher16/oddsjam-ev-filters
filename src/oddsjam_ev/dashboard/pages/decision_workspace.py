@@ -25,6 +25,12 @@ def reset():
             del st.session_state[key]
     st.query_params.pop("candidate", None)
     st.session_state.pop("last_map_event", None)
+    for key in list(st.session_state):
+        if key.startswith("explanation_") and key not in {
+            "explanation_bundle",
+            "explanation_publication",
+        }:
+            del st.session_state[key]
     st.session_state.workspace_chart_revision = (
         st.session_state.get("workspace_chart_revision", 0) + 1
     )
@@ -37,6 +43,9 @@ def sidebar(workspace, run):
         f["id"]: f["name"]
         for f in run.manifests["canonical"]["specification"]["filter_registry"]["filters"]
     }
+    explanation_page = st.session_state.get("page") == "Explain returns"
+    source = workspace["visuals"]["visual_candidates"] if workspace and explanation_page else None
+    selected_saved = st.session_state.get("filter_signal_saved", "all")
     st.sidebar.selectbox(
         "Saved filter",
         [
@@ -47,16 +56,36 @@ def sidebar(workspace, run):
                     for r in records
                     if r["source_kind"] != "global_descriptive_catalogue"
                 }
+                | (
+                    set(
+                        run.tables["canonical"]["filter_attribution"]
+                        .loc[lambda f: f.attribution_status.eq("resolved"), "filter_id"]
+                        .dropna()
+                    )
+                    if explanation_page
+                    else set()
+                )
+                | ({selected_saved} if selected_saved != "all" else set())
             ),
         ],
         format_func=lambda v: "All saved filters" if v == "all" else registry.get(v, v),
         key="filter_signal_saved",
     )
     st.sidebar.caption(
-        "AND across fields · OR within a field. Only exact published slices qualify; empty means all."
+        "Recorded-wager selection: AND across fields, OR within. Model and background stay fixed. Empty means all."
+        if explanation_page
+        else "AND across fields · OR within a field. Only exact published slices qualify; empty means all."
     )
     for field, label in FIELDS.items():
-        options = sorted({terms(r)[field] for r in records if field in terms(r)})
+        options = {terms(r)[field] for r in records if field in terms(r)}
+        if source is not None:
+            if field in {"sportsbook", "sport", "league", "market_family"}:
+                options |= set(source[field].fillna("<missing>").astype(str))
+            elif field in {"odds_band", "advertised_ev_band"}:
+                options |= set(run.tables["atlas"]["wager_dimensions"][field].dropna().astype(str))
+                options = {v for v in options if v.startswith("[") and v.endswith(")")}
+        options |= set(st.session_state.get("filter_signal_" + field, []))
+        options = sorted(options)
         st.sidebar.multiselect(
             label,
             options,
@@ -112,6 +141,12 @@ def selected_changed():
 def focus(ident):
     st.session_state.decision_selected = ident
     st.query_params["candidate"] = ident
+
+
+def explain_idea(candidate_id):
+    """Navigate with an explicit recorded-row scope; do not choose/refit a model."""
+    st.session_state.explanation_candidate_id = candidate_id
+    st.session_state.page = "Explain returns"
 
 
 def card(record):
@@ -175,6 +210,12 @@ def details(records, workspace):
         + PRODUCTS.get(row["product"], row["product"])
         + " · "
         + TIERS[row["evidence_tier"]]
+    )
+    st.button(
+        "Explain this idea’s recorded wagers",
+        key="explain-" + chosen,
+        on_click=explain_idea,
+        args=(chosen,),
     )
     a, b = st.columns(2)
     a.altair_chart(charts.comparison(row), width="stretch")

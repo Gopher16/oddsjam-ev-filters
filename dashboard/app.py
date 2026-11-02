@@ -17,6 +17,7 @@ from oddsjam_ev.dashboard.evidence import (
     load_evidence,
     load_paper_definitions,
 )
+from oddsjam_ev.dashboard.explanation_artifacts import load_explanations
 from oddsjam_ev.dashboard.labels import PRODUCTS, report_dates
 from oddsjam_ev.dashboard.pages.decision_workspace import sidebar as workspace_sidebar
 from oddsjam_ev.dashboard.pages.workspace import PAGES, sidebar_signal_filters
@@ -64,7 +65,10 @@ def main():
     if st.session_state.get("last_selection") != selected:
         st.session_state.pop("published_run", None)
         for key in list(st.session_state):
-            if key.startswith(("filter_", "evidence_term_")) or key in {"mode", "page"}:
+            if key.startswith(("filter_", "evidence_term_", "explanation_")) or key in {
+                "mode",
+                "page",
+            }:
                 del st.session_state[key]
         st.session_state.last_selection = selected
     if selected is not None:
@@ -134,6 +138,15 @@ def main():
     except Exception:
         st.error(
             "Decision workspace could not be verified. Cached queues/charts were cleared; no other publication or descriptive shortlist was substituted."
+        )
+    old_explanations = st.session_state.pop("explanation_bundle", None)
+    try:
+        st.session_state.explanation_bundle = load_explanations(
+            run, cfg, st.session_state.get("decision_workspace"), old_explanations
+        )
+    except Exception:
+        st.error(
+            "Explanatory publications could not be verified. Cached model views were cleared; no fallback model or training was used."
         )
     dates = report_dates(run, cfg.display_timezone)
     with st.expander("Source snapshot & scope"):
