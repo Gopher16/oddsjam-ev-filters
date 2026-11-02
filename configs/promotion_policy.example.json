@@ -1,0 +1,48 @@
+{
+  "policy_key": "prospective-bounded-pilot-review",
+  "version": 1,
+  "scope": "bounded_prod_pilot_review",
+  "error_control": "Descriptive human review only. Existing exploratory Holm/bootstrap results are not prospective production evidence. No repeated-look pass or significance claim is authorized.",
+  "support_interpretation": "Definition and monitoring support gates are operational checks, not a power guarantee or permission to promote.",
+  "review_rules": {
+    "continue": "Freeze a new future definition; review both return measures, quote availability and dependence. Never reopen the old version.",
+    "modify": "Record an exact new definition and configuration diff; historical losing subgroups do not automatically become exclusions.",
+    "stop": "Record a human stopping rationale; actual external retirement requires separate evidence.",
+    "inconclusive": "Retain missing, conflicting or insufficient evidence without granting a pass."
+  },
+  "monitoring": {
+    "paper_stake_usd": 1,
+    "min_wagers": 100,
+    "min_event_groups": 100,
+    "reference_means": {},
+    "absolute_alert_deltas": {}
+  },
+  "evidence_reference": "EXAMPLE ONLY: replace with your explicit policy review reference before recording",
+  "promotion": {
+    "approval_reference": "User approved prospective bounded-pilot review policy in Codex conversation 2026-11-02; pilot caps chosen at user request",
+    "gates": {
+      "min_wagers_per_arm": 100,
+      "min_event_groups_per_arm": 100,
+      "max_wager_stake_share": 0.05,
+      "max_event_stake_share": 0.1,
+      "bootstrap_resamples": 5000,
+      "alpha": 0.05
+    },
+    "pilot_caps": {
+      "max_stake_per_wager_usd": 1.0,
+      "max_total_deployed_stake_usd": 100.0,
+      "max_duration_days": 14,
+      "max_active_pilots": 1
+    },
+    "family_definitions": [
+      {
+        "publication": "data/processed/paper_definition_publications/REPLACE_PUBLICATION_ID",
+        "version_id": "REPLACE_FUTURE_DEFINITION_VERSION_ID",
+        "trial_arm": "subgroup"
+      }
+    ],
+    "seed": 20261102,
+    "max_bootstrap_cells": 50000000,
+    "evaluation_rule": "one_terminal_look_complete_family_both_measures_both_directions_absolute_and_contrast"
+  }
+}
