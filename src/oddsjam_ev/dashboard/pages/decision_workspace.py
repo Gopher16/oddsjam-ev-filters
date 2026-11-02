@@ -203,6 +203,21 @@ def details(records, workspace):
         return
     row = lookup[chosen]
     st.subheader(title(row))
+    lifecycle = st.session_state.get("lifecycle_report_snapshot")
+    if lifecycle:
+        decisions = [
+            e
+            for e in lifecycle["decisions"]
+            if e["payload"]["source"]["definition"]["source"]["candidate_id"] == chosen
+        ]
+        if decisions:
+            latest = decisions[-1]
+            st.info(
+                "Reviewed follow-up: "
+                + latest["payload"]["action"]
+                + ". Inspect Paper-test definitions for approved changes, confirmed application periods and monitoring. This decision is not production authorization."
+            )
+
     prospective = st.session_state.get("prospective_report_snapshot")
     if prospective and "prospective_reviews" in prospective["tables"]:
         studies = prospective["tables"]["prospective_reviews"]

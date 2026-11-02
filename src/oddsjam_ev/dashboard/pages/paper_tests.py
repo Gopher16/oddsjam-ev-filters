@@ -135,5 +135,8 @@ def paper_tests(run, mode, limit):
         st.caption(
             "Returns are fractions (0.03 = 3%). Fixed paper stakes; voids excluded, pushes included. Parent overlaps subgroup/complement. Failed or unknown quotes remain hypothetical; no fills, pooled versions or promotion are inferred."
         )
+    from oddsjam_ev.dashboard.pages.filter_lifecycle import lifecycle_evidence
+
+    lifecycle_evidence(selected)
     with st.expander("Immutable definition and source provenance"):
         st.json(event)
