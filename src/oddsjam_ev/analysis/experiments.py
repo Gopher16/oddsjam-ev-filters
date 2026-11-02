@@ -57,11 +57,22 @@ def replay_experiments(events: list[dict]) -> dict:
                 "enrollments": {},
                 "links": {},
                 "checks": {},
+                "settlements": {},
+                "reviews": [],
                 "events": [],
             }
         elif ident not in state:
             raise ValueError("Unknown experiment")
         item = state[ident]
+        if item["protocol"].get("contract_version") == 2:
+            from oddsjam_ev.analysis.prospective import prepare_event, validate_bound_protocol
+
+            if kind == "REGISTER":
+                validate_bound_protocol(item["protocol"])
+            else:
+                normalized = prepare_event(item, state, kind, payload, event["recorded_at"])
+                if normalized != payload:
+                    raise ValueError("Inconsistent prospective event history")
         if kind == "TRANSITION":
             if payload["to_status"] not in STATES.get(item["status"], set()):
                 raise ValueError("Invalid experiment transition history")
@@ -76,6 +87,10 @@ def replay_experiments(events: list[dict]) -> dict:
             item["links"][payload["enrollment_id"]] = event
         elif kind == "CHECK":
             item["checks"].setdefault(payload["enrollment_id"], []).append(event)
+        elif kind == "SETTLE" and item["protocol"].get("contract_version") == 2:
+            item["settlements"][payload["enrollment_id"]] = event
+        elif kind == "REVIEW" and item["protocol"].get("contract_version") == 2:
+            item["reviews"].append(event)
         elif kind == "DEVIATION":
             if item["status"] == "RUNNING":
                 item["status"] = "PAUSED"

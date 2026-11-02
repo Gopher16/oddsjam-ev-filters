@@ -192,7 +192,16 @@ def register_experiment(
         )
         with writer_lock(root):
             events = read_experiment_events(root)
-            if ident in replay_experiments(events):
+            existing = replay_experiments(events)
+            if protocol.get("contract_version") == 2 and any(
+                e["protocol"].get("definition", {}).get("version_id")
+                == protocol["definition"]["version_id"]
+                for e in existing.values()
+            ):
+                raise ValueError(
+                    "Definition version already registered; publish a new definition for a new experiment"
+                )
+            if ident in existing:
                 raise ValueError("Experiment already registered")
             return _append(
                 root,
@@ -280,6 +289,21 @@ def record_experiment_event(
         now = utc_now()
         protocol = item["protocol"]
         payload = dict(payload)
+        bound = protocol.get("contract_version") == 2
+        if bound:
+            from oddsjam_ev.analysis.prospective import prepare_event
+
+            payload = prepare_event(item, state, kind, payload, now)
+            if kind == "REVIEW" or (
+                kind == "TRANSITION" and payload.get("to_status") == "READY_FOR_REVIEW"
+            ):
+                from oddsjam_ev.io.prospective import validate_review
+
+                payload = validate_review(item, payload, now)
+                if kind == "TRANSITION" and item["status"] != "AWAITING_OUTCOMES":
+                    raise ValueError("Actual enrollment end required before readiness")
+            if kind in {"ENROLL", "SETTLE", "REVIEW"}:
+                return _append(root, events, experiment_id, kind, payload, actor, rationale, now)
         if kind == "TRANSITION":
             target = payload.get("to_status")
             if target not in STATES.get(item["status"], set()):
@@ -304,7 +328,7 @@ def record_experiment_event(
                     or not payload.get("evidence_reference")
                 ):
                     raise ValueError("Exact launch configuration evidence required")
-            if target == "READY_FOR_REVIEW":
+            if target == "READY_FOR_REVIEW" and not bound:
                 from oddsjam_ev.io.experiment_reports import load_experiment_report
 
                 reference = payload.get("review_assessment_reference")

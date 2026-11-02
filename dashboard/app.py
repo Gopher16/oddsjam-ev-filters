@@ -117,6 +117,17 @@ def main():
         st.error(
             "The paper definition snapshot could not be verified. Definition results were cleared; no live register or fallback was loaded."
         )
+    st.session_state.pop("prospective_report_snapshot", None)
+    try:
+        from oddsjam_ev.dashboard.prospective_artifacts import load_prospective_report
+
+        st.session_state.prospective_report_snapshot = load_prospective_report(
+            cfg, st.session_state.get("paper_definition_snapshot")
+        )
+    except Exception:
+        st.error(
+            "Prospective report could not be verified. Results were cleared; no live register was read."
+        )
     st.session_state.pop("decision_sheet_snapshot", None)
     try:
         st.session_state.decision_sheet_snapshot = load_decision_sheets(

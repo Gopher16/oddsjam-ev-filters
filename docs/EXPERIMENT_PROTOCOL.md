@@ -1,5 +1,8 @@
 # Prospective experiments and outcome tracking
 
+
+For the version-bound definition → approval → launch → capture → settlement → review workflow,
+see [Prospective experiment integration](PROSPECTIVE_EXPERIMENT_INTEGRATION.md).
 The experiment registry records paper research, not external trading operations.
 It cannot create or activate OddsJam filters, fund an experiment, place wagers,
 promote a strategy, or schedule exports. Existing notebooks and defaults remain

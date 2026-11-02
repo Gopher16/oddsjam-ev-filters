@@ -25,12 +25,18 @@ def main():
     register.add_argument("--decisions", type=Path, required=True)
     register.add_argument("--proposal-id", required=True)
     register.add_argument("--approval-event-id", required=True)
-    register.add_argument("--protocol", type=Path, required=True)
+    register.add_argument(
+        "--protocol",
+        type=Path,
+        help="Required for legacy proposals; definition-bound proposals use their exact pinned protocol when omitted",
+    )
     register.add_argument("--policy", type=Path, default=Path("configs/experiment_policy.yaml"))
     event = sub.add_parser("event")
     event.add_argument("--experiment-id", required=True)
     event.add_argument(
-        "--kind", choices=["TRANSITION", "ENROLL", "LINK", "CHECK", "DEVIATION"], required=True
+        "--kind",
+        choices=["TRANSITION", "ENROLL", "LINK", "CHECK", "DEVIATION", "SETTLE", "REVIEW"],
+        required=True,
     )
     event.add_argument("--payload", type=Path, required=True)
     event.add_argument("--expected-event-id", required=True)
@@ -41,13 +47,25 @@ def main():
     if args.command == "inspect":
         result = read_experiment_events(args.register)
     elif args.command == "register":
+        if args.protocol:
+            protocol = yaml.safe_load(args.protocol.read_text())
+        else:
+            from oddsjam_ev.io.recommendations import load_recommendations
+
+            selected = load_recommendations(args.bundle)["proposals"]
+            selected = selected.loc[selected.proposal_id.eq(args.proposal_id)]
+            if len(selected) != 1:
+                raise ValueError("Exact proposal required")
+            protocol = json.loads(selected.iloc[0].prospective_protocol_json)
+            if protocol.get("contract_version") != 2:
+                raise ValueError("Legacy proposals require an explicit --protocol")
         result = register_experiment(
             args.register,
             args.bundle,
             args.decisions,
             args.proposal_id,
             args.approval_event_id,
-            yaml.safe_load(args.protocol.read_text()),
+            protocol,
             args.actor,
             args.rationale,
             ExperimentPolicy(**yaml.safe_load(args.policy.read_text())),

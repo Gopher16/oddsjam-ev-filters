@@ -62,7 +62,12 @@ def load_experiment_report(path: Path) -> dict[str, pd.DataFrame]:
     if fingerprint(manifest["specification"]) != manifest["report_id"]:
         raise ValueError("Experiment report integrity failure")
     result = {}
-    for name in TABLES:
+    names = (
+        (*TABLES, "prospective_observations", "prospective_metrics", "prospective_reviews")
+        if manifest["specification"].get("prospective_contract_version") == 2
+        else TABLES
+    )
+    for name in names:
         file = name + ".parquet"
         verify_bytes(path / file, manifest["output_sha256"][file])
         result[name] = read_parquet_file(path / file)
@@ -117,18 +122,73 @@ def publish_experiment_report(
         "pandas_version": pd.__version__,
         "pyarrow_version": pyarrow.__version__,
     }
+    bound_ids = {
+        e["experiment_id"]
+        for e in events
+        if e["kind"] == "REGISTER" and e["payload"]["protocol"].get("contract_version") == 2
+    }
+    if bound_ids:
+        from oddsjam_ev.analysis import prospective
+        from oddsjam_ev.io import prospective as prospective_io
+        from oddsjam_ev.io.experiment_register import utc_now
+
+        if aware(as_of) > aware(utc_now()):
+            raise ValueError("Prospective report cutoff cannot be in the future")
+        spec["prospective_contract_version"] = 2
+        for file in (Path(prospective.__file__), Path(prospective_io.__file__)):
+            spec["code_sha256"][str(file.relative_to(analysis.parent))] = hashlib.sha256(
+                file.read_bytes()
+            ).hexdigest()
     ident = fingerprint(spec)
-    built = build_experiment_outcomes(events, tables, as_of)
+    built = build_experiment_outcomes(
+        [e for e in events if e["experiment_id"] not in bound_ids], tables, as_of
+    )
+    if bound_ids:
+        built.update(prospective.build_prospective_tables(events, as_of))
+        # Preserve a discoverable protocol/event trail alongside separate v2 economics.
+        protocols = []
+        for event in events:
+            if event["experiment_id"] not in bound_ids:
+                continue
+            if event["kind"] == "REGISTER":
+                p = event["payload"]["protocol"]
+                protocols.append(
+                    {
+                        "experiment_id": event["experiment_id"],
+                        "status": "see_prospective_reviews",
+                        "protocol_sha256": fingerprint(p),
+                        "protocol_json": json.dumps(p, sort_keys=True),
+                        "experiment_type": p["experiment_type"],
+                        "registered_at": event["recorded_at"],
+                    }
+                )
+        built["experiment_protocols"] = pd.concat(
+            [built["experiment_protocols"], pd.DataFrame(protocols)], ignore_index=True
+        )
+        event_rows = [
+            {
+                "experiment_id": e["experiment_id"],
+                "event_id": e["event_id"],
+                "kind": e["kind"],
+                "recorded_at": e["recorded_at"],
+                "payload_json": json.dumps(e["payload"], sort_keys=True),
+            }
+            for e in events
+            if e["experiment_id"] in bound_ids
+        ]
+        built["experiment_events"] = pd.concat(
+            [built["experiment_events"], pd.DataFrame(event_rows)], ignore_index=True
+        )
     for frame in built.values():
         for column in frame.select_dtypes(include="object"):
             frame[column] = frame[column].where(frame[column].notna(), None)
         frame["canonical_bundle_id"] = manifest["bundle_id"]
-        frame["experiment_contract_version"] = 1
+        frame["experiment_contract_version"] = 2 if bound_ids else 1
     with writer_lock(output_root):
         destination = output_root / ident
         if destination.exists():
             old = load_experiment_report(destination)
-            for name in TABLES:
+            for name in built:
                 assert_frame_equal(built[name], old[name])
             return destination
         with tempfile.TemporaryDirectory(prefix=".stage-", dir=output_root) as staging:
