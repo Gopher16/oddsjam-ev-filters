@@ -1,5 +1,8 @@
 # Explore frozen explanations
 
+Shared semantics: [authoritative contract reference](reference/MODELS_EXPLANATIONS.md).
+This component guide retains its schema, commands and stage-specific requirements.
+
 Open **Explore → Explain returns**. The default publication reviews all recorded
 history with a separate frozen model for each supported funding/product population.
 It does not pool paper and funded returns. Unsupported populations remain in the

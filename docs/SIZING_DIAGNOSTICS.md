@@ -8,28 +8,9 @@ Neither result alone measures intrinsic filter quality or establishes causality.
 
 ## Metrics and denominators
 
-Within each funding/product population:
-
-| Measure | Definition |
-| --- | --- |
-| Canonical reported ROI | Sum of canonical-eligible profit / sum of canonical-eligible stake; baseline for reconciliation. |
-| Stake-weighted ROI | Sum of profit / sum of stake on the paired diagnostic cohort. |
-| Equal-stake mean return | Mean of each eligible candidate's profit / stake. |
-| Fixed-unit notional profit | Sum of unit returns times the declared hypothetical USD unit. |
-| Stake concentration | Largest and top-five stake shares, HHI, and inverse HHI. |
-| Profit concentration | Largest absolute profit / sum of absolute profit; zero denominator remains unavailable. |
-| Event concentration | Largest known namespace/event stake / event-covered stake. |
-| Bankroll-relative stake | Source stake / evidenced setting bankroll, only for verified application with known, supported bankroll and eligible stake. |
-
-All ROI/return values are **fractions**, not percentage points. Inverse stake HHI is a
-weight-equivalent count, not a number of independent observations. Dollar profit
-reflects deployed capital. Sign disagreements are flagged rather than selecting
-whichever estimand looks better. Paper results remain hypothetical.
-
-Equal-stake scaling assumes profit changes proportionally with stake. Fees, minimum
-stakes, price impact, limits, fills and payout rules can violate that assumption.
-A fixed unit is an arithmetic comparison, not an executable stake recommendation,
-a bankroll simulation or an exact Kelly replay.
+The [economics reference](reference/ECONOMICS.md#metrics-and-denominators) defines
+weighted/equal-stake returns, fixed-unit profit, concentration and units. This guide
+retains stage-specific cohort, regime, uncertainty and publication requirements.
 
 ## Cohorts, exclusions and regime scope
 
@@ -78,7 +59,9 @@ or validated edge claims are produced.
 
 The support setting is not the dashboard's minimum-wager display control. This
 stage publishes private diagnostic tables; it adds no dashboard rendering or sliders.
-Future rendering must retain the existing display policy independently.
+Current [visual datasets](VISUAL_DIAGNOSTICS.md) and the
+[decision workspace](DASHBOARD_DECISION_WORKSPACE.md) consume these diagnostics;
+the display policy remains independent of research eligibility.
 
 ## Explicit reproducible publication
 

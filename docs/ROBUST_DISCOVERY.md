@@ -1,5 +1,8 @@
 # Robust segment research
 
+Shared semantics: [authoritative contract reference](reference/STATISTICAL_EVIDENCE.md).
+This component guide retains its schema, commands and stage-specific requirements.
+
 This framework evaluates **predeclared descriptive hypotheses** from a pinned
 atlas. It never promotes strategies, recommends filter edits, places wagers,
 changes notebook defaults, or enables scheduling. The acquisition draft is not

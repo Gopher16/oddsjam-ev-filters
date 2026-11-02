@@ -9,44 +9,14 @@ answer an exact threshold question, even though its underlying source can.
 
 ## Units, meaning and timing
 
-The declared interpretation is **percentage points**: `3.125` means 3.125%, or
-`0.03125` as a fraction. Values are never rescaled based on magnitude. This is the
-source's advertised/theoretical EV estimate. Export semantics have not been
-independently verified; presence does not prove availability at decision time.
-It is not realized ROI, a verified observed edge, true probability or guaranteed
-profit. Source timing remains `source_current_unverified`.
-
-The legacy preprocessing fields `ev` and `ev_roi` are separate CLV-derived modeled
-quantities: `ev` uses stake, closing-reference implied probability and placed odds;
-`ev_roi` divides that modeled amount by stake. This change does not substitute
-advertised EV for those fields or change their formulas.
+The [EV/settings reference](reference/EV_SETTINGS.md) defines percentage points,
+fractions, exact decimal fields, quality states, source preservation and timing.
+The stage-specific publication interface follows.
 
 ## Exact values and quality
 
-`analysis/continuous_ev.py` defines the versioned contract and parsing:
-
-- `source_ev_raw`: exact decoded field text where text input is available.
-- `source_representation`: text versus previously typed input whose original
-  lexical precision cannot be recovered.
-- `advertised_ev_percent_exact`: decimal text for exact comparisons.
-- `advertised_ev_fraction_exact`: exact decimal scaling by 100, without context
-  rounding, even beyond the default Decimal precision.
-- `advertised_ev_percent`: nullable Float64 preview; approximate and never the
-  authority for exact threshold membership.
-- `ev_status`: valid, missing, invalid, conflict, unavailable source column, or
-  unavailable ticket model. Null and blank values remain missing, not zero.
-
-Accepted numbers use signed decimal/scientific notation. Percent signs, separators,
-underscores, nonfinite values and nonnumeric strings are invalid. Finite values
-outside nonzero Float64 representability are unsupported/invalid in this contract;
-source strings over 4096 characters are also rejected as numeric inputs. Raw text
-remains available. No economically meaningful EV range is invented from magnitude.
-
-New legacy preprocessing outputs additionally retain `percentage_source_raw`
-before numeric coercion, through both direct-CSV and pinned-ingestion routes.
-The existing numeric `percentage` preview remains; old processed files are not
-rewritten. If a caller supplies already typed numbers, the original CSV lexeme
-cannot be reconstructed. Use verified canonical input for authoritative provenance.
+See the [exact numeric fields and quality contract](reference/EV_SETTINGS.md#exact-values-and-quality)
+for raw lexemes, Decimal strings, Float64 previews and missing/invalid/conflict states.
 
 ## Optional publication
 
@@ -73,24 +43,12 @@ Source and candidate counts must not be added. Eligibility is never inferred fro
 
 ## Exact thresholds
 
-```python
-from oddsjam_ev.analysis.continuous_ev import ev_threshold
-
-# A declared decimal endpoint, in percentage points; no epsilon or rounding.
-mask = ev_threshold(wager_ev.advertised_ev_percent_exact, ">", "3")
-eligible_mask = wager_ev.reported_roi_eligible & mask
-```
-
-`>`, `>=`, `<`, `<=` and `==` are explicit operators. `2.999`, `3`, `3.001`, and
-`3.000000000000000000000000000001` remain distinguishable. Invalid, conflicting,
-missing and unavailable values never match. Bands are never parsed as measurements.
-An eligible threshold slice still needs separate product/funding and membership
-scope; paper outcomes remain hypothetical and memberships can overlap.
-
-This helper defines predicate semantics, not an approved discovery grid. Finite
-predeclared search families, multiple-testing control, calibration, sizing-aware
-returns and within-filter comparisons remain follow-up work. Arbitrary sliders
-must not generate new validated findings on dashboard load.
+Use the [exact endpoint contract](reference/EV_SETTINGS.md#exact-endpoints-and-display-bands)
+and `analysis.continuous_ev.ev_threshold` on `advertised_ev_percent_exact`. This
+helper is not itself a research grid. Delivered bounded families and diagnostics
+are documented in [within-filter discovery](WITHIN_FILTER_DISCOVERY.md) and
+[sizing diagnostics](SIZING_DIAGNOSTICS.md); calibration extensions remain separate.
+Arbitrary sliders never generate validated findings on dashboard load.
 
 Tests cover source-to-canonical-to-Parquet precision, both preprocessing routes,
 unit scaling, endpoints, float collisions, missingness, conflicts, ticket exclusions,

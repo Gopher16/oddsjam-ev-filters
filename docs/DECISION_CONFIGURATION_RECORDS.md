@@ -8,33 +8,10 @@ configuration review, not permission to deploy.
 
 ## States and provenance
 
-`analysis/decision_config.py` defines the complete control catalog: Recommended
-Filters, formula builder, devig books/weights/method/model version, platform,
-sport/league/market types/exact markets/games, odds and EV endpoints, liquidity,
-minimum recommended bet, market width, date range, pregame/live/time-to-event,
-timezone, warning behavior, paper sizing and bankroll/Kelly context.
-
-Each input setting has an explicit state:
-
-| State | Interpretation |
-| --- | --- |
-| `observed` | A sourced value, not a guessed default. |
-| `unrestricted` | A deliberate lack of an additional restriction within the prospective universe. |
-| `unset` | Confirmed inactive control; value must be null, not zero. |
-| `platform_default` | Verified default with platform/version evidence. |
-| `not_applicable` | Explicit reason/evidence for inapplicability. |
-| `unknown` | Missing evidence; blocks complete setup readiness. |
-
-Output sheets add `inherited` and `override`. Inheritance preserves the input state,
-value and baseline fingerprint in separate columns. A null inherited value may be
-confirmed unset/unrestricted; it is not silently converted to zero or unknown.
-Unknown is never promoted to unset, unrestricted or default.
-
-Known input states require a reason, evidence reference, observation time and a basis:
-`historical_observation`, `prospective_design`, `operational_constraint` or
-`platform_requirement`. Observation time cannot follow recording time. The basis
-explains why the value was chosen, not proof of its profitability. Unrestricted logged
-history does not establish that an unrestricted scanner is profitable.
+The [setting-state reference](reference/EV_SETTINGS.md#states-and-provenance) is
+authoritative for observed/unrestricted/unset/default/not-applicable/unknown states,
+output inheritance/overrides and provenance. Omitted controls stay unknown; complete
+coverage does not mean the setup is executable.
 
 ## Explicit evidence input
 
@@ -172,9 +149,9 @@ scanner setups.
 
 ## Boundaries and follow-up
 
-This implements plan A. It does not infer missing historical configuration, optimize
-unknown knobs from outcomes, alter statistical thresholds, deploy filters, train
-explanatory models or deliver the future redesigned home page. See
-`plans/DASHBOARD_DECISION_WORKSPACE.md` for the updated A–I sequence, including
-notebook visuals, all-history prioritization, SHAP model/exploration workstreams and
-prospective experiment integration. No new ML dependency is introduced here.
+This component supplies configuration records, not statistical ranking, deployment
+or inference of historical settings. The delivered workspace, models and prospective
+lifecycle are indexed in the [documentation home](README.md); the historical
+[workspace plan](plans/DASHBOARD_DECISION_WORKSPACE.md) preserves design context.
+The [implementation ledger](plans/MULTIDIMENSIONAL_IMPLEMENTATION_STATUS.md) tracks
+partial and evidence-blocked behavior without treating old proposed filenames as gaps.

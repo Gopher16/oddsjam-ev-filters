@@ -63,123 +63,27 @@ flag their ticket. Ticket grouping never silently removes an ambiguous leg.
 
 ## Wagers, explicit tickets, and candidate legs
 
-A nonempty `parlay_id` is explicit ticket evidence even if the source bet type is
-inconsistent. Repeated ticket amounts are recorded once only when all current
-legs agree numerically. Missing or conflicting ticket amounts remain null; no
-first-row, maximum, or sum rule resolves them. Mixed venue/execution evidence is
-not replaced with a guessed value.
-
-Individual statuses/odds belong to legs. They are not used to determine ticket
-status or combine odds. All ticket candidates have unverified completeness and
-settlement eligibility; even one exported leg or all terminal leg statuses does
-not establish a complete settled ticket. Current and unresolved leg counts are
-reported separately. Historical superseded observations are source audit history,
-not extra legs in the current ticket.
-
-User clarification: Pick'em plays can be logged as individual bets before being
-assembled into a real ticket. Therefore `bet_type=positive_ev` is not sufficient
-to establish standalone-wager economics. Exact configured Pick'em products are
-ineligible for standalone ROI regardless of their row label. Dated Pick'em filter
-IDs/aliases provide additional negative eligibility evidence: they cannot make a
-candidate leg eligible or establish payout mechanics. No tickets are reconstructed
-from timestamps, shared events, nearby rows, or filter names.
-
-`configs/canonical_facts.yaml` declares exact product mappings. These mappings
-are research policy, not independently verified platform mechanics. Any unlisted
-product remains `unknown`, including venues that may support multiple products.
-The legacy exchange/sportsbook inference remains untouched; it is not used as a
-fallback for canonical payout classification.
+See the authoritative [grain and ticket contract](reference/DATA_GRAINS.md).
+The table inventory above describes this bundle's API; candidate identity never
+implies ticket completeness or economic eligibility.
 
 ## USD, reported profit, and fee uncertainty
 
-USD is the user's confirmed source-level currency assumption, recorded as
-`user_confirmed_2026-10-22`. Source amounts are parsed into separate reported USD
-columns without rounding or modifying the raw strings. No conversion is applied.
-
-OddsJam's `bet_profit` is retained as reported profit. There is no explicit source
-fee/fill breakdown or fee-verification field. `fee_inclusion` remains `unverified`
-and `fee_verified_net_roi_eligible` is false for every record. No estimated fees
-are deducted, avoiding a potential double charge.
-
-`reported_roi_eligible` permits supported ordinary pre-match single candidates on
-configured fixed-odds or exchange products with finite positive stake, finite
-profit, nonzero finite odds, supported terminal status, and explicit false values
-for free-bet, odds-boost, and live-bet flags. Missing/unknown flags do not establish
-ordinary wagers. Middle/arbitrage/unknown types remain unsupported. Execution mode
-is retained as an independent evidence dimension; unknown execution is never
-silently described as funded. Economic summaries separate assumed real, paper,
-and unknown cohorts.
-
-For fixed-odds singles, modeled profit is a consistency check using the existing
-American-odds multiplier:
-
-- Won: stake × profit multiplier.
-- Lost: −stake.
-- Half won: half the modeled winning profit.
-- Half lost: −half the stake.
-
-The default mismatch tolerance is USD 0.01. A mismatch excludes the row from the
-reported ROI cohort but never overwrites reported profit. No model is applied to
-exchange returns: they remain source-reported diagnostics with unknown fee status.
-No actual payout is inferred from `potential_payout`; it remains potential.
-
-Pending/open/unknown settlement, refunds/cancellations, unlinked Pick'em plays,
-explicit tickets, unknown products, promotions, invalid amounts, and unsupported
-bet types remain visible with explicit exclusion reasons. Refund/cancellation
-amounts are preserved but excluded from the new denominator by policy. Legacy
-notebook metric definitions are unchanged.
-
-Reported ROI equals the sum of eligible reported profit divided by the sum of
-stake for those exact same eligible candidates. Excluded amounts never enter
-either side of that ratio. Empty eligible populations have null totals and ROI,
-not a false zero result. Do not call these estimates verified bankroll returns.
+Use the authoritative [economics and eligibility reference](reference/ECONOMICS.md)
+for canonical exclusions, settlement consistency, fee uncertainty and matching
+profit/stake denominators. The dated validation counts below are historical evidence,
+not current account results.
 
 ## Opportunities and filter attribution
 
-Selection proxies use namespace, event identity, raw market label, and raw bet
-selection. When game ID is missing, event name requires a raw event-start value;
-otherwise an observation-specific fallback prevents unrelated rows collapsing.
-Quote proxies add source venue, odds, created timestamp, and timestamp timezone.
-Missing quote identity evidence also uses an observation-specific fallback.
-These are grouping proxies, not confirmed scanner quotes or independent samples.
-
-Different executions may link to the same proxy; their wagers are preserved.
-Across prices/books, selection-group membership does not combine their economic
-facts. Only invariant descriptive attributes are retained on shared proxies;
-conflicting metadata stays in source features rather than choosing an execution.
-The denominator is logged source records, not all available market opportunities.
-
-Filter resolution gives precedence to exact names/aliases, preserving commas
-inside names. Multiple memberships resolve only when the entire string has one
-unambiguous segmentation using known names. Unknown/ambiguous labels are retained
-as diagnostics. Repeated leg labels or aliases do not duplicate bet/filter links.
-
-Registry validation rejects duplicate IDs, conflicting aliases, missing clone
-references, and clone cycles. The Onyx clone reference now targets the already
-committed `test_dk_pick6_player_props` ID; stable IDs were not renamed. Registry
-snapshot date is provenance, not proof its settings applied to an earlier bet.
-Canonical attribution never supplies historical UI settings or execution funding.
+The [opportunity and attribution reference](reference/DATA_GRAINS.md#opportunities-and-filter-attribution)
+defines grouping fallbacks, non-additivity and historical-label limitations.
 
 ## Time, leakage, and feature availability
 
-Unknown source timezone stays unknown: raw timestamps remain available and UTC
-values are null. A confirmed timezone or explicit offset allows UTC representation,
-but does not establish the timestamp is an execution or quote-observation time.
-The builder does not bypass PR 1's preprocessing timezone gate or change its
-reconciliation precedence. Ticket timestamps require consensus; no earliest-leg
-placement time is invented.
-
-The ingestion manifest, its system as-of cutoff, source metadata, and resolution
-history are pinned in the canonical specification. A canonical build only reads
-that snapshot; later imports are not consulted. This prevents later snapshots
-from silently replacing earlier observed state. It cannot recover pre-bet knowledge
-that was never recorded. CLV and settlement outcomes are never declared safe
-pre-bet predictors. All catalog entries have decision-time verification false.
-
-`percentage` is catalogued as source-advertised EV percent, separate from the
-legacy CLV-derived EV calculation and realized ROI. Raw liquidity remains missing
-or untrusted; tags do not verify executable capacity. Player IDs, standalone line
-values, settlement/update times, and a verified market taxonomy are not invented.
+The [chronology reference](reference/CHRONOLOGY.md) defines source timestamps,
+knowledge cutoffs, decision-time availability and blocked temporal claims. Unknown
+timezone remains unknown; a successful build does not verify placement semantics.
 
 ## Publication and research compatibility
 

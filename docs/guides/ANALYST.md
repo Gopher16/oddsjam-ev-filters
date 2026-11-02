@@ -1,5 +1,9 @@
 # Analyst guide
 
+Shared concepts are defined in the [research/data contract reference](../reference/README.md).
+Use its separately documented exploratory and prospective promotion policies;
+component commands and practical workflows remain linked below.
+
 Build from explicit verified inputs and interpret each publication at its declared
 grain. Start with [the architecture](../ARCHITECTURE.md) and [glossary](../GLOSSARY.md).
 All commands below run from the repository root. Paths and IDs in angle brackets

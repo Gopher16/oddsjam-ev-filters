@@ -1,5 +1,8 @@
 # Bounded within-filter descriptive discovery
 
+Shared semantics: [authoritative contract reference](reference/DATA_GRAINS.md).
+This component guide retains its schema, commands and stage-specific requirements.
+
 This optional stage enumerates observed feature intersections inside **resolved
 saved-filter membership**, then compares each subgroup with its exact parent and
 complement. It does not substitute global platform results for within-filter
