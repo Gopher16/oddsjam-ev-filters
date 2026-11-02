@@ -1,15 +1,16 @@
 # Documentation consolidation after release acceptance
 
-The next documentation project is useful but does not gate candidate review. Preserve
+This four-PR documentation sequence does not gate candidate review. J delivers
+navigation and the implementation audit; K–M remain follow-up work. Preserve
 research contracts and the distinction between implemented behavior, historical
 notes and proposals. Do not rewrite historical evidence to match current defaults.
 
 | PR | Deliverable | Suggested Conventional Commits |
 | --- | --- | --- |
-| Documentation navigation and architecture | Task-based docs home; current architecture Mermaid diagrams; publication/register glossary; clear entry points for operator, analyst and contributor | `docs: organize operator analyst and contributor guides` |
-| Operator walkthroughs | Synthetic copyable discovery-to-paper and modification examples; configuration/publication map; troubleshooting and evidence-remediation guide; current screenshots using synthetic data | `docs: add reproducible dashboard and paper-study walkthroughs` |
-| Research and data reference | Consolidated grains, units, eligibility, chronology, missingness, corrections, SHAP interpretation, effective-date and source-lineage references; link to implementation and tests | `docs: consolidate research and data contracts` |
-| Maintenance and presentation | Normalize headings/tables/code fences, relative links and diagram accessibility; archive superseded plans with migration links; CI checks for local links and documented CLI examples | `chore: validate documentation links and examples` |
+| **J — Navigation, architecture and status** | Delivered: [documentation home](../README.md), role guides, [architecture](../ARCHITECTURE.md), [glossary](../GLOSSARY.md) and [requirement ledger](MULTIDIMENSIONAL_IMPLEMENTATION_STATUS.md) with partial/evidence-blocked/deferred work explicit | `docs: organize operator analyst and contributor guides` · `docs: reconcile discovery plans with implemented capabilities` |
+| **K — Operator walkthroughs** | Synthetic copyable discovery-to-paper and modification examples; configuration/publication map; troubleshooting and evidence-remediation guide; current screenshots using synthetic data | `docs: add reproducible dashboard and paper-study walkthroughs` |
+| **L — Research and data reference** | Consolidated grains, units, eligibility, chronology, missingness, corrections, SHAP interpretation, effective-date and source-lineage references; link to implementation and tests | `docs: consolidate research and data contracts` |
+| **M — Maintenance and presentation** | Normalize headings/tables/code fences, relative links and diagram accessibility; archive superseded plans with migration links; CI checks for local links and documented CLI examples | `chore: validate documentation links and examples` |
 
 ```mermaid
 flowchart TD
@@ -32,3 +33,20 @@ one authoritative explanation with links over copied contracts that drift apart.
 Keep the overhaul separate from methodological changes or a redesign. Do not add
 generic Markdown beautification dependencies unless they solve an identified
 maintenance problem. Preserve contributor edits and private roadmap notes.
+
+
+## Parallel evidence work and conditional extensions
+
+The [implementation ledger](MULTIDIMENSIONAL_IMPLEMENTATION_STATUS.md#remaining-work-and-its-next-action)
+records reasons, prerequisites and next actions. Confirm scanner baselines/lifecycle,
+source timing/liquidity/closing semantics and prospective observations through the
+existing contracts. These are operational/evidence tasks unless a source adapter or
+contract is actually missing.
+
+Optional development includes pinned orchestration of newer builders, integrated
+chronological evaluation of the within-filter family, the remaining chart forms and
+drill-through, threshold/calibration studies, outside-universe widening, supported
+bankroll scenarios and environment-specific hosting benchmarks. These are separately
+scoped changes with prerequisites, not part of the documentation PRs or promises that
+all original proposals are already implemented. Candidate review can proceed while
+unknown setup evidence continues to block an individual launch.
