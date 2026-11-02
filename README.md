@@ -12,6 +12,9 @@ This repository provides a **repeatable, script-driven analysis pipeline** desig
 
 Primary focus: **pre-match Positive EV betting only** (no live betting).
 
+For the current dashboard workflow, release checks and first paper study, start with
+[Release acceptance and first study workflow](docs/RELEASE_ACCEPTANCE.md).
+
 ---
 
 # Philosophy

@@ -569,6 +569,10 @@ approval/application and recorded monitoring/rollback evidence remain mandatory.
 
 ### PR I — End-to-end acceptance, documentation and release validation
 
+Implemented release checks and operator guidance are recorded in
+[Release acceptance](../RELEASE_ACCEPTANCE.md) and its dated evidence report.
+Missing source evidence remains a supported blocked state, not a successful strategy test.
+
 - `test: exercise the complete discovery test review and modification cycle`
 - `docs: document dashboard decisions source coverage and operational limits`
 - `chore: verify dashboard performance and release readiness`
