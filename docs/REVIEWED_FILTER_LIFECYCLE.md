@@ -135,7 +135,10 @@ To close an old experiment explicitly, use the existing experiment `TRANSITION` 
 `CLOSED` from `READY_FOR_REVIEW`, supplying `review_decision_reference` (an immutable
 lifecycle report), `review_decision_event_id`, and evidence reference. Closure records
 the reviewed action. It does not retire an external scanner. A properly linked final
-closure is accepted without treating it as changed outcome data.
+closure is accepted without treating it as changed outcome data. Later outcome
+facts/corrections can still be appended to that closed experiment; they do not reopen
+enrollment. They invalidate earlier dependent approvals and require an amended human
+review. They cannot create another statistical look at the completed promotion family.
 
 ### Before/after configuration sheets and actual application
 

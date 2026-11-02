@@ -620,6 +620,45 @@ def test_closure_requires_published_current_review_decision(reviewed, tmp_path, 
     )
     assert closed["payload"]["review_outcome"] == "stop"
     assert closed["payload"]["lifecycle_publication_id"] == report.name
+    from oddsjam_ev.analysis.experiments import replay_experiments
+    from oddsjam_ev.io.experiment_register import read_experiment_events
+
+    before = read_experiment_events(c["root"])
+    prior = next(
+        e
+        for e in reversed(before)
+        if e["kind"] == "SETTLE" and e["payload"]["enrollment_id"] == "one"
+    )
+    correction = command(
+        c,
+        monkeypatch,
+        "SETTLE",
+        {
+            "enrollment_id": "one",
+            "result": "won",
+            "supersedes_event_id": prior["event_id"],
+            "correction_reason": "late fact after human closure",
+            "outcome_available_at_utc": "2030-02-04T01:02:00Z",
+            "evidence_reference": "explicit corrected outcome",
+        },
+        "2030-02-04T01:03:00Z",
+    )
+    state = replay_experiments(read_experiment_events(c["root"]))[closed["experiment_id"]]
+    assert state["status"] == "CLOSED"
+    assert len(state["enrollments"]) == 2
+    assert state["settlements"]["one"]["event_id"] == correction["event_id"]
+    with pytest.raises(ValueError, match="evidence changed"):
+        event(
+            c,
+            monkeypatch,
+            "CHANGE",
+            {
+                "decision_event_id": decision["event_id"],
+                "filter_id": "test-filter",
+                "evidence_reference": "old decision cannot authorize a new change",
+            },
+            "2030-02-04T01:04:00Z",
+        )
 
 
 def test_dashboard_shows_decisions_changes_and_monitoring_without_mutation(

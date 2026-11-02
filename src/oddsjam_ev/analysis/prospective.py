@@ -274,8 +274,8 @@ def prepare_event(item: dict, states: dict, kind: str, payload: dict, now: str) 
         out["availability_status"] = "not_checked"
     elif kind == "SETTLE":
         enrollment = item["enrollments"].get(out.get("enrollment_id"))
-        if enrollment is None or item["status"] in {"CANCELLED", "CLOSED"}:
-            raise ValueError("Existing open experiment enrollment required")
+        if enrollment is None or item["status"] == "CANCELLED":
+            raise ValueError("Existing noncancelled experiment enrollment required")
         if out.get("result") not in {"won", "lost", "push", "void", "pending"} or not out.get(
             "evidence_reference"
         ):
