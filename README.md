@@ -332,3 +332,6 @@ Holm correction, and overlap audits, see [Statistical prioritization](docs/STATI
 
 To freeze candidate rules, baseline settings, future dates, paper sizing and review
 criteria, see [Prospective paper-test definitions](docs/PROSPECTIVE_PAPER_DEFINITIONS.md).
+
+For frozen model attributions, linked sidebar selections, local waterfalls and explicit
+offline subset-model handoff, see [Dashboard explanations](docs/DASHBOARD_EXPLANATIONS.md).

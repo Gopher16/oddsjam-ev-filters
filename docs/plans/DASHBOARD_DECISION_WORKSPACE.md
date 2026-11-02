@@ -506,6 +506,8 @@ that result and cannot drive the recommendation queue as established evidence.
 
 ### PR F — Interactive global and selected-population explanations
 
+Implementation and interpretation guide: [DASHBOARD_EXPLANATIONS.md](../DASHBOARD_EXPLANATIONS.md).
+
 - `feat: add linked SHAP and feature-effect exploration to the dashboard`
 - `feat: compare selected cohorts with frozen model explanations`
 - `test: preserve model references across filters and explanation empty states`
