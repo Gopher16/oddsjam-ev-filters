@@ -1,0 +1,21 @@
+{
+  "policy_key": "descriptive-paper-review",
+  "version": 1,
+  "scope": "descriptive_paper_review_only",
+  "error_control": "Descriptive human review only. Existing exploratory Holm/bootstrap results are not prospective production evidence. No repeated-look pass or significance claim is authorized.",
+  "support_interpretation": "Definition and monitoring support gates are operational checks, not a power guarantee or permission to promote.",
+  "review_rules": {
+    "continue": "Freeze a new future definition; review both return measures, quote availability and dependence. Never reopen the old version.",
+    "modify": "Record an exact new definition and configuration diff; historical losing subgroups do not automatically become exclusions.",
+    "stop": "Record a human stopping rationale; actual external retirement requires separate evidence.",
+    "inconclusive": "Retain missing, conflicting or insufficient evidence without granting a pass."
+  },
+  "monitoring": {
+    "paper_stake_usd": 1,
+    "min_wagers": 100,
+    "min_event_groups": 100,
+    "reference_means": {},
+    "absolute_alert_deltas": {}
+  },
+  "evidence_reference": "EXAMPLE ONLY: replace with your explicit policy review reference before recording"
+}

@@ -193,9 +193,8 @@ def prepare_event(item: dict, states: dict, kind: str, payload: dict, now: str) 
         ):
             raise ValueError("Actual end cannot precede captured observations")
         if target == "CLOSED":
-            raise ValueError(
-                "Human outcome decisions belong to the subsequent reviewed-decision workflow"
-            )
+            if not out.get("review_decision_reference") or not out.get("review_decision_event_id"):
+                raise ValueError("Explicit published reviewed-decision evidence required to close")
     elif kind == "ENROLL":
         if item["status"] != "RUNNING":
             raise ValueError("Enrollment is closed or paused")
@@ -275,8 +274,8 @@ def prepare_event(item: dict, states: dict, kind: str, payload: dict, now: str) 
         out["availability_status"] = "not_checked"
     elif kind == "SETTLE":
         enrollment = item["enrollments"].get(out.get("enrollment_id"))
-        if enrollment is None or item["status"] in {"CANCELLED", "CLOSED"}:
-            raise ValueError("Existing open experiment enrollment required")
+        if enrollment is None or item["status"] == "CANCELLED":
+            raise ValueError("Existing noncancelled experiment enrollment required")
         if out.get("result") not in {"won", "lost", "push", "void", "pending"} or not out.get(
             "evidence_reference"
         ):
@@ -312,8 +311,16 @@ def prepare_event(item: dict, states: dict, kind: str, payload: dict, now: str) 
             raise ValueError("A due predeclared review date is required")
         if not out.get("evidence_reference") or not out.get("notes"):
             raise ValueError("Explicit review evidence and notes required")
-        if any(e["payload"]["scheduled_review_utc"] == scheduled for e in item["reviews"]):
-            raise ValueError("Scheduled review already recorded")
+        prior = [e for e in item["reviews"] if e["payload"]["scheduled_review_utc"] == scheduled]
+        if prior:
+            if out.get("supersedes_review_event_id") != prior[-1]["event_id"] or not out.get(
+                "correction_reason"
+            ):
+                raise ValueError(
+                    "Scheduled review already recorded; explicit latest review amendment and reason required"
+                )
+        elif out.get("supersedes_review_event_id") is not None:
+            raise ValueError("No prior scheduled review to supersede")
     elif kind != "DEVIATION":
         raise ValueError("Unknown prospective event kind")
     return out

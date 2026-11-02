@@ -294,6 +294,10 @@ def record_experiment_event(
             from oddsjam_ev.analysis.prospective import prepare_event
 
             payload = prepare_event(item, state, kind, payload, now)
+            if kind == "TRANSITION" and payload.get("to_status") == "CLOSED":
+                from oddsjam_ev.io.filter_lifecycle import validate_experiment_close
+
+                payload = validate_experiment_close(item, payload, now)
             if kind == "REVIEW" or (
                 kind == "TRANSITION" and payload.get("to_status") == "READY_FOR_REVIEW"
             ):
@@ -359,12 +363,17 @@ def record_experiment_event(
                 ):
                     raise ValueError("Outcomes or declared follow-up are incomplete")
                 payload["readiness_assessment_status"] = row.readiness
-            if target == "CLOSED" and payload.get("review_outcome") not in {
-                "continue_new_protocol",
-                "modify_new_protocol",
-                "stop",
-                "inconclusive",
-            }:
+            if (
+                target == "CLOSED"
+                and not bound
+                and payload.get("review_outcome")
+                not in {
+                    "continue_new_protocol",
+                    "modify_new_protocol",
+                    "stop",
+                    "inconclusive",
+                }
+            ):
                 raise ValueError("Explicit human review outcome required; no promotion")
         elif kind == "DEVIATION":
             if (

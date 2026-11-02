@@ -554,6 +554,19 @@ support cannot become an automatic pass; current status and subsequent economics
 remain tied to the applied configuration version. Paper profit does not establish
 real fills/capacity. Define review/error-control policy before interpreting outcomes.
 
+Implementation reference: [Reviewed filter lifecycle](../REVIEWED_FILTER_LIFECYCLE.md).
+The user approved the fixed terminal prospective policy on November 2, 2026:
+≥100 settled wagers and ≥100 namespace/event groups in each arm, complete IDs,
+5%/10% concentration caps, original-quote capacity, 5,000 paired event draws and
+Holm 0.05 across the complete family × both measures × both directions × absolute
+and comparative claims. Marginal intervals and approximate cluster tests remain
+explicitly distinct. One eligible assessment permits bounded human pilot review,
+not automatic promotion. Initial pilot limits selected at the user's request are
+$1/wager, $100 cumulative recorded pilot deployed stake, 14 days and one active
+pilot. Registration precedes launch; outcomes arriving after the fixed terminal
+cutoff cannot rescue a failed evaluation. Exact tested scanner sheets, separate
+approval/application and recorded monitoring/rollback evidence remain mandatory.
+
 ### PR I — End-to-end acceptance, documentation and release validation
 
 - `test: exercise the complete discovery test review and modification cycle`

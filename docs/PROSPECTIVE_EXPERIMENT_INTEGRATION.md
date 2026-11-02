@@ -1,5 +1,8 @@
 # Definition-bound prospective experiments
 
+
+Reviewed outcomes, applied changes, prospective pilot policy and monitoring are documented
+in [Reviewed filter lifecycle](REVIEWED_FILTER_LIFECYCLE.md).
 A frozen paper definition now connects to the existing human decision and experiment
 registers. This is an explicit local workflow: publication does not approve a plan,
 approval does not register or launch it, and elapsed dates do not create observations
@@ -206,8 +209,8 @@ reports show the review as performed. A stale report cannot support another even
 
 `READY_FOR_REVIEW` similarly requires current report evidence and either complete
 readiness or elapsed follow-up (allowing an inconclusive human assessment). Human
-continue/modify/stop decisions, production changes, promotion and monitoring remain
-in the next workstream; this bridge does not close or promote definition-bound tests.
+continue/modify/stop decisions and bounded pilot review use the separately published
+reviewed lifecycle workflow; closure requires that exact human decision evidence.
 Scheduled dates are report fields, not an installed scheduler or notification service.
 
 ## Dashboard attachment
