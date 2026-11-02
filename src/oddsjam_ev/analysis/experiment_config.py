@@ -92,6 +92,11 @@ def validate_protocol(protocol: dict, policy: ExperimentPolicy) -> None:
     -------
     None
     """
+    if protocol.get("contract_version") == 2:
+        from oddsjam_ev.analysis.prospective import validate_bound_protocol
+
+        validate_bound_protocol(protocol)
+        return
     if protocol_blockers(protocol):
         raise ValueError("Incomplete or funded experiment protocol")
     if protocol.get("experiment_type") not in policy.allowed_types:
