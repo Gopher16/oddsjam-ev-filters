@@ -11,6 +11,13 @@ planning documents preserve historical proposals and explicitly deferred work.
 | [Architecture](ARCHITECTURE.md) | Three diagrams covering research, prospective studies and applied changes |
 | [Glossary](GLOSSARY.md) | Grains, artifacts, lifecycle terms and setting states |
 
+## Hands-on workflows
+
+Start the [isolated synthetic tutorial](walkthroughs/README.md) to review a candidate,
+define/approve/launch a paper study, review a TEST modification and refresh from a new
+export. Use the [configuration/publication map](CONFIGURATION_PUBLICATION_MAP.md) and
+[troubleshooting/remediation guide](TROUBLESHOOTING.md) alongside the commands.
+
 ## Current reference library
 
 | Area | Authoritative implementation guides |

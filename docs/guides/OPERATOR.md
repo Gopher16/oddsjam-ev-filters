@@ -61,7 +61,7 @@ The tool does not operate OddsJam. Passing the prospective policy permits human
 bounded-pilot review; it does not automatically promote, fund or establish fills.
 
 For the complete first-study checklist and known operational limits, see
-[release acceptance](../RELEASE_ACCEPTANCE.md). Reproducible synthetic walkthroughs
-and screenshots are planned separately in documentation PR K.
+[release acceptance](../RELEASE_ACCEPTANCE.md). Use the [reproducible synthetic walkthroughs](../walkthroughs/README.md) for copyable
+steps and screenshots, and the [troubleshooting guide](../TROUBLESHOOTING.md) for blockers.
 
 [Documentation home](../README.md) · [Architecture](../ARCHITECTURE.md)
