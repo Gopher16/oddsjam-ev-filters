@@ -49,6 +49,14 @@ Likewise, the older core discovery policy and the later prioritization policy ar
 separate contracts. Use the [implementation ledger](plans/MULTIDIMENSIONAL_IMPLEMENTATION_STATUS.md)
 to follow their composition rather than applying one stage's limitations to all stages.
 
+## Documentation upkeep
+
+[Maintenance guidance](DOCUMENTATION_MAINTENANCE.md) describes offline checks,
+selected CLI interfaces, example safety and synchronization with contract changes.
+The [planning-history index](plans/README.md) distinguishes archived intent from the
+maintained implementation ledger. Candidate review and future paper-study preparation
+can begin now; an individual study still needs its required setup/evidence and approval.
+
 ## Planning and status
 
 - [Discovery implementation ledger](plans/MULTIDIMENSIONAL_IMPLEMENTATION_STATUS.md):
@@ -59,7 +67,8 @@ to follow their composition rather than applying one stage's limitations to all 
   the expanded A–I sequence and original acceptance contract; current operating
   guidance lives in the reference library above.
 - [Documentation follow-up sequence](plans/DOCUMENTATION_OVERHAUL.md): J–M navigation,
-  walkthroughs, research reference and maintenance; later work remains proposed.
+  walkthroughs, research reference and maintenance; this delivered sequence does not
+  make the ledger’s optional extensions mandatory.
 - [Original research plan](RESEARCH_PLAN.md): historical goals and research framing,
   not an approval or a replacement for current versioned policies.
 

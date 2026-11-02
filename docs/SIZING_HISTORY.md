@@ -68,7 +68,7 @@ rejected rather than silently discarded. Settings scope does not infer funding.
 
 With no dated history, publish an unknown-coverage audit:
 
-```sh
+```bash
 poetry run python scripts/build_sizing_history.py \
   --canonical <explicit-canonical-bundle> \
   --knowledge-as-of <aware-knowledge-cutoff>
@@ -76,7 +76,7 @@ poetry run python scripts/build_sizing_history.py \
 
 With a private ledger:
 
-```sh
+```bash
 poetry run python scripts/build_sizing_history.py \
   --canonical <explicit-canonical-bundle> \
   --history data/processed/private_sizing_history.json

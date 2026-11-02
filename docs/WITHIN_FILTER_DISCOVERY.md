@@ -66,7 +66,7 @@ from production; prospective comparisons and reviewed statistical policy are nee
 
 ## Published artifacts
 
-```sh
+```bash
 poetry run python scripts/build_within_filter_discovery.py \
   --canonical <verified-canonical-directory> \
   --atlas <matching-atlas-directory> \

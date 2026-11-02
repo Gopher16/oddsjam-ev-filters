@@ -7,7 +7,7 @@ correct tests, fit models, register experiments or change OddsJam settings.
 
 ## Start or restart
 
-```sh
+```bash
 poetry install --with dashboard
 poetry run streamlit run dashboard/app.py
 ```

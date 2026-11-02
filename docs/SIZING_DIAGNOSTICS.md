@@ -65,7 +65,7 @@ the display policy remains independent of research eligibility.
 
 ## Explicit reproducible publication
 
-```sh
+```bash
 poetry run python scripts/build_sizing_diagnostics.py \
   --canonical <verified-canonical-directory> \
   --sizing <matching-sizing-publication-directory> \

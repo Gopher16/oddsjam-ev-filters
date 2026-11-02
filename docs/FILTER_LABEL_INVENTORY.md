@@ -4,7 +4,7 @@ Inventory exact historical `saved_filter_names` values before proposing aliases.
 This command requires an explicit ingestion snapshot and the canonical bundle
 that pins that exact snapshot. Both inputs are verified before analysis.
 
-```sh
+```bash
 poetry run python scripts/inventory_filter_labels.py \
   --snapshot data/raw/ingestion/snapshots/<snapshot-id> \
   --canonical data/processed/canonical/<bundle-id>

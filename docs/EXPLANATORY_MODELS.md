@@ -23,7 +23,7 @@ remain below; the dashboard consumes these outputs through
 
 Use explicit, mutually pinned existing publications; no acquisition or scheduling:
 
-```sh
+```bash
 poetry run python scripts/build_explanatory_models.py \
   --canonical /absolute/path/to/canonical-publication \
   --visuals /absolute/path/to/visual-publication \

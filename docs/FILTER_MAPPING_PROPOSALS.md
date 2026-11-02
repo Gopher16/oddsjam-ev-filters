@@ -3,7 +3,7 @@
 Prepare a proposal after publishing the [exact-label inventory](FILTER_LABEL_INVENTORY.md).
 The command requires that inventory and its exact original canonical bundle:
 
-```sh
+```bash
 poetry run python scripts/propose_filter_mappings.py \
   --inventory data/processed/filter_label_inventory/<inventory-id> \
   --canonical data/processed/canonical/<bundle-id>

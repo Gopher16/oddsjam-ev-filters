@@ -3,7 +3,6 @@
 Shared semantics: [authoritative contract reference](reference/PROSPECTIVE_LIFECYCLE.md).
 This component guide retains its schema, commands and stage-specific requirements.
 
-
 Reviewed outcomes, applied changes, prospective pilot policy and monitoring are documented
 in [Reviewed filter lifecycle](REVIEWED_FILTER_LIFECYCLE.md).
 

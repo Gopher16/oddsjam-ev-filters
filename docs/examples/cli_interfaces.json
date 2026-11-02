@@ -1,0 +1,123 @@
+[
+  {
+    "script": "scripts/build_canonical_facts.py",
+    "command": [],
+    "options": [
+      "--snapshot",
+      "--config",
+      "--registry"
+    ],
+    "docs": [
+      "docs/CANONICAL_FACTS.md"
+    ]
+  },
+  {
+    "script": "scripts/build_decision_records.py",
+    "command": [],
+    "options": [
+      "--discovery",
+      "--prioritization",
+      "--evidence",
+      "--as-of",
+      "--effective-at"
+    ],
+    "docs": [
+      "docs/DECISION_CONFIGURATION_RECORDS.md"
+    ]
+  },
+  {
+    "script": "scripts/build_explanatory_models.py",
+    "command": [],
+    "options": [
+      "--canonical",
+      "--visuals",
+      "--scope",
+      "--output-root"
+    ],
+    "docs": [
+      "docs/EXPLANATORY_MODELS.md"
+    ]
+  },
+  {
+    "script": "scripts/build_experiment_report.py",
+    "command": [],
+    "options": [
+      "--register",
+      "--canonical",
+      "--as-of",
+      "--output-root"
+    ],
+    "docs": [
+      "docs/PROSPECTIVE_EXPERIMENT_INTEGRATION.md"
+    ]
+  },
+  {
+    "script": "scripts/build_filter_lifecycle_report.py",
+    "command": [],
+    "options": [
+      "--register",
+      "--as-of",
+      "--output-root"
+    ],
+    "docs": [
+      "docs/REVIEWED_FILTER_LIFECYCLE.md"
+    ]
+  },
+  {
+    "script": "scripts/manage_paper_definitions.py",
+    "command": [
+      "save"
+    ],
+    "options": [
+      "--definition",
+      "--discovery",
+      "--prioritization",
+      "--decision-publication"
+    ],
+    "docs": [
+      "docs/PROSPECTIVE_PAPER_DEFINITIONS.md",
+      "docs/DECISION_CONFIGURATION_RECORDS.md"
+    ]
+  },
+  {
+    "script": "scripts/manage_experiments.py",
+    "command": [
+      "register"
+    ],
+    "options": [
+      "--bundle",
+      "--decisions",
+      "--proposal-id",
+      "--approval-event-id"
+    ],
+    "docs": [
+      "docs/PROSPECTIVE_EXPERIMENT_INTEGRATION.md"
+    ]
+  },
+  {
+    "script": "scripts/ingest_bet_tracker.py",
+    "command": [
+      "import"
+    ],
+    "options": [
+      "--exported-at",
+      "--timestamp-timezone",
+      "--scope"
+    ],
+    "docs": [
+      "docs/INGESTION.md"
+    ]
+  },
+  {
+    "script": "scripts/verify_release.py",
+    "command": [],
+    "options": [
+      "--config",
+      "--run-id",
+      "--repeats"
+    ],
+    "docs": [
+      "docs/RELEASE_ACCEPTANCE.md"
+    ]
+  }
+]
