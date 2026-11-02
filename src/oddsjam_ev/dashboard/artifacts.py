@@ -43,6 +43,7 @@ class DashboardConfig:
     decision_records_publication: str | None = None
     evidence_publications: dict = field(default_factory=dict)
     workspace_publications: dict = field(default_factory=dict)
+    explanation_publications: dict = field(default_factory=dict)
 
     def __post_init__(self):
         from zoneinfo import ZoneInfo
@@ -81,6 +82,21 @@ class DashboardConfig:
                 or not all(isinstance(v, str) and v for v in links.values())
             ):
                 raise ValueError("Explicit queue and visual publication links required")
+        if not isinstance(self.explanation_publications, dict):
+            raise ValueError("Explanation publications must be a report mapping")
+        for run_id, links in self.explanation_publications.items():
+            if (
+                not ID.fullmatch(str(run_id))
+                or not isinstance(links, dict)
+                or set(links) != {"global", "subsets"}
+                or not isinstance(links["global"], str)
+                or not links["global"]
+                or not isinstance(links["subsets"], list)
+                or len(links["subsets"]) > 8
+                or not all(isinstance(p, str) and p for p in links["subsets"])
+                or len(set([links["global"], *links["subsets"]])) != len(links["subsets"]) + 1
+            ):
+                raise ValueError("Explicit global and distinct offline subset model paths required")
         if type(self.contract_version) is not int or self.contract_version != 1:
             raise ValueError("Unsupported dashboard contract")
         if not isinstance(self.artifact_root, str) or not self.artifact_root:

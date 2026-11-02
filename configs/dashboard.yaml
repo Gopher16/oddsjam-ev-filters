@@ -21,3 +21,10 @@ workspace_publications:
   a5d1070494285b648f452222f004b4f6f5ed96217112860fb1d83c96519aeffd:
     queues: review_queues/baf4ff87715df60487699fb501ed9b2a080feba7b3075d22a9fee707d1e1530b
     visuals: visual_diagnostics/a0fd9f86a3534d403b2449221e5b3077bd2d48bc0ff8bd62e8db39595e85d948
+
+# Explicit frozen model evidence; sidebar interactions never train or select refits.
+explanation_publications:
+  a5d1070494285b648f452222f004b4f6f5ed96217112860fb1d83c96519aeffd:
+    global: explanatory_models/c787798f0be207b0e4cb208e592d5f044b123044051dd354a36630418aebbb5d
+    subsets:
+      - explanatory_models/335f5ee38c45dba478e9a131a399d1678fdabca2326cdc2fbcab182a9154ca0a
