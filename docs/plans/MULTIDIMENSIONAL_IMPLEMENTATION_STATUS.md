@@ -227,7 +227,7 @@ Evidence: [visual contracts](../VISUAL_DIAGNOSTICS.md),
 | Threshold sensitivity / smooth calibration | General model and threshold support do not implement these specific studies | Predeclare research target/grid/family and evaluation before a separate publication. |
 | Widening / bankroll replay / additional stake comparison | Required universe, chronology, cash-flow/fill or stake fields are absent | Collect evidence first; do not reconstruct unsupported history. Separate research contracts if pursued. |
 | Hosted or multi-user use | Desktop release budgets do not establish deployment capacity | Choose a host/workload and benchmark there before optimization/deployment. |
-| Navigation and reference consolidation | Historical docs retain delivery-era language | J supplies current entry points/status; K adds executable walkthroughs, L consolidates reference contracts, M adds maintenance checks. |
+| Navigation and reference consolidation | Historical docs retain delivery-era language | J supplies current entry points/status; K provides executable walkthroughs, L consolidates reference contracts, M adds maintenance checks. |
 
 ## What completion means now
 

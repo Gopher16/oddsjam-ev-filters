@@ -1,14 +1,15 @@
 # Documentation consolidation after release acceptance
 
 This four-PR documentation sequence does not gate candidate review. J delivers
-navigation and the implementation audit; K–M remain follow-up work. Preserve
+navigation and the implementation audit; K supplies executable walkthroughs and
+synthetic screenshots. L–M remain follow-up work. Preserve
 research contracts and the distinction between implemented behavior, historical
 notes and proposals. Do not rewrite historical evidence to match current defaults.
 
 | PR | Deliverable | Suggested Conventional Commits |
 | --- | --- | --- |
 | **J — Navigation, architecture and status** | Delivered: [documentation home](../README.md), role guides, [architecture](../ARCHITECTURE.md), [glossary](../GLOSSARY.md) and [requirement ledger](MULTIDIMENSIONAL_IMPLEMENTATION_STATUS.md) with partial/evidence-blocked/deferred work explicit | `docs: organize operator analyst and contributor guides` · `docs: reconcile discovery plans with implemented capabilities` |
-| **K — Operator walkthroughs** | Synthetic copyable discovery-to-paper and modification examples; configuration/publication map; troubleshooting and evidence-remediation guide; current screenshots using synthetic data | `docs: add reproducible dashboard and paper-study walkthroughs` |
+| **K — Operator walkthroughs** | Delivered: [staged synthetic tutorial](../walkthroughs/README.md), tested real CLI commands, [configuration/publication map](../CONFIGURATION_PUBLICATION_MAP.md), [troubleshooting/remediation](../TROUBLESHOOTING.md) and watermarked synthetic screenshots | `docs: add reproducible dashboard and paper-study walkthroughs` |
 | **L — Research and data reference** | Consolidated grains, units, eligibility, chronology, missingness, corrections, SHAP interpretation, effective-date and source-lineage references; link to implementation and tests | `docs: consolidate research and data contracts` |
 | **M — Maintenance and presentation** | Normalize headings/tables/code fences, relative links and diagram accessibility; archive superseded plans with migration links; CI checks for local links and documented CLI examples | `chore: validate documentation links and examples` |
 

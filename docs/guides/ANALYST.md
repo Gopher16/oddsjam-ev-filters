@@ -82,6 +82,8 @@ for supported, blocked and deferred requirements.
 
 Legacy notebooks and [preprocessing](../../scripts/preprocess_bet_tracker.py) retain
 their original inputs/assumptions; they are not executed by the runner or dashboard.
-Detailed synthetic end-to-end build walkthroughs are reserved for documentation PR K.
+The [synthetic walkthroughs](../walkthroughs/README.md) exercise the build/refresh
+chain. Use the [configuration/publication map](../CONFIGURATION_PUBLICATION_MAP.md)
+and [troubleshooting guide](../TROUBLESHOOTING.md) to locate inputs, outputs and remedies.
 
 [Documentation home](../README.md) · [Operator route](OPERATOR.md)
