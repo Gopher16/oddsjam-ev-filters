@@ -203,6 +203,29 @@ def details(records, workspace):
         return
     row = lookup[chosen]
     st.subheader(title(row))
+    prospective = st.session_state.get("prospective_report_snapshot")
+    if prospective and "prospective_reviews" in prospective["tables"]:
+        studies = prospective["tables"]["prospective_reviews"]
+        studies = studies.loc[studies.candidate_id.eq(chosen)]
+        if not studies.empty:
+            st.caption(
+                "Prospective follow-up for this exact candidate · inspect Paper-test definitions for per-version outcomes"
+            )
+            st.dataframe(
+                studies[
+                    [
+                        "test_key",
+                        "version",
+                        "status",
+                        "scheduled_review_utc",
+                        "review_due",
+                        "review_recorded",
+                        "readiness",
+                    ]
+                ],
+                hide_index=True,
+            )
+
     st.caption(
         "Evidence source: "
         + row["execution_status"].replace("_", " ")
