@@ -94,7 +94,7 @@ def distribution(frame):
         )
         .add_params(pick)
     )
-    return (points + zero()).properties(width="container", height=280).interactive()
+    return (zero() + points).properties(width="container", height=280).interactive()
 
 
 def dependence(frame, feature, label, color):
