@@ -1,5 +1,8 @@
 # Prospective paper-test definitions
 
+
+For the version-bound definition → approval → launch → capture → settlement → review workflow,
+see [Prospective experiment integration](PROSPECTIVE_EXPERIMENT_INTEGRATION.md).
 Freeze a reviewable plan before collecting new paper observations. Definitions pin
 exact source rules and preserve revisions; they do not approve or launch experiments,
 place bets, infer fills, or evaluate future outcomes. A candidate can be explicitly
