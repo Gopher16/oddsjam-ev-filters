@@ -1,6 +1,9 @@
 # Prospective paper-test definitions
 
 
+Reviewed outcomes, applied changes, prospective pilot policy and monitoring are documented
+in [Reviewed filter lifecycle](REVIEWED_FILTER_LIFECYCLE.md).
+
 For the version-bound definition → approval → launch → capture → settlement → review workflow,
 see [Prospective experiment integration](PROSPECTIVE_EXPERIMENT_INTEGRATION.md).
 Freeze a reviewable plan before collecting new paper observations. Definitions pin
