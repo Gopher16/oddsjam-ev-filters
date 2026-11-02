@@ -20,7 +20,7 @@ for raw lexemes, Decimal strings, Float64 previews and missing/invalid/conflict 
 
 ## Optional publication
 
-```sh
+```bash
 poetry run python scripts/build_continuous_ev.py \
   --canonical <explicit-canonical-bundle-directory>
 ```

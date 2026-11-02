@@ -10,7 +10,7 @@ Existing statistical-prioritization outputs retain their own inference contract.
 
 ## Build from explicit verified inputs
 
-```sh
+```bash
 poetry run python scripts/build_visual_diagnostics.py \
   --canonical data/processed/weekly_research/artifacts/canonical/<canonical-id> \
   --atlas data/processed/weekly_research/artifacts/atlas/<atlas-id> \

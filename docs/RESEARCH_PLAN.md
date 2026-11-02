@@ -1,5 +1,13 @@
 # OddsJam EV Filter Research Plan (White Paper)
 
+Status: **historical research framing and notebook roadmap**. Retained for context;
+this is not the current operating guide, inference policy or authorization to deploy.
+Use the [documentation home](README.md), [shared contract reference](reference/README.md)
+and separately approved [exploratory](reference/policies/EXPLORATORY.md) and
+[prospective promotion](reference/policies/PROMOTION.md) policies. Original goals and
+assumptions remain below; [implementation status](plans/MULTIDIMENSIONAL_IMPLEMENTATION_STATUS.md)
+records supported and remaining behavior.
+
 ## Purpose
 
 The notebook sequence and data policies below are updated by the canonical facts

@@ -8,7 +8,7 @@ follows in the default-dashboard redesign.
 
 ## Explicit build and immutable outputs
 
-```sh
+```bash
 poetry run python scripts/build_review_queues.py \
   --discovery data/processed/within_filter_discovery/<discovery-id> \
   --prioritization data/processed/signal_prioritization/<prioritization-id> \

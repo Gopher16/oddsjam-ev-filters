@@ -43,6 +43,22 @@ jobs:
       - name: Ruff format (including notebooks)
         run: poetry run ruff format --check .
 
+  documentation:
+    name: documentation
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
+
+      - name: Check tracked local links and presentation offline
+        run: python scripts/check_documentation.py
+
   tests:
     name: tests
     runs-on: ubuntu-latest
@@ -61,6 +77,9 @@ jobs:
 
       - name: Install locked dependencies
         run: poetry install --with dashboard --no-interaction --no-ansi --sync
+
+      - name: Check allowlisted CLI help interfaces offline
+        run: poetry run python scripts/check_documentation.py --check-cli
 
       - name: Run unit tests
         run: poetry run pytest -q

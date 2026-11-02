@@ -201,7 +201,6 @@ fee/fill verification, cross-event dependence models, justified temporal windows
 and embargo, empirical-Bayes modeling, and prospective validation. Existing
 notebooks and their input selection are unchanged.
 
-
 ### October validation evidence
 
 Validated atlas: `198d2851aaf045f115124015c76f410ad6808ccf5f83cf674d3826b660ebb5e6`.

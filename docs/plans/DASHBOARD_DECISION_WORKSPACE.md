@@ -1,9 +1,13 @@
 # Dashboard decision workspace: opportunities, leaks and prospective feedback
 
-Status: proposed delivery plan, October 30, 2026. This is a plan, not an implemented
-ranking change or a claim that any current candidate is validated. It supplements
-`MULTIDIMENSIONAL_SIGNAL_DISCOVERY.md` and replaces its remaining dashboard delivery
-priorities with the sequence below. Existing published research is preserved.
+Status: **historical delivery design, October 30, 2026; A–I reviewed and delivered**.
+This retained proposal is not the current operating guide or an approval to deploy.
+Use the [current workspace guide](../DASHBOARD_DECISION_WORKSPACE.md),
+[contract reference](../reference/README.md),
+[implementation ledger](MULTIDIMENSIONAL_IMPLEMENTATION_STATUS.md) and
+[dated release evidence](../releases/2026-11-02-acceptance.md).
+The original design and sequence remain below; partial or evidence-blocked original
+requirements are tracked in the ledger rather than declared complete by this banner.
 
 ## Product objective
 

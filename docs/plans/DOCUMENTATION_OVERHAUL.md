@@ -2,8 +2,9 @@
 
 This four-PR documentation sequence does not gate candidate review. J delivers
 navigation and the implementation audit; K supplies executable walkthroughs and
-synthetic screenshots. L consolidates the shared contract reference; M remains
-follow-up work. Preserve
+synthetic screenshots. L consolidates the shared contract reference; M supplies
+maintenance checks and presentation guidance. J–M are delivered scope, not a claim
+that all optional methodological work is complete. Preserve
 research contracts and the distinction between implemented behavior, historical
 notes and proposals. Do not rewrite historical evidence to match current defaults.
 
@@ -12,7 +13,7 @@ notes and proposals. Do not rewrite historical evidence to match current default
 | **J — Navigation, architecture and status** | Delivered: [documentation home](../README.md), role guides, [architecture](../ARCHITECTURE.md), [glossary](../GLOSSARY.md) and [requirement ledger](MULTIDIMENSIONAL_IMPLEMENTATION_STATUS.md) with partial/evidence-blocked/deferred work explicit | `docs: organize operator analyst and contributor guides` · `docs: reconcile discovery plans with implemented capabilities` |
 | **K — Operator walkthroughs** | Delivered: [staged synthetic tutorial](../walkthroughs/README.md), tested real CLI commands, [configuration/publication map](../CONFIGURATION_PUBLICATION_MAP.md), [troubleshooting/remediation](../TROUBLESHOOTING.md) and watermarked synthetic screenshots | `docs: add reproducible dashboard and paper-study walkthroughs` |
 | **L — Research and data reference** | Delivered: [authoritative shared references](../reference/README.md), implementation/test links and separately documented approved exploratory/promotion policies; component guides link to shared explanations | `docs: consolidate research and data contracts` |
-| **M — Maintenance and presentation** | Normalize headings/tables/code fences, relative links and diagram accessibility; archive superseded plans with migration links; CI checks for local links and documented CLI examples | `chore: validate documentation links and examples` |
+| **M — Maintenance and presentation** | Delivered: [maintenance guide](../DOCUMENTATION_MAINTENANCE.md), historical-status/replacement index, offline local-link/presentation CI and allowlisted CLI help plus synthetic example tests | `chore: validate documentation links and examples` |
 
 ```mermaid
 flowchart TD
@@ -24,6 +25,10 @@ flowchart TD
     Contributor --> Contracts
     Home --> Archive[Clearly labeled historical plans]
 ```
+
+Readers enter through the documentation home and choose an operator, analyst or
+contributor guide. Each role uses the same shared contract reference. Historical
+plans remain separately labeled and linked rather than replacing current instructions.
 
 Acceptance: a new user can locate the exact build and launch commands, distinguish
 paper approval from actual launch and PROD deployment, explain an unknown control,

@@ -41,7 +41,7 @@ not establish today's account state or additional temporal/statistical validatio
 | S07 | No scheduling, live scanner, wagers, automatic filter edits or dashboard fitting | Implemented | [Core configuration](../../configs/weekly_research.yaml) forbids scheduling; viewer consumes publications; approval/application are explicit records. |
 | S08 | Do not infer liquidity, CLV validity, fills or PROD from names | Implemented | Visual readiness, configuration/lifecycle evidence and prospective quote checks preserve those distinctions. |
 | S09 | Assess existing grains, identities, inference and compatibility before extension | Implemented | Component contracts and tests below separate core discovery, within-filter discovery, prioritization, global catalogue and models; old readers/publications remain supported. |
-| S10 | One separate pre-code compatibility/migration proposal and supported-intersection census | Partially implemented | Compatibility, coverage and exclusions are documented/published across components; there is no single standalone assessment artifact matching the initial brief. Consolidate references in documentation K/L; do not invent an earlier review. |
+| S10 | One separate pre-code compatibility/migration proposal and supported-intersection census | Partially implemented | Compatibility, coverage and exclusions are documented/published across components; there is no single standalone assessment artifact matching the initial brief. Current [operator walkthroughs](../walkthroughs/README.md) and [contract references](../reference/README.md) consolidate these links; do not invent an earlier standalone pre-code review. |
 
 ## Historical identity requirements
 
@@ -227,7 +227,7 @@ Evidence: [visual contracts](../VISUAL_DIAGNOSTICS.md),
 | Threshold sensitivity / smooth calibration | General model and threshold support do not implement these specific studies | Predeclare research target/grid/family and evaluation before a separate publication. |
 | Widening / bankroll replay / additional stake comparison | Required universe, chronology, cash-flow/fill or stake fields are absent | Collect evidence first; do not reconstruct unsupported history. Separate research contracts if pursued. |
 | Hosted or multi-user use | Desktop release budgets do not establish deployment capacity | Choose a host/workload and benchmark there before optimization/deployment. |
-| Navigation and reference consolidation | Historical docs retain delivery-era language | J supplies current entry points/status; K provides executable walkthroughs, L consolidates reference contracts, M adds maintenance checks. |
+| Navigation and reference consolidation | Historical intent must remain separate from current instructions | J–M provide entry points/status, tested walkthroughs, shared contracts and [maintenance checks](../DOCUMENTATION_MAINTENANCE.md). Maintain these alongside future contract changes; no further planned documentation PR blocks candidate review. |
 
 ## What completion means now
 

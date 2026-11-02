@@ -25,7 +25,7 @@ The revision date records knowledge of identities, not dates when parameters cha
 
 From the repository root, select the original snapshot and original analysis cutoff:
 
-```sh
+```bash
 poetry run python scripts/run_weekly.py \
   --config configs/weekly_research_attribution_2026-10-30.yaml \
   --snapshot data/raw/ingestion/snapshots/<snapshot-id> \
@@ -40,7 +40,7 @@ freshness; the original historical cutoff and unknown chronology remain visible.
 
 Then compare explicit before/after canonical bundles:
 
-```sh
+```bash
 poetry run python scripts/audit_filter_attribution.py \
   --before <original-canonical-directory> \
   --after <new-canonical-directory>

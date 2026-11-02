@@ -34,6 +34,8 @@ poetry run ruff check . --fix
 poetry run ruff format .
 poetry run ruff check .
 poetry run ruff format --check .
+python scripts/check_documentation.py
+poetry run python scripts/check_documentation.py --check-cli
 poetry run pytest -q
 git diff --check
 ```
@@ -57,6 +59,14 @@ retain their inputs and document any actual notebook validation performed.
 - Run fitting/builds explicitly outside ordinary dashboard interactions.
 - Keep private source/configuration evidence under ignored paths, with synthetic fixtures
   and safe public templates. Never stage raw history, credentials or account screenshots.
+
+## Maintain the documentation
+
+Follow the [documentation maintenance guide](../DOCUMENTATION_MAINTENANCE.md) when
+changing a CLI, schema, policy, publication or dashboard control. Update the owning
+reference and selected interface checks together; preserve archived evidence and
+link replacements. Code fences are not executable directives. Human-decision
+examples are checked through synthetic fixtures, not run against real registers.
 
 Use Conventional Commits and the [PR template](../../.github/pull_request_template.md).
 State validation and limitations; user review/merge remains separate from creating a PR.
