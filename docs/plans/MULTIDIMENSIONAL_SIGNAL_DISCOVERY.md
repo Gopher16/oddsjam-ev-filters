@@ -1,9 +1,24 @@
 # Follow-up: multidimensional signals and saved-filter optimization
 
-Status: proposed research change, to begin after the stakeholder dashboard changes
-are reviewed and merged. This document is an implementation brief, not an implemented
-capability or an approval to deploy a filter. Use this descriptive title for the
-follow-up pull request rather than a roadmap sequence number.
+Status: **historical implementation brief, reconciled after release acceptance**.
+The core discovery, decision-workspace and prospective review capabilities have been
+implemented. The retained design text below describes the system and proposals at
+the time of writing; it is not the current operating guide or an approval to deploy.
+
+Start with the [documentation home](../README.md), [current architecture](../ARCHITECTURE.md)
+and [requirement-by-requirement implementation ledger](MULTIDIMENSIONAL_IMPLEMENTATION_STATUS.md).
+The ledger distinguishes **Implemented**, **Implemented, evidence-blocked**,
+**Partially implemented**, **Optional extension** and **Superseded**, with actual
+modules, configurations, tests, remaining prerequisites and next actions. It also
+maps provisional filenames to their delivered replacements. Partial orchestration,
+chronological evaluation and visual enhancements remain explicit; unknown source
+or scanner evidence is not counted as validated capability.
+
+The original problem statement (including the earlier two-dimension limit), proposed
+components and delivery sequences are preserved below as historical context. Later
+reviewed workspace decisions supersede the old navigation and coarse sequence.
+Use the [documentation follow-up plan](DOCUMENTATION_OVERHAUL.md) for J–M work and
+[release evidence](../releases/2026-11-02-acceptance.md) for the dated acceptance scope.
 
 ## Problem and intended outcome
 

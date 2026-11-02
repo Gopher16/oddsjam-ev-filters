@@ -1,340 +1,82 @@
-# oddsjam-ev-filters
+# OddsJam EV Filters
 
-A research framework for evaluating, stress-testing, and iterating on Positive EV betting filters using exported OddsJam Bet Tracker data.
+An offline research workspace for evaluating historical OddsJam Bet Tracker data,
+reviewing potential positive-EV filter hypotheses, and following prospective paper
+studies through human review and versioned filter changes.
 
-This repository provides a **repeatable, script-driven analysis pipeline** designed to:
+The dashboard brings together published opportunities, production concerns,
+notebook-inspired diagnostics and frozen model explanations. Historical associations
+remain exploratory; missing scanner settings and source evidence remain explicit.
+The project does not operate the live scanner, place wagers or automatically deploy
+changes.
 
-- Identify durable betting edges
-- Eliminate negative-EV leakage
-- Design exploratory **TEST filters**
-- Promote validated TEST filters into a small, high-quality set of **PROD filters**
-- Separate variance from true signal
+## Start here
 
-Primary focus: **pre-match Positive EV betting only** (no live betting).
+| Your task | Entry point |
+| --- | --- |
+| Review candidates, inspect settings and prepare a paper study | [Operator guide](docs/guides/OPERATOR.md) |
+| Build publications and interpret research evidence | [Analyst guide](docs/guides/ANALYST.md) |
+| Understand modules, run checks and extend contracts | [Contributor guide](docs/guides/CONTRIBUTOR.md) |
+| Find a reference or understand a term | [Documentation home](docs/README.md) · [Glossary](docs/GLOSSARY.md) |
+| Understand what is implemented and what remains | [Discovery implementation status](docs/plans/MULTIDIMENSIONAL_IMPLEMENTATION_STATUS.md) |
 
-For the current dashboard workflow, release checks and first paper study, start with
-[Release acceptance and first study workflow](docs/RELEASE_ACCEPTANCE.md).
+## Open the dashboard
 
----
-
-# Philosophy
-
-This project treats sports betting as a research discipline — not reactive gambling.
-
-Goals:
-
-- Reduce overtrading and filter sprawl
-- Converge toward ≤ 5 production filters
-- Continuously explore new angles in a controlled way
-- Make all filter changes evidence-driven
-- Avoid emotional decision-making after variance swings
-
-The system is designed so that new OddsJam exports can be dropped in and the entire research pipeline re-run consistently.
-
----
-
-# High-Level Workflow
-
-```mermaid
-flowchart LR
-
-classDef stage fill:#1f2937,color:#ffffff,stroke:#4b5563,stroke-width:1px;
-
-csv[Raw CSV Export]:::stage
-proc[Processed Parquet + QA Artifacts]:::stage
-eda[EDA + Diagnostics Notebook]:::stage
-eval[Filter Evaluation + Promotion Decisions]:::stage
-
-csv --> proc --> eda --> eval
-```
-
----
-
-# Setup
-
-Install dependencies:
+Use Python 3.11 and Poetry 2. Run from the repository root:
 
 ```bash
-poetry install
-poetry run pre-commit install
+poetry install --with dashboard
+poetry run streamlit run dashboard/app.py
 ```
 
----
-
-## Data Workflow
-
-Publish reproducible opportunity and production-change research queues from explicit
-verified inputs. See [All-history review queues](docs/REVIEW_QUEUES.md) for evidence
-tiers, overlap-aware priorities, full setup sheets and production safeguards.
-
-Reusable datasets for notebook-inspired charts can be published from explicit verified
-canonical, atlas and sizing inputs. See [Visual diagnostics](docs/VISUAL_DIAGNOSTICS.md)
-for matched-cohort economics, chart readiness and source-evidence blockers.
-
-Canonical wager facts can be built separately from a pinned ingestion snapshot.
-See [Canonical facts and economic eligibility](docs/CANONICAL_FACTS.md) for ticket/leg
-grains, USD assumptions, Pick'em exclusions, and reported-return limitations.
-This does not change the existing notebook input or historical metrics.
-
-Historical CSV imports now have an optional immutable ingestion and lineage layer.
-See [Historical ingestion](docs/INGESTION.md) for the CLI, reconciliation policies,
-execution-status assumptions, and reproducible snapshot selection. The existing
-preprocessing command and default notebook snapshot remain available unchanged.
-
-### 1️⃣ Add Raw Export
-
-Place your OddsJam Bet Tracker export CSV in:
-
-```bash
-data/raw/
-```
-
----
-
-### 2️⃣ Run Preprocessing
-
-All preprocessing and QA now happens via a script:
-
-```bash
-poetry run python scripts/preprocess_bet_tracker.py
-```
-
-This script:
-
-- Standardizes timestamps to ET  
-- Applies optional date cutoffs  
-- Normalizes filter names  
-- Adds liquidity buckets  
-- Adds time-to-event buckets  
-- Computes EV-related fields  
-- Generates QA artifacts  
-- Writes processed parquet  
-- Optionally writes a settled-only parquet  
-
-Outputs are written to:
-
-```bash
-data/processed/
-data/processed/artifacts/
-```
-
----
-
-### 3️⃣ Run EDA / Diagnostics
-
-Open the main QA notebook:
-
-```bash
-notebooks/01_qa_initial_eda.ipynb
-```
-
-This notebook:
-
-- Loads the processed parquet  
-- Validates preprocessing assumptions  
-- Reviews QA artifacts  
-- Examines duplicates  
-- Reviews liquidity coverage
-- Produces initial EV & ROI diagnostics  
-
-This notebook is your **data readiness sign-off** before deeper analysis.
-
----
-
-## Repository Structure
-
-```bash
-src/oddsjam_ev/
-    plotting/        # EV, ROI, filter-level and time-series visualizations
-    metrics/         # EV math and odds utilities
-    liquidity.py     # liquidity parsing and bucketing logic
-    dedupe.py        # artifact dedupe utilities
-    qa.py            # field validation + duplicate audits
-    io/              # data loading + timestamp standardization
-
-scripts/
-    preprocess_bet_tracker.py  # YAML-driven preprocessing pipeline
-
-configs/
-    preprocess.yaml             # preprocessing configuration
-
-notebooks/
-    01_qa_initial_eda.ipynb     # validation + diagnostics
-
-docs/
-    RESEARCH_PLAN.md            # structured decision framework
-
-data/raw/        # ignored by git
-data/processed/  # ignored by git
-figures/         # optional saved plots
-```
-
----
-
-## Preprocessing Design
-
-The preprocessing pipeline is intentionally configurable via:
-
-```bash
-configs/preprocess.yaml
-```
-
-Key design principles:
-
-- Clear separation between:
-  - Processed dataset
-  - Settled-only dataset
-- Status settlement inferred via profit-known rates
-- Liquidity buckets configurable
-- Time-to-event bucketing configurable
-- QA artifacts always written
-- No dedupe by default (to preserve realized ROI integrity)
-
-This ensures research reproducibility and auditability.
-
----
-
-## Research Framework
-
-The system operates as a closed loop:
-
-### 1. Explore
-Design new TEST filters to probe potential edges.
-
-### 2. Evaluate
-Measure:
-- Theoretical EV
-- Realized ROI
-- CLV-based EV
-- Variance behavior
-- Liquidity sensitivity
-- Time-to-event sensitivity
-- Book-level exposure
-
-### 3. Decide
-For each filter:
-- Promote to PROD
-- Patch and retest
-- Kill permanently
-
-### 4. Iterate
-Refine and tighten toward a small, durable production set.
-
----
-
-## Plotting API
-
-Reusable visualizations are exposed via:
-
-```bash
-src/oddsjam_ev/plotting/
-```
-
-Includes:
-
-- Combined EV & ROI summaries
-- Liquidity bucket diagnostics
-- Faceted EV analysis
-- Time-series performance
-- Filter-level summaries
-
-All plotting logic is centralized to ensure consistency across notebooks.
-
----
-
-## Guardrails
-
-- No reactive filter changes after short-term variance.
-- No silent preprocessing changes — always YAML-driven.
-- QA artifacts must be reviewed before performance conclusions.
-- Duplicate analysis must precede modeling work.
-- Liquidity missingness must be explicitly understood.
-
----
-
-## Future Extensions
-
-Potential roadmap:
-
-- Opportunity-level deduplication modes
-- Kelly sizing simulations
-- Bankroll drawdown stress tests
-- Monte Carlo variance simulations
-- PROD vs TEST filter performance tracking dashboard
-
-### Descriptive opportunity atlas
-
-Build a separate atlas from a pinned canonical bundle and explore it in Notebook 03.
-See [OPPORTUNITY_ATLAS.md](docs/OPPORTUNITY_ATLAS.md) for explicit input selection,
-grains, reported-ROI exclusions, and uncertainty limitations. Existing notebook
-inputs and preprocessing defaults remain unchanged.
-
-### Robust segment research
-
-[ROBUST_DISCOVERY.md](docs/ROBUST_DISCOVERY.md) describes predeclared search
-families, conditional event-proxy uncertainty, multiple-testing accounting and
-chronological evidence gates. Formal tests remain blocked by the unset stake
-threshold; October temporal validation remains unavailable. Reports are
-exploratory and never promote filters or enable wagering.
-
-### Research proposals and human review
-
-[RECOMMENDATIONS.md](docs/RECOMMENDATIONS.md) describes evidence-linked research
-proposals, reviewed UI translations, observed coverage audits and an append-only
-human decision register. Production filter changes remain prohibited; draft paper
-protocols are not automatically launched or funded. Reports and decisions stay
-under private ignored data paths.
-
-### Prospective paper experiments
-
-[EXPERIMENT_PROTOCOL.md](docs/EXPERIMENT_PROTOCOL.md) documents approval-bound
-registration, manual launch evidence, unchecked signal screening, sampled quote
-verification, and pinned outcome reports. Funding and availability are independent;
-Core Exchange history reflects selectively chosen funded trades. No filter is
-launched, funded, or promoted automatically.
-
-### Local research pipeline
-
-[WEEKLY_RESEARCH.md](docs/WEEKLY_RESEARCH.md) describes one explicit command for
-manual-import or pinned-snapshot research, verified stage reuse, run manifests and
-private reports. Missing/stale/undated inputs produce notices rather than fresh-data
-claims. Historical mode preserves unknown metadata. Scheduling remains disabled;
-no acquisition adapter, notebook execution, approval or wagering is performed.
-
-### Local research dashboard
-
-[WITHIN_FILTER_DISCOVERY.md](docs/WITHIN_FILTER_DISCOVERY.md) documents bounded
-predicates and descriptive parent/subgroup/complement comparisons within saved filters.
-
-[SIZING_DIAGNOSTICS.md](docs/SIZING_DIAGNOSTICS.md) describes paired weighted and
-equal-stake returns, concentration, verified-regime splits and conditional intervals.
-
-[SIZING_HISTORY.md](docs/SIZING_HISTORY.md) describes optional private bankroll/Kelly
-history, verified temporal linkage, ambiguity audits and explicit replay blockers.
-
-[CONTINUOUS_EV_CONTRACT.md](docs/CONTINUOUS_EV_CONTRACT.md) documents source EV
-precision, percent-point units, exact thresholds and optional verified EV tables.
-
-[FILTER_LABEL_INVENTORY.md](docs/FILTER_LABEL_INVENTORY.md) documents the explicit,
-verified historical-label inventory, separate count grains, lineage and overlap
-audits used before reviewing new identity mappings.
-
-[Decision dashboard guide](docs/DASHBOARD_DECISION_WORKSPACE.md) covers the new default
-opportunity/production workspace, shared selectors, linked interactive diagnostics,
-complete setup sheets and candidate-to-paper-study actions. Restart Streamlit after
-pulling updates because file watching is disabled.
-
-[RESEARCH_DASHBOARD.md](docs/RESEARCH_DASHBOARD.md) describes the optional read-only
-Streamlit viewer. Install with `poetry install --with dashboard`, then run
-`poetry run streamlit run dashboard/app.py` from the repository root. Select a
-published run explicitly; the viewer verifies its artifact chain and keeps funding
-populations separate. No research build, scheduling, approval or wagering is run.
-
-For opt-in paired subgroup/complement testing, approved support gates, complete-family
-Holm correction, and overlap audits, see [Statistical prioritization](docs/STATISTICAL_PRIORITIZATION.md).
-
-To freeze candidate rules, baseline settings, future dates, paper sizing and review
-criteria, see [Prospective paper-test definitions](docs/PROSPECTIVE_PAPER_DEFINITIONS.md).
-
-For frozen model attributions, linked sidebar selections, local waterfalls and explicit
-offline subset-model handoff, see [Dashboard explanations](docs/DASHBOARD_EXPLANATIONS.md).
+The default configuration is [configs/dashboard.yaml](configs/dashboard.yaml).
+An installation without the private publications will display an unavailable or
+empty state; it does not include a public historical dataset. See the
+[analyst build instructions](docs/guides/ANALYST.md#build-a-research-report) to publish
+from your own explicitly selected inputs. Restart Streamlit after updates because
+file watching is disabled in the repository configuration.
+
+## Implemented workflow
+
+1. Import a manually exported CSV and preserve its original bytes and metadata.
+2. Build canonical wager facts and research from an explicit snapshot and policies.
+3. Publish optional within-filter comparisons, prioritization, complete setup
+   sheets, visuals, review queues and explanatory models using explicit builders.
+4. Attach exact publications to the dashboard and review candidate evidence.
+5. Freeze a prospective definition, review/approve it, then separately confirm launch.
+6. Capture observations, original-quote checks and outcomes; publish a scheduled review.
+7. Record a reviewed decision, approve any settings change and separately confirm
+   its external application before version-specific monitoring.
+
+[Architecture diagrams](docs/ARCHITECTURE.md) show these boundaries. The existing
+weekly runner orchestrates its core stages; it does not automatically build every
+optional extension. Ordinary dashboard interaction reads verified outputs and never
+fits models or launches studies.
+
+## Interpretation and release status
+
+- Keep real-money, paper and unknown funding populations and product economics separate.
+- Exact EV predicates use original numeric values; display bands do not replace them.
+- Weighted and equal-stake returns answer different questions. Neither proves an edge.
+- A `PROD` name is not proof of an applied configuration. Unknown historical settings
+  cannot be filled from today's scanner settings.
+- Liquidity, timing and closing-price series require supported source evidence.
+- A qualifying prospective assessment permits explicit bounded-pilot human review;
+  approval and actual application remain separate.
+
+See [release acceptance and first-study workflow](docs/RELEASE_ACCEPTANCE.md) and
+[dated release evidence](docs/releases/2026-11-02-acceptance.md). Acceptance covers
+software behavior and supported source states, not profitable filters or verified
+fills. Private data, publications and account evidence belong in ignored local storage.
+
+## Legacy notebooks and development
+
+The existing [preprocessing script](scripts/preprocess_bet_tracker.py),
+[preprocessing configuration](configs/preprocess.yaml), [notebooks](notebooks/) and
+[plotting helpers](src/oddsjam_ev/plotting/) remain available. Their historical
+assumptions and input defaults are independent of the canonical dashboard workflow;
+legacy timestamp or CLV transforms do not establish verified source semantics.
+
+For code checks, synthetic tests and contribution boundaries, use the
+[contributor guide](docs/guides/CONTRIBUTOR.md). For historical plans and the next
+four documentation PRs, see [planning and status](docs/README.md#planning-and-status).
