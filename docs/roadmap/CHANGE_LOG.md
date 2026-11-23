@@ -35,3 +35,17 @@ original requirement's disposition. No baseline Word document is modified here.
   rather than claim either was filled or fabricate a reconciliation.
 - **R01:** owner-reported merge confirmed by GitHub/main; register updated with
   actual PR URL and merge SHA. No baseline Word files changed.
+
+## 2026-11-23 — R03 evidence documentation and R02 reconciliation
+
+- **Scope:** publish human-readable field, decision-regime and gap references.
+  R01 is satisfied; R02's merge and passing post-merge CI are reconciled.
+- **Boundary:** R04 retains the full programme register and R05 retains versioned
+  regime evidence. Alternative of encoding narrative directly into classifications
+  is excluded: dated row-level evidence is still required by existing contracts.
+- **Source clarification:** retain R01's Kelly-sized paper convention and TEST-only
+  proposed pass tags without editing the frozen Word sources. Current settings and
+  the Core strategy's Nov 10 narrative do not prove historical row classification.
+- **Disposition:** no baseline work removed, split or retired; no material scope or
+  architecture departure. Functional remediation roles identify future evidence
+  tasks, not assigned individuals or remediation already delivered.
