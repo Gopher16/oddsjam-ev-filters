@@ -1,0 +1,1034 @@
+{
+  "manifest_version": 1,
+  "purpose": "Documentation asset inventory; not an executable research or configuration schema.",
+  "source_document": {
+    "title": "OddsJam Research & Development Roadmap",
+    "sha256": "5fe04dc7e1d0918960ad872735226fa46b591d1a96215cf960bf9b5619109a25",
+    "sections": "2 and 2.1–2.5; source Figures 1–50",
+    "disposition": "private_not_committed"
+  },
+  "catalogued_on": "2026-11-23",
+  "capture_date_policy": "Unknown dates remain null. Narrative opportunity dates do not establish image capture dates.",
+  "entries": [
+    {
+      "asset_id": "owf-001",
+      "source_figure": 1,
+      "figure_slot": null,
+      "source_caption": "Account bankroll settings showing the configured $20,000 bankroll and 0.25 Kelly multiplier.",
+      "proposed_alt_text": "Account bankroll settings showing the configured $20,000 bankroll and 0.25 Kelly multiplier.",
+      "original_capture_date": null,
+      "capture_date_basis": "Not established by the source caption; case dates are separate.",
+      "case_id": null,
+      "source_disposition": "private_owner_supplied_word_document",
+      "public_disposition": "text_placeholder_only",
+      "publication_status": "awaiting_image_review",
+      "public_asset_path": null,
+      "public_asset_sha256": null,
+      "visual_review": {
+        "status": "not_performed",
+        "reviewed_on": null
+      },
+      "context_path": "../../operations/ODDSJAM_WORKFLOW.md#dated-configuration-and-display-choices"
+    },
+    {
+      "asset_id": "owf-002",
+      "source_figure": 2,
+      "figure_slot": null,
+      "source_caption": "Positive EV tool saved-filter menu showing the available filters and their summarized settings.",
+      "proposed_alt_text": "Positive EV tool saved-filter menu showing the available filters and their summarized settings.",
+      "original_capture_date": null,
+      "capture_date_basis": "Not established by the source caption; case dates are separate.",
+      "case_id": null,
+      "source_disposition": "private_owner_supplied_word_document",
+      "public_disposition": "text_placeholder_only",
+      "publication_status": "awaiting_image_review",
+      "public_asset_path": null,
+      "public_asset_sha256": null,
+      "visual_review": {
+        "status": "not_performed",
+        "reviewed_on": null
+      },
+      "context_path": "../../operations/ODDSJAM_WORKFLOW.md#dated-configuration-and-display-choices"
+    },
+    {
+      "asset_id": "owf-003",
+      "source_figure": 3,
+      "figure_slot": null,
+      "source_caption": "Saved-filter list with “PROD - Exchanges: Core Exchange Conservative (Low Risk, Slow Build)” selected and the Recommended Filters toggle and its preset-filter explanation.",
+      "proposed_alt_text": "Saved-filter list with “PROD - Exchanges: Core Exchange Conservative (Low Risk, Slow Build)” selected and the Recommended Filters toggle and its preset-filter explanation.",
+      "original_capture_date": null,
+      "capture_date_basis": "Not established by the source caption; case dates are separate.",
+      "case_id": null,
+      "source_disposition": "private_owner_supplied_word_document",
+      "public_disposition": "text_placeholder_only",
+      "publication_status": "awaiting_image_review",
+      "public_asset_path": null,
+      "public_asset_sha256": null,
+      "visual_review": {
+        "status": "not_performed",
+        "reviewed_on": null
+      },
+      "context_path": "../../operations/ODDSJAM_WORKFLOW.md#dated-configuration-and-display-choices"
+    },
+    {
+      "asset_id": "owf-004",
+      "source_figure": 4,
+      "figure_slot": null,
+      "source_caption": "EV Formula Builder selection with the on-screen notice about its 10-league limit.",
+      "proposed_alt_text": "EV Formula Builder selection with the on-screen notice about its 10-league limit.",
+      "original_capture_date": null,
+      "capture_date_basis": "Not established by the source caption; case dates are separate.",
+      "case_id": null,
+      "source_disposition": "private_owner_supplied_word_document",
+      "public_disposition": "text_placeholder_only",
+      "publication_status": "awaiting_image_review",
+      "public_asset_path": null,
+      "public_asset_sha256": null,
+      "visual_review": {
+        "status": "not_performed",
+        "reviewed_on": null
+      },
+      "context_path": "../../operations/ODDSJAM_WORKFLOW.md#dated-configuration-and-display-choices"
+    },
+    {
+      "asset_id": "owf-005",
+      "source_figure": 5,
+      "figure_slot": null,
+      "source_caption": "EV Formula Builder panel showing the default OddsJam Algo weighting.",
+      "proposed_alt_text": "EV Formula Builder panel showing the default OddsJam Algo weighting.",
+      "original_capture_date": null,
+      "capture_date_basis": "Not established by the source caption; case dates are separate.",
+      "case_id": null,
+      "source_disposition": "private_owner_supplied_word_document",
+      "public_disposition": "text_placeholder_only",
+      "publication_status": "awaiting_image_review",
+      "public_asset_path": null,
+      "public_asset_sha256": null,
+      "visual_review": {
+        "status": "not_performed",
+        "reviewed_on": null
+      },
+      "context_path": "../../operations/ODDSJAM_WORKFLOW.md#dated-configuration-and-display-choices"
+    },
+    {
+      "asset_id": "owf-006",
+      "source_figure": 6,
+      "figure_slot": null,
+      "source_caption": "Sportsbook selector showing the exchange and sportsbook options available in the Positive EV tool.",
+      "proposed_alt_text": "Sportsbook selector showing the exchange and sportsbook options available in the Positive EV tool.",
+      "original_capture_date": null,
+      "capture_date_basis": "Not established by the source caption; case dates are separate.",
+      "case_id": null,
+      "source_disposition": "private_owner_supplied_word_document",
+      "public_disposition": "text_placeholder_only",
+      "publication_status": "awaiting_image_review",
+      "public_asset_path": null,
+      "public_asset_sha256": null,
+      "visual_review": {
+        "status": "not_performed",
+        "reviewed_on": null
+      },
+      "context_path": "../../operations/ODDSJAM_WORKFLOW.md#dated-configuration-and-display-choices"
+    },
+    {
+      "asset_id": "owf-007",
+      "source_figure": 7,
+      "figure_slot": null,
+      "source_caption": "Min/Max Odds parameter configured from −150 to +150 American odds.",
+      "proposed_alt_text": "Min/Max Odds parameter configured from −150 to +150 American odds.",
+      "original_capture_date": null,
+      "capture_date_basis": "Not established by the source caption; case dates are separate.",
+      "case_id": null,
+      "source_disposition": "private_owner_supplied_word_document",
+      "public_disposition": "text_placeholder_only",
+      "publication_status": "awaiting_image_review",
+      "public_asset_path": null,
+      "public_asset_sha256": null,
+      "visual_review": {
+        "status": "not_performed",
+        "reviewed_on": null
+      },
+      "context_path": "../../operations/ODDSJAM_WORKFLOW.md#dated-configuration-and-display-choices"
+    },
+    {
+      "asset_id": "owf-008",
+      "source_figure": 8,
+      "figure_slot": null,
+      "source_caption": "Minimum advertised EV Percentage parameter configured to 2.5%.",
+      "proposed_alt_text": "Minimum advertised EV Percentage parameter configured to 2.5%.",
+      "original_capture_date": null,
+      "capture_date_basis": "Not established by the source caption; case dates are separate.",
+      "case_id": null,
+      "source_disposition": "private_owner_supplied_word_document",
+      "public_disposition": "text_placeholder_only",
+      "publication_status": "awaiting_image_review",
+      "public_asset_path": null,
+      "public_asset_sha256": null,
+      "visual_review": {
+        "status": "not_performed",
+        "reviewed_on": null
+      },
+      "context_path": "../../operations/ODDSJAM_WORKFLOW.md#dated-configuration-and-display-choices"
+    },
+    {
+      "asset_id": "owf-009",
+      "source_figure": 9,
+      "figure_slot": null,
+      "source_caption": "Minimum Liquidity parameter showing an inactive $300 default rather than an enabled restriction.",
+      "proposed_alt_text": "Minimum Liquidity parameter showing an inactive $300 default rather than an enabled restriction.",
+      "original_capture_date": null,
+      "capture_date_basis": "Not established by the source caption; case dates are separate.",
+      "case_id": null,
+      "source_disposition": "private_owner_supplied_word_document",
+      "public_disposition": "text_placeholder_only",
+      "publication_status": "awaiting_image_review",
+      "public_asset_path": null,
+      "public_asset_sha256": null,
+      "visual_review": {
+        "status": "not_performed",
+        "reviewed_on": null
+      },
+      "context_path": "../../operations/ODDSJAM_WORKFLOW.md#dated-configuration-and-display-choices"
+    },
+    {
+      "asset_id": "owf-010",
+      "source_figure": 10,
+      "figure_slot": null,
+      "source_caption": "Devig Settings panel showing Pinnacle as the reference book and the available devig methods.",
+      "proposed_alt_text": "Devig Settings panel showing Pinnacle as the reference book and the available devig methods.",
+      "original_capture_date": null,
+      "capture_date_basis": "Not established by the source caption; case dates are separate.",
+      "case_id": null,
+      "source_disposition": "private_owner_supplied_word_document",
+      "public_disposition": "text_placeholder_only",
+      "publication_status": "awaiting_image_review",
+      "public_asset_path": null,
+      "public_asset_sha256": null,
+      "visual_review": {
+        "status": "not_performed",
+        "reviewed_on": null
+      },
+      "context_path": "../../operations/ODDSJAM_WORKFLOW.md#dated-configuration-and-display-choices"
+    },
+    {
+      "asset_id": "owf-011-a",
+      "source_figure": 11,
+      "figure_slot": "a",
+      "source_caption": "Devig Settings detail and tooltip explaining the OddsJam Recommended Book Weights and Worst Case method (two screenshots).",
+      "proposed_alt_text": "Devig settings screenshot A of two in source Figure 11; exact panel content awaits visual review.",
+      "original_capture_date": null,
+      "capture_date_basis": "Not established by the source caption; case dates are separate.",
+      "case_id": null,
+      "source_disposition": "private_owner_supplied_word_document",
+      "public_disposition": "text_placeholder_only",
+      "publication_status": "awaiting_image_review",
+      "public_asset_path": null,
+      "public_asset_sha256": null,
+      "visual_review": {
+        "status": "not_performed",
+        "reviewed_on": null
+      },
+      "context_path": "../../operations/ODDSJAM_WORKFLOW.md#dated-configuration-and-display-choices"
+    },
+    {
+      "asset_id": "owf-011-b",
+      "source_figure": 11,
+      "figure_slot": "b",
+      "source_caption": "Devig Settings detail and tooltip explaining the OddsJam Recommended Book Weights and Worst Case method (two screenshots).",
+      "proposed_alt_text": "Devig settings screenshot B of two in source Figure 11; exact panel content awaits visual review.",
+      "original_capture_date": null,
+      "capture_date_basis": "Not established by the source caption; case dates are separate.",
+      "case_id": null,
+      "source_disposition": "private_owner_supplied_word_document",
+      "public_disposition": "text_placeholder_only",
+      "publication_status": "awaiting_image_review",
+      "public_asset_path": null,
+      "public_asset_sha256": null,
+      "visual_review": {
+        "status": "not_performed",
+        "reviewed_on": null
+      },
+      "context_path": "../../operations/ODDSJAM_WORKFLOW.md#dated-configuration-and-display-choices"
+    },
+    {
+      "asset_id": "owf-012",
+      "source_figure": 12,
+      "figure_slot": null,
+      "source_caption": "League selector showing the available sports categories, with no league restrictions selected.",
+      "proposed_alt_text": "League selector showing the available sports categories, with no league restrictions selected.",
+      "original_capture_date": null,
+      "capture_date_basis": "Not established by the source caption; case dates are separate.",
+      "case_id": null,
+      "source_disposition": "private_owner_supplied_word_document",
+      "public_disposition": "text_placeholder_only",
+      "publication_status": "awaiting_image_review",
+      "public_asset_path": null,
+      "public_asset_sha256": null,
+      "visual_review": {
+        "status": "not_performed",
+        "reviewed_on": null
+      },
+      "context_path": "../../operations/ODDSJAM_WORKFLOW.md#dated-configuration-and-display-choices"
+    },
+    {
+      "asset_id": "owf-013",
+      "source_figure": 13,
+      "figure_slot": null,
+      "source_caption": "Expanded Football category showing individual leagues available for selection.",
+      "proposed_alt_text": "Expanded Football category showing individual leagues available for selection.",
+      "original_capture_date": null,
+      "capture_date_basis": "Not established by the source caption; case dates are separate.",
+      "case_id": null,
+      "source_disposition": "private_owner_supplied_word_document",
+      "public_disposition": "text_placeholder_only",
+      "publication_status": "awaiting_image_review",
+      "public_asset_path": null,
+      "public_asset_sha256": null,
+      "visual_review": {
+        "status": "not_performed",
+        "reviewed_on": null
+      },
+      "context_path": "../../operations/ODDSJAM_WORKFLOW.md#dated-configuration-and-display-choices"
+    },
+    {
+      "asset_id": "owf-014",
+      "source_figure": 14,
+      "figure_slot": null,
+      "source_caption": "Market selector showing the Main Market, Player Prop, and Alternate Market groups.",
+      "proposed_alt_text": "Market selector showing the Main Market, Player Prop, and Alternate Market groups.",
+      "original_capture_date": null,
+      "capture_date_basis": "Not established by the source caption; case dates are separate.",
+      "case_id": null,
+      "source_disposition": "private_owner_supplied_word_document",
+      "public_disposition": "text_placeholder_only",
+      "publication_status": "awaiting_image_review",
+      "public_asset_path": null,
+      "public_asset_sha256": null,
+      "visual_review": {
+        "status": "not_performed",
+        "reviewed_on": null
+      },
+      "context_path": "../../operations/ODDSJAM_WORKFLOW.md#dated-configuration-and-display-choices"
+    },
+    {
+      "asset_id": "owf-015",
+      "source_figure": 15,
+      "figure_slot": null,
+      "source_caption": "Expanded Main Market group showing selected game-level markets.",
+      "proposed_alt_text": "Expanded Main Market group showing selected game-level markets.",
+      "original_capture_date": null,
+      "capture_date_basis": "Not established by the source caption; case dates are separate.",
+      "case_id": null,
+      "source_disposition": "private_owner_supplied_word_document",
+      "public_disposition": "text_placeholder_only",
+      "publication_status": "awaiting_image_review",
+      "public_asset_path": null,
+      "public_asset_sha256": null,
+      "visual_review": {
+        "status": "not_performed",
+        "reviewed_on": null
+      },
+      "context_path": "../../operations/ODDSJAM_WORKFLOW.md#dated-configuration-and-display-choices"
+    },
+    {
+      "asset_id": "owf-016",
+      "source_figure": 16,
+      "figure_slot": null,
+      "source_caption": "Date Range selector with Next 24 Hours selected.",
+      "proposed_alt_text": "Date Range selector with Next 24 Hours selected.",
+      "original_capture_date": null,
+      "capture_date_basis": "Not established by the source caption; case dates are separate.",
+      "case_id": null,
+      "source_disposition": "private_owner_supplied_word_document",
+      "public_disposition": "text_placeholder_only",
+      "publication_status": "awaiting_image_review",
+      "public_asset_path": null,
+      "public_asset_sha256": null,
+      "visual_review": {
+        "status": "not_performed",
+        "reviewed_on": null
+      },
+      "context_path": "../../operations/ODDSJAM_WORKFLOW.md#dated-configuration-and-display-choices"
+    },
+    {
+      "asset_id": "owf-017",
+      "source_figure": 17,
+      "figure_slot": null,
+      "source_caption": "Custom Date Range option displaying the calendar picker.",
+      "proposed_alt_text": "Custom Date Range option displaying the calendar picker.",
+      "original_capture_date": null,
+      "capture_date_basis": "Not established by the source caption; case dates are separate.",
+      "case_id": null,
+      "source_disposition": "private_owner_supplied_word_document",
+      "public_disposition": "text_placeholder_only",
+      "publication_status": "awaiting_image_review",
+      "public_asset_path": null,
+      "public_asset_sha256": null,
+      "visual_review": {
+        "status": "not_performed",
+        "reviewed_on": null
+      },
+      "context_path": "../../operations/ODDSJAM_WORKFLOW.md#dated-configuration-and-display-choices"
+    },
+    {
+      "asset_id": "owf-018",
+      "source_figure": 18,
+      "figure_slot": null,
+      "source_caption": "Game selector showing no specific games or teams selected.",
+      "proposed_alt_text": "Game selector showing no specific games or teams selected.",
+      "original_capture_date": null,
+      "capture_date_basis": "Not established by the source caption; case dates are separate.",
+      "case_id": null,
+      "source_disposition": "private_owner_supplied_word_document",
+      "public_disposition": "text_placeholder_only",
+      "publication_status": "awaiting_image_review",
+      "public_asset_path": null,
+      "public_asset_sha256": null,
+      "visual_review": {
+        "status": "not_performed",
+        "reviewed_on": null
+      },
+      "context_path": "../../operations/ODDSJAM_WORKFLOW.md#dated-configuration-and-display-choices"
+    },
+    {
+      "asset_id": "owf-019",
+      "source_figure": 19,
+      "figure_slot": null,
+      "source_caption": "Minimum Recommended Bet field showing an inactive $15 default, not an active minimum.",
+      "proposed_alt_text": "Minimum Recommended Bet field showing an inactive $15 default, not an active minimum.",
+      "original_capture_date": null,
+      "capture_date_basis": "Not established by the source caption; case dates are separate.",
+      "case_id": null,
+      "source_disposition": "private_owner_supplied_word_document",
+      "public_disposition": "text_placeholder_only",
+      "publication_status": "awaiting_image_review",
+      "public_asset_path": null,
+      "public_asset_sha256": null,
+      "visual_review": {
+        "status": "not_performed",
+        "reviewed_on": null
+      },
+      "context_path": "../../operations/ODDSJAM_WORKFLOW.md#dated-configuration-and-display-choices"
+    },
+    {
+      "asset_id": "owf-020",
+      "source_figure": 20,
+      "figure_slot": null,
+      "source_caption": "Market Width fields showing no selected minimum and a selected maximum of 25.",
+      "proposed_alt_text": "Market Width fields showing no selected minimum and a selected maximum of 25.",
+      "original_capture_date": null,
+      "capture_date_basis": "Not established by the source caption; case dates are separate.",
+      "case_id": null,
+      "source_disposition": "private_owner_supplied_word_document",
+      "public_disposition": "text_placeholder_only",
+      "publication_status": "awaiting_image_review",
+      "public_asset_path": null,
+      "public_asset_sha256": null,
+      "visual_review": {
+        "status": "not_performed",
+        "reviewed_on": null
+      },
+      "context_path": "../../operations/ODDSJAM_WORKFLOW.md#dated-configuration-and-display-choices"
+    },
+    {
+      "asset_id": "owf-021",
+      "source_figure": 21,
+      "figure_slot": null,
+      "source_caption": "Bet Warnings panel with Same Game, Conflicting, and Previously Placed warnings enabled.",
+      "proposed_alt_text": "Bet Warnings panel with Same Game, Conflicting, and Previously Placed warnings enabled.",
+      "original_capture_date": null,
+      "capture_date_basis": "Not established by the source caption; case dates are separate.",
+      "case_id": null,
+      "source_disposition": "private_owner_supplied_word_document",
+      "public_disposition": "text_placeholder_only",
+      "publication_status": "awaiting_image_review",
+      "public_asset_path": null,
+      "public_asset_sha256": null,
+      "visual_review": {
+        "status": "not_performed",
+        "reviewed_on": null
+      },
+      "context_path": "../../operations/ODDSJAM_WORKFLOW.md#discover-and-review-an-opportunity"
+    },
+    {
+      "asset_id": "owf-022",
+      "source_figure": 22,
+      "figure_slot": null,
+      "source_caption": "Positive EV results showing the selected opportunity with an inline Previously Placed warning (bet already placed).",
+      "proposed_alt_text": "Positive EV results showing the selected opportunity with an inline Previously Placed warning (bet already placed).",
+      "original_capture_date": null,
+      "capture_date_basis": "Not established by the source caption; case dates are separate.",
+      "case_id": null,
+      "source_disposition": "private_owner_supplied_word_document",
+      "public_disposition": "text_placeholder_only",
+      "publication_status": "awaiting_image_review",
+      "public_asset_path": null,
+      "public_asset_sha256": null,
+      "visual_review": {
+        "status": "not_performed",
+        "reviewed_on": null
+      },
+      "context_path": "../../operations/ODDSJAM_WORKFLOW.md#discover-and-review-an-opportunity"
+    },
+    {
+      "asset_id": "owf-023",
+      "source_figure": 23,
+      "figure_slot": null,
+      "source_caption": "Positive EV results showing an inline Conflicting Bet warning.",
+      "proposed_alt_text": "Positive EV results showing an inline Conflicting Bet warning.",
+      "original_capture_date": null,
+      "capture_date_basis": "Not established by the source caption; case dates are separate.",
+      "case_id": null,
+      "source_disposition": "private_owner_supplied_word_document",
+      "public_disposition": "text_placeholder_only",
+      "publication_status": "awaiting_image_review",
+      "public_asset_path": null,
+      "public_asset_sha256": null,
+      "visual_review": {
+        "status": "not_performed",
+        "reviewed_on": null
+      },
+      "context_path": "../../operations/ODDSJAM_WORKFLOW.md#discover-and-review-an-opportunity"
+    },
+    {
+      "asset_id": "owf-024",
+      "source_figure": 24,
+      "figure_slot": null,
+      "source_caption": "Conflicting Bets dialog displaying an overlapping previously placed wager.",
+      "proposed_alt_text": "Conflicting Bets dialog displaying an overlapping previously placed wager.",
+      "original_capture_date": null,
+      "capture_date_basis": "Not established by the source caption; case dates are separate.",
+      "case_id": null,
+      "source_disposition": "private_owner_supplied_word_document",
+      "public_disposition": "text_placeholder_only",
+      "publication_status": "awaiting_image_review",
+      "public_asset_path": null,
+      "public_asset_sha256": null,
+      "visual_review": {
+        "status": "not_performed",
+        "reviewed_on": null
+      },
+      "context_path": "../../operations/ODDSJAM_WORKFLOW.md#discover-and-review-an-opportunity"
+    },
+    {
+      "asset_id": "owf-025",
+      "source_figure": 25,
+      "figure_slot": null,
+      "source_caption": "Positive EV Settings panel showing odds-format and optional display settings.",
+      "proposed_alt_text": "Positive EV Settings panel showing odds-format and optional display settings.",
+      "original_capture_date": null,
+      "capture_date_basis": "Not established by the source caption; case dates are separate.",
+      "case_id": null,
+      "source_disposition": "private_owner_supplied_word_document",
+      "public_disposition": "text_placeholder_only",
+      "publication_status": "awaiting_image_review",
+      "public_asset_path": null,
+      "public_asset_sha256": null,
+      "visual_review": {
+        "status": "not_performed",
+        "reviewed_on": null
+      },
+      "context_path": "../../operations/ODDSJAM_WORKFLOW.md#discover-and-review-an-opportunity"
+    },
+    {
+      "asset_id": "owf-026",
+      "source_figure": 26,
+      "figure_slot": null,
+      "source_caption": "Sorting panel with Percentage selected as the ranking criterion.",
+      "proposed_alt_text": "Sorting panel with Percentage selected as the ranking criterion.",
+      "original_capture_date": null,
+      "capture_date_basis": "Not established by the source caption; case dates are separate.",
+      "case_id": null,
+      "source_disposition": "private_owner_supplied_word_document",
+      "public_disposition": "text_placeholder_only",
+      "publication_status": "awaiting_image_review",
+      "public_asset_path": null,
+      "public_asset_sha256": null,
+      "visual_review": {
+        "status": "not_performed",
+        "reviewed_on": null
+      },
+      "context_path": "../../operations/ODDSJAM_WORKFLOW.md#discover-and-review-an-opportunity"
+    },
+    {
+      "asset_id": "owf-027",
+      "source_figure": 27,
+      "figure_slot": null,
+      "source_caption": "Bet Tracker Tags interface showing the first group of custom liquidity labels.",
+      "proposed_alt_text": "Bet Tracker Tags interface showing the first group of custom liquidity labels.",
+      "original_capture_date": null,
+      "capture_date_basis": "Not established by the source caption; case dates are separate.",
+      "case_id": null,
+      "source_disposition": "private_owner_supplied_word_document",
+      "public_disposition": "text_placeholder_only",
+      "publication_status": "awaiting_image_review",
+      "public_asset_path": null,
+      "public_asset_sha256": null,
+      "visual_review": {
+        "status": "not_performed",
+        "reviewed_on": null
+      },
+      "context_path": "../../operations/ODDSJAM_WORKFLOW.md#execute-reconcile-and-log"
+    },
+    {
+      "asset_id": "owf-028",
+      "source_figure": 28,
+      "figure_slot": null,
+      "source_caption": "Continuation of the Bet Tracker Tags list with additional liquidity labels.",
+      "proposed_alt_text": "Continuation of the Bet Tracker Tags list with additional liquidity labels.",
+      "original_capture_date": null,
+      "capture_date_basis": "Not established by the source caption; case dates are separate.",
+      "case_id": null,
+      "source_disposition": "private_owner_supplied_word_document",
+      "public_disposition": "text_placeholder_only",
+      "publication_status": "awaiting_image_review",
+      "public_asset_path": null,
+      "public_asset_sha256": null,
+      "visual_review": {
+        "status": "not_performed",
+        "reviewed_on": null
+      },
+      "context_path": "../../operations/ODDSJAM_WORKFLOW.md#execute-reconcile-and-log"
+    },
+    {
+      "asset_id": "owf-029",
+      "source_figure": 29,
+      "figure_slot": null,
+      "source_caption": "OddsJam Positive EV listing advertising 13.23% EV for Western Carolina vs. UNC Asheville Under 151.5.",
+      "proposed_alt_text": "OddsJam Positive EV listing advertising 13.23% EV for Western Carolina vs. UNC Asheville Under 151.5.",
+      "original_capture_date": null,
+      "capture_date_basis": "Not established by the source caption; case dates are separate.",
+      "case_id": "A",
+      "source_disposition": "private_owner_supplied_word_document",
+      "public_disposition": "text_placeholder_only",
+      "publication_status": "awaiting_image_review",
+      "public_asset_path": null,
+      "public_asset_sha256": null,
+      "visual_review": {
+        "status": "not_performed",
+        "reviewed_on": null
+      },
+      "context_path": "../../operations/ODDSJAM_WORKFLOW.md#execute-reconcile-and-log"
+    },
+    {
+      "asset_id": "owf-030",
+      "source_figure": 30,
+      "figure_slot": null,
+      "source_caption": "Novig order slip and order-book detail for Western Carolina vs. UNC Asheville Under 151.5.",
+      "proposed_alt_text": "Novig order slip and order-book detail for Western Carolina vs. UNC Asheville Under 151.5.",
+      "original_capture_date": null,
+      "capture_date_basis": "Not established by the source caption; case dates are separate.",
+      "case_id": "A",
+      "source_disposition": "private_owner_supplied_word_document",
+      "public_disposition": "text_placeholder_only",
+      "publication_status": "awaiting_image_review",
+      "public_asset_path": null,
+      "public_asset_sha256": null,
+      "visual_review": {
+        "status": "not_performed",
+        "reviewed_on": null
+      },
+      "context_path": "../../operations/ODDSJAM_WORKFLOW.md#execute-reconcile-and-log"
+    },
+    {
+      "asset_id": "owf-031",
+      "source_figure": 31,
+      "figure_slot": null,
+      "source_caption": "OddsJam Positive EV listing advertising 3.07% EV for Samford vs. UNLV Over 158.5.",
+      "proposed_alt_text": "OddsJam Positive EV listing advertising 3.07% EV for Samford vs. UNLV Over 158.5.",
+      "original_capture_date": null,
+      "capture_date_basis": "Not established by the source caption; case dates are separate.",
+      "case_id": "B",
+      "source_disposition": "private_owner_supplied_word_document",
+      "public_disposition": "text_placeholder_only",
+      "publication_status": "awaiting_image_review",
+      "public_asset_path": null,
+      "public_asset_sha256": null,
+      "visual_review": {
+        "status": "not_performed",
+        "reviewed_on": null
+      },
+      "context_path": "../../operations/ODDSJAM_WORKFLOW.md#execute-reconcile-and-log"
+    },
+    {
+      "asset_id": "owf-032",
+      "source_figure": 32,
+      "figure_slot": null,
+      "source_caption": "Novig order slip and displayed liquidity for Samford vs. UNLV Over 158.5.",
+      "proposed_alt_text": "Novig order slip and displayed liquidity for Samford vs. UNLV Over 158.5.",
+      "original_capture_date": null,
+      "capture_date_basis": "Not established by the source caption; case dates are separate.",
+      "case_id": "B",
+      "source_disposition": "private_owner_supplied_word_document",
+      "public_disposition": "text_placeholder_only",
+      "publication_status": "awaiting_image_review",
+      "public_asset_path": null,
+      "public_asset_sha256": null,
+      "visual_review": {
+        "status": "not_performed",
+        "reviewed_on": null
+      },
+      "context_path": "../../operations/ODDSJAM_WORKFLOW.md#execute-reconcile-and-log"
+    },
+    {
+      "asset_id": "owf-033",
+      "source_figure": 33,
+      "figure_slot": null,
+      "source_caption": "Bet Tracker entry showing the recorded liquidity tag for the Samford vs. UNLV wager.",
+      "proposed_alt_text": "Bet Tracker entry showing the recorded liquidity tag for the Samford vs. UNLV wager.",
+      "original_capture_date": null,
+      "capture_date_basis": "Not established by the source caption; case dates are separate.",
+      "case_id": "B",
+      "source_disposition": "private_owner_supplied_word_document",
+      "public_disposition": "text_placeholder_only",
+      "publication_status": "awaiting_image_review",
+      "public_asset_path": null,
+      "public_asset_sha256": null,
+      "visual_review": {
+        "status": "not_performed",
+        "reviewed_on": null
+      },
+      "context_path": "../../operations/ODDSJAM_WORKFLOW.md#execute-reconcile-and-log"
+    },
+    {
+      "asset_id": "owf-034",
+      "source_figure": 34,
+      "figure_slot": null,
+      "source_caption": "OddsJam Positive EV listing for the Austin Peay vs. Kennesaw State low-liquidity case study.",
+      "proposed_alt_text": "OddsJam Positive EV listing for the Austin Peay vs. Kennesaw State low-liquidity case study.",
+      "original_capture_date": null,
+      "capture_date_basis": "Not established by the source caption; case dates are separate.",
+      "case_id": "C",
+      "source_disposition": "private_owner_supplied_word_document",
+      "public_disposition": "text_placeholder_only",
+      "publication_status": "awaiting_image_review",
+      "public_asset_path": null,
+      "public_asset_sha256": null,
+      "visual_review": {
+        "status": "not_performed",
+        "reviewed_on": null
+      },
+      "context_path": "../../operations/ODDSJAM_WORKFLOW.md#execute-reconcile-and-log"
+    },
+    {
+      "asset_id": "owf-035",
+      "source_figure": 35,
+      "figure_slot": null,
+      "source_caption": "Novig order slip and order-book detail for Austin Peay vs. Kennesaw State Under 161.5.",
+      "proposed_alt_text": "Novig order slip and order-book detail for Austin Peay vs. Kennesaw State Under 161.5.",
+      "original_capture_date": null,
+      "capture_date_basis": "Not established by the source caption; case dates are separate.",
+      "case_id": "C",
+      "source_disposition": "private_owner_supplied_word_document",
+      "public_disposition": "text_placeholder_only",
+      "publication_status": "awaiting_image_review",
+      "public_asset_path": null,
+      "public_asset_sha256": null,
+      "visual_review": {
+        "status": "not_performed",
+        "reviewed_on": null
+      },
+      "context_path": "../../operations/ODDSJAM_WORKFLOW.md#execute-reconcile-and-log"
+    },
+    {
+      "asset_id": "owf-036",
+      "source_figure": 36,
+      "figure_slot": null,
+      "source_caption": "Additional OddsJam opportunity and bet-detail view for the Austin Peay vs. Kennesaw State case study.",
+      "proposed_alt_text": "Additional OddsJam opportunity and bet-detail view for the Austin Peay vs. Kennesaw State case study.",
+      "original_capture_date": null,
+      "capture_date_basis": "Not established by the source caption; case dates are separate.",
+      "case_id": "C",
+      "source_disposition": "private_owner_supplied_word_document",
+      "public_disposition": "text_placeholder_only",
+      "publication_status": "awaiting_image_review",
+      "public_asset_path": null,
+      "public_asset_sha256": null,
+      "visual_review": {
+        "status": "not_performed",
+        "reviewed_on": null
+      },
+      "context_path": "../../operations/ODDSJAM_WORKFLOW.md#execute-reconcile-and-log"
+    },
+    {
+      "asset_id": "owf-037",
+      "source_figure": 37,
+      "figure_slot": null,
+      "source_caption": "OddsJam Positive EV listing for Anastasia Zakharova Moneyline, showing 2.90% advertised EV and blended-price liquidity.",
+      "proposed_alt_text": "OddsJam Positive EV listing for Anastasia Zakharova Moneyline, showing 2.90% advertised EV and blended-price liquidity.",
+      "original_capture_date": null,
+      "capture_date_basis": "Not established by the source caption; case dates are separate.",
+      "case_id": "D",
+      "source_disposition": "private_owner_supplied_word_document",
+      "public_disposition": "text_placeholder_only",
+      "publication_status": "awaiting_image_review",
+      "public_asset_path": null,
+      "public_asset_sha256": null,
+      "visual_review": {
+        "status": "not_performed",
+        "reviewed_on": null
+      },
+      "context_path": "../../operations/ODDSJAM_WORKFLOW.md#execute-reconcile-and-log"
+    },
+    {
+      "asset_id": "owf-038",
+      "source_figure": 38,
+      "figure_slot": null,
+      "source_caption": "ProphetX market view illustrating the available moneyline prices and order-book liquidity.",
+      "proposed_alt_text": "ProphetX market view illustrating the available moneyline prices and order-book liquidity.",
+      "original_capture_date": null,
+      "capture_date_basis": "Not established by the source caption; case dates are separate.",
+      "case_id": "D",
+      "source_disposition": "private_owner_supplied_word_document",
+      "public_disposition": "text_placeholder_only",
+      "publication_status": "awaiting_image_review",
+      "public_asset_path": null,
+      "public_asset_sha256": null,
+      "visual_review": {
+        "status": "not_performed",
+        "reviewed_on": null
+      },
+      "context_path": "../../operations/ODDSJAM_WORKFLOW.md#execute-reconcile-and-log"
+    },
+    {
+      "asset_id": "owf-039",
+      "source_figure": 39,
+      "figure_slot": null,
+      "source_caption": "ProphetX order-entry view for the Anastasia Zakharova Moneyline opportunity.",
+      "proposed_alt_text": "ProphetX order-entry view for the Anastasia Zakharova Moneyline opportunity.",
+      "original_capture_date": null,
+      "capture_date_basis": "Not established by the source caption; case dates are separate.",
+      "case_id": "D",
+      "source_disposition": "private_owner_supplied_word_document",
+      "public_disposition": "text_placeholder_only",
+      "publication_status": "awaiting_image_review",
+      "public_asset_path": null,
+      "public_asset_sha256": null,
+      "visual_review": {
+        "status": "not_performed",
+        "reviewed_on": null
+      },
+      "context_path": "../../operations/ODDSJAM_WORKFLOW.md#execute-reconcile-and-log"
+    },
+    {
+      "asset_id": "owf-040",
+      "source_figure": 40,
+      "figure_slot": null,
+      "source_caption": "ProphetX execution detail illustrating the partially filled wager and remaining resting order.",
+      "proposed_alt_text": "ProphetX execution detail illustrating the partially filled wager and remaining resting order.",
+      "original_capture_date": null,
+      "capture_date_basis": "Not established by the source caption; case dates are separate.",
+      "case_id": "D",
+      "source_disposition": "private_owner_supplied_word_document",
+      "public_disposition": "text_placeholder_only",
+      "publication_status": "awaiting_image_review",
+      "public_asset_path": null,
+      "public_asset_sha256": null,
+      "visual_review": {
+        "status": "not_performed",
+        "reviewed_on": null
+      },
+      "context_path": "../../operations/ODDSJAM_WORKFLOW.md#execute-reconcile-and-log"
+    },
+    {
+      "asset_id": "owf-041",
+      "source_figure": 41,
+      "figure_slot": null,
+      "source_caption": "Additional ProphetX trade or order detail and Bet Tracker information associated with the Zakharova wager.",
+      "proposed_alt_text": "Additional ProphetX trade or order detail and Bet Tracker information associated with the Zakharova wager.",
+      "original_capture_date": null,
+      "capture_date_basis": "Not established by the source caption; case dates are separate.",
+      "case_id": "D",
+      "source_disposition": "private_owner_supplied_word_document",
+      "public_disposition": "text_placeholder_only",
+      "publication_status": "awaiting_image_review",
+      "public_asset_path": null,
+      "public_asset_sha256": null,
+      "visual_review": {
+        "status": "not_performed",
+        "reviewed_on": null
+      },
+      "context_path": "../../operations/ODDSJAM_WORKFLOW.md#execute-reconcile-and-log"
+    },
+    {
+      "asset_id": "owf-042",
+      "source_figure": 42,
+      "figure_slot": null,
+      "source_caption": "OddsJam blended-odds tooltip showing how multiple price levels contribute to the displayed average price and available liquidity.",
+      "proposed_alt_text": "OddsJam blended-odds tooltip showing how multiple price levels contribute to the displayed average price and available liquidity.",
+      "original_capture_date": null,
+      "capture_date_basis": "Not established by the source caption; case dates are separate.",
+      "case_id": null,
+      "source_disposition": "private_owner_supplied_word_document",
+      "public_disposition": "text_placeholder_only",
+      "publication_status": "awaiting_image_review",
+      "public_asset_path": null,
+      "public_asset_sha256": null,
+      "visual_review": {
+        "status": "not_performed",
+        "reviewed_on": null
+      },
+      "context_path": "../../operations/ODDSJAM_WORKFLOW.md#discover-and-review-an-opportunity"
+    },
+    {
+      "asset_id": "owf-043",
+      "source_figure": 43,
+      "figure_slot": null,
+      "source_caption": "OddsJam Positive EV listing for Massachusetts +6 against Boston College on BetOpenly, including advertised EV and available liquidity.",
+      "proposed_alt_text": "OddsJam Positive EV listing for Massachusetts +6 against Boston College on BetOpenly, including advertised EV and available liquidity.",
+      "original_capture_date": null,
+      "capture_date_basis": "Not established by the source caption; case dates are separate.",
+      "case_id": "E",
+      "source_disposition": "private_owner_supplied_word_document",
+      "public_disposition": "text_placeholder_only",
+      "publication_status": "awaiting_image_review",
+      "public_asset_path": null,
+      "public_asset_sha256": null,
+      "visual_review": {
+        "status": "not_performed",
+        "reviewed_on": null
+      },
+      "context_path": "../../operations/ODDSJAM_WORKFLOW.md#execute-reconcile-and-log"
+    },
+    {
+      "asset_id": "owf-044",
+      "source_figure": 44,
+      "figure_slot": null,
+      "source_caption": "BetOpenly wager-entry screen for the Massachusetts +6 opportunity.",
+      "proposed_alt_text": "BetOpenly wager-entry screen for the Massachusetts +6 opportunity.",
+      "original_capture_date": null,
+      "capture_date_basis": "Not established by the source caption; case dates are separate.",
+      "case_id": "E",
+      "source_disposition": "private_owner_supplied_word_document",
+      "public_disposition": "text_placeholder_only",
+      "publication_status": "awaiting_image_review",
+      "public_asset_path": null,
+      "public_asset_sha256": null,
+      "visual_review": {
+        "status": "not_performed",
+        "reviewed_on": null
+      },
+      "context_path": "../../operations/ODDSJAM_WORKFLOW.md#execute-reconcile-and-log"
+    },
+    {
+      "asset_id": "owf-045",
+      "source_figure": 45,
+      "figure_slot": null,
+      "source_caption": "BetOpenly trade detail documenting the executed Massachusetts +6 wager.",
+      "proposed_alt_text": "BetOpenly trade detail documenting the executed Massachusetts +6 wager.",
+      "original_capture_date": null,
+      "capture_date_basis": "Not established by the source caption; case dates are separate.",
+      "case_id": "E",
+      "source_disposition": "private_owner_supplied_word_document",
+      "public_disposition": "text_placeholder_only",
+      "publication_status": "awaiting_image_review",
+      "public_asset_path": null,
+      "public_asset_sha256": null,
+      "visual_review": {
+        "status": "not_performed",
+        "reviewed_on": null
+      },
+      "context_path": "../../operations/ODDSJAM_WORKFLOW.md#execute-reconcile-and-log"
+    },
+    {
+      "asset_id": "owf-046",
+      "source_figure": 46,
+      "figure_slot": null,
+      "source_caption": "OddsJam Positive EV listing for Arkansas State +25.5 against Alabama on Novig.",
+      "proposed_alt_text": "OddsJam Positive EV listing for Arkansas State +25.5 against Alabama on Novig.",
+      "original_capture_date": null,
+      "capture_date_basis": "Not established by the source caption; case dates are separate.",
+      "case_id": "F",
+      "source_disposition": "private_owner_supplied_word_document",
+      "public_disposition": "text_placeholder_only",
+      "publication_status": "awaiting_image_review",
+      "public_asset_path": null,
+      "public_asset_sha256": null,
+      "visual_review": {
+        "status": "not_performed",
+        "reviewed_on": null
+      },
+      "context_path": "../../operations/ODDSJAM_WORKFLOW.md#execute-reconcile-and-log"
+    },
+    {
+      "asset_id": "owf-047",
+      "source_figure": 47,
+      "figure_slot": null,
+      "source_caption": "Novig order-book view showing limited liquidity on both sides of the Arkansas State–Alabama spread.",
+      "proposed_alt_text": "Novig order-book view showing limited liquidity on both sides of the Arkansas State–Alabama spread.",
+      "original_capture_date": null,
+      "capture_date_basis": "Not established by the source caption; case dates are separate.",
+      "case_id": "F",
+      "source_disposition": "private_owner_supplied_word_document",
+      "public_disposition": "text_placeholder_only",
+      "publication_status": "awaiting_image_review",
+      "public_asset_path": null,
+      "public_asset_sha256": null,
+      "visual_review": {
+        "status": "not_performed",
+        "reviewed_on": null
+      },
+      "context_path": "../../operations/ODDSJAM_WORKFLOW.md#execute-reconcile-and-log"
+    },
+    {
+      "asset_id": "owf-048",
+      "source_figure": 48,
+      "figure_slot": null,
+      "source_caption": "Additional Novig execution or market detail for the Arkansas State +25.5 wager.",
+      "proposed_alt_text": "Additional Novig execution or market detail for the Arkansas State +25.5 wager.",
+      "original_capture_date": null,
+      "capture_date_basis": "Not established by the source caption; case dates are separate.",
+      "case_id": "F",
+      "source_disposition": "private_owner_supplied_word_document",
+      "public_disposition": "text_placeholder_only",
+      "publication_status": "awaiting_image_review",
+      "public_asset_path": null,
+      "public_asset_sha256": null,
+      "visual_review": {
+        "status": "not_performed",
+        "reviewed_on": null
+      },
+      "context_path": "../../operations/ODDSJAM_WORKFLOW.md#execute-reconcile-and-log"
+    },
+    {
+      "asset_id": "owf-049",
+      "source_figure": 49,
+      "figure_slot": null,
+      "source_caption": "OddsJam Positive EV listing for UMass Lowell vs. Massachusetts Under 150.5, including blended-price liquidity.",
+      "proposed_alt_text": "OddsJam Positive EV listing for UMass Lowell vs. Massachusetts Under 150.5, including blended-price liquidity.",
+      "original_capture_date": null,
+      "capture_date_basis": "Not established by the source caption; case dates are separate.",
+      "case_id": "G",
+      "source_disposition": "private_owner_supplied_word_document",
+      "public_disposition": "text_placeholder_only",
+      "publication_status": "awaiting_image_review",
+      "public_asset_path": null,
+      "public_asset_sha256": null,
+      "visual_review": {
+        "status": "not_performed",
+        "reviewed_on": null
+      },
+      "context_path": "../../operations/ODDSJAM_WORKFLOW.md#execute-reconcile-and-log"
+    },
+    {
+      "asset_id": "owf-050",
+      "source_figure": 50,
+      "figure_slot": null,
+      "source_caption": "Novig order-book view showing substantial Under-side liquidity at 46.0¢ relative to the opposing side.",
+      "proposed_alt_text": "Novig order-book view showing substantial Under-side liquidity at 46.0¢ relative to the opposing side.",
+      "original_capture_date": null,
+      "capture_date_basis": "Not established by the source caption; case dates are separate.",
+      "case_id": "G",
+      "source_disposition": "private_owner_supplied_word_document",
+      "public_disposition": "text_placeholder_only",
+      "publication_status": "awaiting_image_review",
+      "public_asset_path": null,
+      "public_asset_sha256": null,
+      "visual_review": {
+        "status": "not_performed",
+        "reviewed_on": null
+      },
+      "context_path": "../../operations/ODDSJAM_WORKFLOW.md#execute-reconcile-and-log"
+    }
+  ]
+}
