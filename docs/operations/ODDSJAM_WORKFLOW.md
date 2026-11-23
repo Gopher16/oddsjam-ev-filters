@@ -112,7 +112,10 @@ An illustrative 1–10 judgment rubric in §2.4 ranges from substantial concerns
 (1–3), through marginal/conflicting evidence (4–5), to plausible candidates (6–7)
 and compelling setups (8–10), always subject to final checks. Ratings are optional,
 subjective reasoning aids, not win probabilities or required historical labels.
-The complete A–G illustration and reviewed image catalogue remain R02 work.
+The [A–G case studies](case-studies/README.md) link each decision to the
+[source figure catalogue](../images/oddsjam-workflow/CATALOGUE.md). The catalogue
+currently provides text placeholders; no private account images are published or
+claimed to have passed visual review.
 
 ## Execute, reconcile and log
 

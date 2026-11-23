@@ -19,6 +19,12 @@ define/approve/launch a paper study, review a TEST modification and refresh from
 export. Use the [configuration/publication map](CONFIGURATION_PUBLICATION_MAP.md) and
 [troubleshooting/remediation guide](TROUBLESHOOTING.md) alongside the commands.
 
+For the owner's historical discretionary decisions, see the
+[OddsJam cases A–G](operations/case-studies/README.md) and
+[source figure catalogue](images/oddsjam-workflow/CATALOGUE.md). Public images remain
+text placeholders until deliberate asset/privacy review; the manifest retains stable
+figure IDs and unknown capture dates.
+
 ## Shared research and data contracts
 
 The [authoritative contract reference](reference/README.md) defines grains,
