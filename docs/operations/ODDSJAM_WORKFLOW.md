@@ -217,5 +217,9 @@ prospective tests, then record complete versioned evidence and follow the existi
 review/approval/launch process separately. This owner workflow is context for future
 work, not a machine-readable baseline that silently clears configuration blockers.
 
+Use the [field/provenance inventory](SOURCE_FIELD_INVENTORY.md),
+[decision-regime guide](DECISION_REGIMES.md) and [evidence-gap register](EVIDENCE_GAPS.md)
+for the analytical consequences and concrete remediation tasks behind these limits.
+
 [Documentation home](../README.md) · [Research operator guide](../guides/OPERATOR.md) ·
 [Delivery register](../roadmap/DELIVERY_REGISTER.md)

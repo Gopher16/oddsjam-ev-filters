@@ -8,8 +8,7 @@ erasing their original intent. See [R01's source fingerprints and working plan](
 | --- | --- | --- | --- | --- |
 | R01 | Document actual OddsJam operating workflow | None | Merged by owner; GitHub state verified 2026-11-23 | [PR #34](https://github.com/Gopher16/oddsjam-ev-filters/pull/34), merge `1a0e486c5a4ab0be1d23d71b33216bd0551b7a8e`; [plan](pr-plans/R01.md) |
 | R02 | Screenshot catalogue and operating case studies | R01 | Merged; PR and post-merge CI passed | [PR #35](https://github.com/Gopher16/oddsjam-ev-filters/pull/35), merge `a72e3aee8dc60c1eab4421c6e346193f3d708f22`; [plan](pr-plans/R02.md) |
-
-| R03 | Source limitations and decision-process regimes | R01 | Planned; baseline review complete | [Plan and acceptance](pr-plans/R03.md) |
+| R03 | Source limitations and decision-process regimes | R01 | Implemented; local verification complete, remote checks pending | [Plan and acceptance](pr-plans/R03.md) |
 
 Only delivered PRs and the selected next PR are initialized here. Full R01–R60 coverage remains R04; no
 unlisted requirement is delivered, retired or renumbered by this scaffold. R02

@@ -9,6 +9,11 @@ grain. Start with [the architecture](../ARCHITECTURE.md) and [glossary](../GLOSS
 All commands below run from the repository root. Paths and IDs in angle brackets
 are placeholders; choose the intended local artifacts before running a build.
 
+Before assigning meaning to an export, consult the [source inventory](../operations/SOURCE_FIELD_INVENTORY.md),
+[decision regimes](../operations/DECISION_REGIMES.md) and [evidence tasks](../operations/EVIDENCE_GAPS.md).
+Field presence is not verified decision-time availability; current filter names
+cannot establish historical funding or applied settings.
+
 ## Build a research report
 
 Install the locked environment, including the optional dashboard when needed:

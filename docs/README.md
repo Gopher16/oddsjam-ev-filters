@@ -25,6 +25,12 @@ For the owner's historical discretionary decisions, see the
 text placeholders until deliberate asset/privacy review; the manifest retains stable
 figure IDs and unknown capture dates.
 
+Before interpreting tracker history, review the [source-field/provenance inventory](operations/SOURCE_FIELD_INVENTORY.md),
+[funding and decision regimes](operations/DECISION_REGIMES.md) and
+[evidence-gap register](operations/EVIDENCE_GAPS.md). Each gap links its analytical
+consequence to an open evidence task and functional owner; these guides do not
+reclassify historical records or replace the shared contracts below.
+
 ## Shared research and data contracts
 
 The [authoritative contract reference](reference/README.md) defines grains,
