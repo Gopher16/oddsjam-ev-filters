@@ -6,7 +6,7 @@ erasing their original intent. See [R01's source fingerprints and working plan](
 
 | ID | Scope | Dependencies | Status | Delivery evidence |
 | --- | --- | --- | --- | --- |
-| R01 | Document actual OddsJam operating workflow | None | Plan recorded; implementation pending | [Commit plan and acceptance](pr-plans/R01.md) |
+| R01 | Document actual OddsJam operating workflow | None | Implemented locally; validation and owner walkthrough gate merge | [Commit plan and acceptance](pr-plans/R01.md) |
 
 Only the selected PR is initialized here. Full R01–R60 coverage remains R04; no
 unlisted requirement is delivered, retired or renumbered by this scaffold. R02

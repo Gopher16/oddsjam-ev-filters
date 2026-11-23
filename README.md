@@ -14,6 +14,7 @@ changes.
 
 | Your task | Entry point |
 | --- | --- |
+| Understand how the owner uses OddsJam before exporting Bet Tracker data | [OddsJam operating workflow](docs/operations/ODDSJAM_WORKFLOW.md) |
 | Review candidates, inspect settings and prepare a paper study | [Operator guide](docs/guides/OPERATOR.md) |
 | Build publications and interpret research evidence | [Analyst guide](docs/guides/ANALYST.md) |
 | Understand modules, run checks and extend contracts | [Contributor guide](docs/guides/CONTRIBUTOR.md) |

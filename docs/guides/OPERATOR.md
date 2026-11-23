@@ -7,6 +7,12 @@ component commands and practical workflows remain linked below.
 Use this route to review research and prepare a prospective paper study. All-history
 browsing includes supported populations without blending hypothetical and funded returns.
 
+For the owner's dated vendor settings, discretionary taker decisions, paper sizing,
+pass handling and manual CSV export, read the
+[OddsJam operating workflow](../operations/ODDSJAM_WORKFLOW.md). That narrative
+provides operating context; it does not populate scanner baselines, change source
+classifications or launch a study. This guide covers the offline research tools.
+
 ## Open and orient
 
 From the repository root:
