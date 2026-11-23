@@ -5,6 +5,7 @@ planning documents preserve historical proposals and explicitly deferred work.
 
 | Entry point | What you will find |
 | --- | --- |
+| [OddsJam operating workflow](operations/ODDSJAM_WORKFLOW.md) | Dated vendor settings, discretionary decisions, tracking and manual export before repository research |
 | [Operator](guides/OPERATOR.md) | Open the dashboard, review evidence, inspect a setup, prepare a study and follow reviewed outcomes |
 | [Analyst](guides/ANALYST.md) | Choose source snapshots, build explicit publications, attach evidence and interpret limitations |
 | [Contributor](guides/CONTRIBUTOR.md) | Navigate module boundaries, verify changes and preserve contracts |
@@ -58,6 +59,9 @@ maintained implementation ledger. Candidate review and future paper-study prepar
 can begin now; an individual study still needs its required setup/evidence and approval.
 
 ## Planning and status
+
+- [Roadmap delivery register](roadmap/DELIVERY_REGISTER.md): R01 plan and delivery
+  evidence for the frozen Word-roadmap programme; full programme initialization remains R04.
 
 - [Discovery implementation ledger](plans/MULTIDIMENSIONAL_IMPLEMENTATION_STATUS.md):
   current requirement status, actual components, tests, gaps and next actions.
