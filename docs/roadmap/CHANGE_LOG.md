@@ -21,3 +21,17 @@ original requirement's disposition. No baseline Word document is modified here.
   awaits the R01 owner walkthrough before merge. No new research policy is approved.
 
 [Delivery register](DELIVERY_REGISTER.md) · [R01 plan](pr-plans/R01.md)
+
+## 2026-11-23 — R02 catalogue publication approach
+
+- **Decision:** use the R02 baseline's explicitly allowed placeholder route; do not
+  publish raw account screenshots or claim visual redaction review occurred.
+- **Reason / alternatives:** complete traceability is possible now; extracting and
+  publishing private images would require separate asset/privacy review.
+- **Scope:** Figures 1–50 (two slots for Figure 11), A–G narrative pages and links.
+  Stable placeholders retain future asset work; no baseline requirement is retired.
+- **Source discrepancy:** Case G lists $95 + $129 (= $224), but its hypothetical
+  tagging example says roughly $210. Preserve both as unresolved source descriptions,
+  rather than claim either was filled or fabricate a reconciliation.
+- **R01:** owner-reported merge confirmed by GitHub/main; register updated with
+  actual PR URL and merge SHA. No baseline Word files changed.
