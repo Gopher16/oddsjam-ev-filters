@@ -33,6 +33,9 @@ reclassify historical records or replace the shared contracts below.
 
 ## Shared research and data contracts
 
+[Shared analysis context](ANALYSIS_CONTEXT.md) defines optional pinned scope,
+portable selections and reasoned linked-view adapters (R07).
+
 The [authoritative contract reference](reference/README.md) defines grains,
 economics, EV/settings, chronology, statistical evidence, model explanations,
 prospective lifecycle and lineage. Approved [exploratory policies](reference/policies/EXPLORATORY.md)
