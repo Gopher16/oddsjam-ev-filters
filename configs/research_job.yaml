@@ -1,0 +1,14 @@
+# Explicit opt-in optional refresh. No dashboard attachment or model fit occurs.
+contract_version: 1
+stages: [queues]
+# Omitted policies use existing publisher defaults, frozen in the run specification.
+stage_configs: {}
+# Supply a reviewed aware effective time to build sheets/queues. Null blocks them.
+decision_effective_at: null
+# Private optional files resolve relative to this job file's directory:
+# sizing_history_file: /private/path/sizing-history.json
+# sizing_previous: /private/path/immutable-predecessor-publication
+# decision_evidence_file: /private/path/baseline-evidence.yaml
+# To request models, add models to stages AND pass --fit-models on the first run.
+# model_policy: {}  # existing bounded ModelPolicy defaults
+# model_scope: {}   # all supported populations, kept separate by existing builder

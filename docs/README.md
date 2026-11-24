@@ -57,7 +57,7 @@ artifact schemas and stage-specific behavior.
 | Models | [Offline explanatory publications](EXPLANATORY_MODELS.md), [interactive explanations](DASHBOARD_EXPLANATIONS.md) |
 | Prospective work | [Paper definitions](PROSPECTIVE_PAPER_DEFINITIONS.md), [experiment protocol](EXPERIMENT_PROTOCOL.md), [definition-to-experiment integration](PROSPECTIVE_EXPERIMENT_INTEGRATION.md) |
 | Reviewed changes | [Lifecycle, bounded pilot policy and monitoring](REVIEWED_FILTER_LIFECYCLE.md) |
-| Operations and acceptance | [Core pipeline](WEEKLY_RESEARCH.md), [release runbook](RELEASE_ACCEPTANCE.md), [dated acceptance evidence](releases/2026-11-02-acceptance.md) |
+| Operations and acceptance | [Core pipeline](WEEKLY_RESEARCH.md), [optional research jobs](RESEARCH_JOBS.md), [release runbook](RELEASE_ACCEPTANCE.md), [dated acceptance evidence](releases/2026-11-02-acceptance.md) |
 
 Some component guides retain the state at their original delivery. For example,
 the descriptive within-filter builder does not perform inference; the separate
