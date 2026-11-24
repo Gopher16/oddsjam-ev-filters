@@ -83,3 +83,10 @@ historical-policy adapter; no brand request becomes verified economics/access.
 Existing canonical mappings/readers and money remain unchanged. Missing vendor
 contracts stay evidence gaps, not fabricated seed values. R07 and later connector/
 economic implementations retain their destinations; no material baseline deviation.
+
+## 2026-11-24 — R07 additive shared-context boundary
+
+R06/#39 is merged and verified (main run 45424580420). R07 adds the portable
+contract and optional adapters; existing pages remain compatible. Full integrated
+presentation and risk computation remain R11/R12/R23/R25–R29/R32. No requirement
+is displaced and no baseline Word file is modified. [R07 plan](pr-plans/R07.md).
