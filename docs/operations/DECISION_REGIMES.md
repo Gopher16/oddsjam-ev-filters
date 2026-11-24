@@ -105,3 +105,10 @@ They illustrate why unresolved evidence must survive into reporting.
 
 [Operating workflow](ODDSJAM_WORKFLOW.md) · [Source inventory](SOURCE_FIELD_INVENTORY.md) ·
 [Evidence tasks](EVIDENCE_GAPS.md) · [Documentation home](../README.md)
+
+## Optional versioned evidence
+
+[R05 operating evidence](../OPERATING_REGIMES.md) provides a private date-precision
+ledger, explicit legacy adapters and non-economic linkage. The Nov 10 narrative
+remains date-only until exact scoped chronology is supported; existing snapshots
+and funding labels are unchanged.

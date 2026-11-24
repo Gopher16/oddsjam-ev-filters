@@ -18,7 +18,7 @@ retains new work under its roadmap gate. Merge status is tracked separately in t
 | Capability / requirements | Existing implementation to reuse | Remaining work / destination |
 | --- | --- | --- |
 | Operating documentation and evidence context; REQ01–REQ03 | [Workflow](../operations/ODDSJAM_WORKFLOW.md), [cases](../operations/case-studies/README.md), [source inventory](../operations/SOURCE_FIELD_INVENTORY.md), [EG register](../operations/EVIDENCE_GAPS.md) | R01–R03 merged. Public images are placeholders, not reviewed raw assets; historical EG remediation stays open. |
-| Evidence/configuration and venue scope; REQ05–REQ06 | [Attribution](../../src/oddsjam_ev/analysis/filter_attribution.py), [sizing linkage](../../src/oddsjam_ev/analysis/sizing_linkage.py), [configuration records](../../src/oddsjam_ev/analysis/decision_config.py), [canonical policy](../../configs/canonical_facts.yaml) | R05 adds explicit selection-regime evidence/adapters; R06 adds venue/product capabilities. Existing mappings do not prove account access or current settings. |
+| Evidence/configuration and venue scope; REQ05–REQ06 | [Attribution](../../src/oddsjam_ev/analysis/filter_attribution.py), [sizing linkage](../../src/oddsjam_ev/analysis/sizing_linkage.py), [configuration records](../../src/oddsjam_ev/analysis/decision_config.py), [canonical policy](../../configs/canonical_facts.yaml) | R05 implements an optional [operating-regime ledger](../OPERATING_REGIMES.md), explicit adapters and conservative candidate linkage; activation in shared consumers stays future work. R06 adds venue/product capabilities. Existing mappings do not prove account access or current settings. |
 | Shared workspace scope; REQ07/REQ24 | [Queries](../../src/oddsjam_ev/dashboard/decision_queries.py), [verified attachments](../../src/oddsjam_ev/dashboard/decision_artifacts.py) | R07 defines shared serialized analysis context; R32 connects investigation/scenario/action. Existing selectors are not that full contract. |
 | Immutable import and optional orchestration; REQ08–REQ09 | [Ingestion](../INGESTION.md), [runner](../../scripts/run_weekly.py), separate [visual](../../scripts/build_visual_diagnostics.py) and [queue](../../scripts/build_review_queues.py) builders | R08 integrates optional dependency stages; R09 stages private CSV/preview; R10 adds confirmed upload/progress/activation. Current runner is not an automated export service. |
 | Navigation/framework and chart reuse; REQ10–REQ11 | [Workspace](../../src/oddsjam_ev/dashboard/pages/decision_workspace.py), [charts](../../src/oddsjam_ev/dashboard/decision_charts.py), [visual publication](../VISUAL_DIAGNOSTICS.md) | R11 assesses design/framework; R12 implements chosen path; R13 audits Notebook 02 contracts; R14/R15 improve charts. No React migration selected here. |
@@ -65,7 +65,9 @@ their delivered replacements in the [ledger's integration section](../plans/MULT
 V19's old navigation is already superseded by the delivered workspace design; R11
 may revise the next design with an explicit decision, not revive it by accident.
 Current evidence collection for candidate settings uses existing contracts; a new
-R05 adapter extends those contracts rather than implying they never existed.
+R05 adapter extends those contracts rather than implying they never existed. R05
+implementation was reconciled against main `9b7a181fffe1f18258f23ce47b596ea398b4cfea`
+on 2026-11-24; real account evidence remains an owner task, not recovered history.
 
 Conditional expansions above preserve original ideas without expanding an approved
 PR by stealth. At selection, either include a justified bounded item within the

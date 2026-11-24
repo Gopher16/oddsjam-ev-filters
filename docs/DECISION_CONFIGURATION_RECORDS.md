@@ -155,3 +155,10 @@ lifecycle are indexed in the [documentation home](README.md); the historical
 [workspace plan](plans/DASHBOARD_DECISION_WORKSPACE.md) preserves design context.
 The [implementation ledger](plans/MULTIDIMENSIONAL_IMPLEMENTATION_STATUS.md) tracks
 partial and evidence-blocked behavior without treating old proposed filenames as gaps.
+
+## Operating-regime migration
+
+The optional [operating-regime ledger](OPERATING_REGIMES.md) explicitly adapts
+prospective baseline settings and exact aliases while preserving planned status and
+unknown account namespace. It does not replace lifecycle/translation evidence or
+assert historical application of a prospective configuration.
