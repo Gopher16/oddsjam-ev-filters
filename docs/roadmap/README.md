@@ -27,7 +27,7 @@ Section 5 acceptance. Conditional phases I–N (R34–R60) explore independent c
 models/strategies, execution, fantasy, expansion and sustainable operations.
 The register's actual dependency clauses control entry, not this broad sequence.
 
-R01–R03 are merged. R04 is documentation delivery in progress. Future features are
+R01–R03 are merged. R04 implementation is locally verified; remote checks and merge remain pending. Future features are
 not implemented merely because their row exists. The next normal candidate after
 R04's verified merge is R05, subject to its own source review and plan. No dates,
 external spending, framework rewrite or trading activation are promised here.

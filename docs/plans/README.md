@@ -29,3 +29,11 @@ Private/local roadmap notes are outside this public documentation index and its
 tracked-file checks. Do not move or publish them as part of archival maintenance.
 
 [Documentation home](../README.md)
+
+## Owner implementation programme
+
+The later [R01–R60 programme](../roadmap/README.md) preserves owner baseline intent
+and tracks delivery/decisions separately from historical plans. Its
+[capability reconciliation](../roadmap/CAPABILITY_RECONCILIATION.md) links this area's
+existing multidimensional ledger to reused code and named future destinations;
+partial or optional engineering is not silently marked complete.
