@@ -105,3 +105,5 @@ candidate results are current today. Private/local roadmap notes are not publish
 as part of these guides.
 
 [Return to the repository README](../README.md)
+
+For bounded local CSV preview and explicit import, see [CSV staging](CSV_STAGING.md).

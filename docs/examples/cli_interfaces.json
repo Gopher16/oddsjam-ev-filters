@@ -119,5 +119,15 @@
     "docs": [
       "docs/RELEASE_ACCEPTANCE.md"
     ]
+  },
+  {
+    "script": "scripts/stage_csv.py",
+    "options": [
+      "--staging-root",
+      "--ingestion-root"
+    ],
+    "docs": [
+      "docs/CSV_STAGING.md"
+    ]
   }
 ]

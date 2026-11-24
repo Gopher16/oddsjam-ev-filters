@@ -238,3 +238,23 @@ def test_cli_stage_preview_confirm(tmp_path):
     assert not run(
         ["confirm", r["stage_id"], "--preview-sha256", p["preview_sha256"], "--confirm-import"]
     )["repeated_import"]
+
+
+def test_symlink_stage_and_public_directory_rejected(tmp_path):
+    r = stage(tmp_path)
+    source = tmp_path / "stages" / r["stage_id"] / "source.csv"
+    source.unlink()
+    target = tmp_path / "target.csv"
+    target.write_text(HEADER + ROW)
+    source.symlink_to(target)
+    with pytest.raises(ValueError, match="symlink"):
+        load_stage(tmp_path / "stages", r["stage_id"])
+    public = tmp_path / "public"
+    public.mkdir(mode=0o755)
+    with pytest.raises(ValueError, match="private"):
+        stage_csv(
+            io.BytesIO((HEADER + ROW).encode()),
+            public,
+            filename="bets.csv",
+            metadata=SourceMetadata("owner"),
+        )
