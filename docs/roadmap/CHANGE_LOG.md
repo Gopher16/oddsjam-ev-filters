@@ -66,3 +66,12 @@ original requirement's disposition. No baseline Word document is modified here.
   R58/R59/R60 retain their conditional component/branch dependencies.
 - **Status:** documentation approach within authorized R04; no framework, source-feed,
   paid-service, deployment or live-trading architecture decision made.
+
+## 2026-11-24 — R05 additive evidence boundary
+
+R04 merge/CI reconciled. R05 extends existing evidence contracts through an optional
+versioned sidecar and explicit adapters rather than changing old schemas or funding
+classifications. Date-only owner evidence remains unlinked; prospective baseline
+settings remain planned context. R06 capability and R07 shared dashboard context
+remain at their destinations. No material baseline scope change or evidence
+reclassification is approved by this implementation choice.

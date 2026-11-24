@@ -116,3 +116,10 @@ fees and fillability. Evidence recorded here is not sufficient for exact replay.
 [Sizing diagnostics](SIZING_DIAGNOSTICS.md) now provides weighted/equal-stake and
 concentration diagnostics on reconciled eligible cohorts. Unknown regimes must remain a separate population;
 current settings must never fill those gaps.
+
+## Operating-process evidence
+
+The optional [operating-regime sidecar](OPERATING_REGIMES.md) can explicitly adapt
+initial sizing ledgers into versioned process/settings evidence. Existing accepted
+amounts, application evidence, constraints and sizing readers remain here; a Kelly
+paper-sizing convention never verifies a fill.
