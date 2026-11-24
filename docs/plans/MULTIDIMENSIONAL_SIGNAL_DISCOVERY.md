@@ -20,6 +20,11 @@ reviewed workspace decisions supersede the old navigation and coarse sequence.
 Use the [documentation follow-up plan](DOCUMENTATION_OVERHAUL.md) for J–M work and
 [release evidence](../releases/2026-11-02-acceptance.md) for the dated acceptance scope.
 
+The owner's later [implementation programme](../roadmap/README.md) preserves the
+new R01–R60 roadmap separately. Its [reconciliation](../roadmap/CAPABILITY_RECONCILIATION.md)
+retains this brief's unfinished work while reusing delivered components; it does
+not turn historical proposals into current capabilities.
+
 ## Problem and intended outcome
 
 The dashboard consumes existing candidate artifacts. The current discovery policy
