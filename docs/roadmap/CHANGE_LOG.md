@@ -97,3 +97,9 @@ R07/#40 merged and main CI 45468469602 passed. R08 extends the existing runner
 through an explicit frozen job request, reusing immutable publishers. Default
 refresh stays core-only; model fitting is separately requested. Upload/activation
 remain R09/R10. No baseline requirement displaced. [R08 plan](pr-plans/R08.md).
+
+## 2026-11-24 — R09 entry
+
+Reconciled R08/#41 verified merge and main CI. R09 adds bounded private staging
+and explicit import; R10 retains dashboard interaction and report activation.
+No baseline scope retired or changed.
