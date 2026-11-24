@@ -12,6 +12,11 @@ Proposed table/file names were provisional; actual replacements are mapped below
 No historical source, parameter value, publication or contributor note is rewritten
 by this status assessment.
 
+The newer owner programme is tracked in the [R01–R60 delivery register](../roadmap/DELIVERY_REGISTER.md).
+Its [capability crosswalk](../roadmap/CAPABILITY_RECONCILIATION.md) maps reuse,
+partial engineering and evidence-gated/optional work to future destinations without
+changing this ledger's dated statuses or implying those future PRs are delivered.
+
 ## Status vocabulary
 
 | Status | Meaning |

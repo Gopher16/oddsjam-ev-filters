@@ -49,3 +49,20 @@ original requirement's disposition. No baseline Word document is modified here.
 - **Disposition:** no baseline work removed, split or retired; no material scope or
   architecture departure. Functional remediation roles identify future evidence
   tasks, not assigned individuals or remediation already delivered.
+
+## 2026-11-23 — R04 programme records and conditional branches
+
+- **Authority/scope:** owner selected the next eligible PR; R01–R03 are merged.
+  Expand the earlier administrative scaffold to R04's full documentation scope.
+- **Decision:** preserve all 60 roadmap identities and baseline dependencies;
+  represent future feasibility/execution/fantasy branches as conditional planning,
+  rather than implicitly approving them or omitting them from coverage.
+- **Reason/alternative:** a flat completed/not-completed list would conflate existing
+  capability, remaining engineering and evidence/access gates. Reuse the current
+  multidimensional ledger and name future destinations for partial/optional work.
+- **Effect/disposition:** no source roadmap change, scope retirement or implementation
+  acceleration; R05 onward still require their own selected PR plan and gates.
+  R34's feasibility entry does not require R33 unless performing full cutover;
+  R58/R59/R60 retain their conditional component/branch dependencies.
+- **Status:** documentation approach within authorized R04; no framework, source-feed,
+  paid-service, deployment or live-trading architecture decision made.

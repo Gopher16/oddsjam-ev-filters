@@ -62,6 +62,13 @@ Likewise, the older core discovery policy and the later prioritization policy ar
 separate contracts. Use the [implementation ledger](plans/MULTIDIMENSIONAL_IMPLEMENTATION_STATUS.md)
 to follow their composition rather than applying one stage's limitations to all stages.
 
+## Roadmap delivery
+
+The [implementation programme](roadmap/README.md) links frozen-source fingerprints,
+R01–R60 dependencies/status, requirement coverage, current-versus-planned capability
+and the per-PR plan-to-merge workflow. It preserves future conditional work without
+turning roadmap entries into implemented features or live-trading authorization.
+
 ## Documentation upkeep
 
 [Maintenance guidance](DOCUMENTATION_MAINTENANCE.md) describes offline checks,
