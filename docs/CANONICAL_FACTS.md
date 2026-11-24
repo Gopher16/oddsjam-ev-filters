@@ -146,3 +146,10 @@ All 70,635 bet candidates have unknown source timezone and null canonical UTC
 creation time in this input. No complete temporal validation or decision-time
 feature availability is claimed. Eligibility is reported-return arithmetic and
 product policy, not proof of funded execution, net fees, or profitability.
+
+## Optional venue/product evidence
+
+The [venue capability registry](VENUE_CAPABILITIES.md) preserves stable identities,
+source/effective scope, units/fees/settlement gaps, access and operation permissions.
+Historical labels and new brand requests never establish verified economics or
+current account access. Existing canonical behavior remains unchanged.

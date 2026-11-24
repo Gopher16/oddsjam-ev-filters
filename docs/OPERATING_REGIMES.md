@@ -188,3 +188,10 @@ optional sidecar or selecting a previous publication, retaining all artifacts.
 R06 retains venue capability/economics work, R07 shared analysis context, and later
 capture work retains missing historical evidence requirements. See the
 [R05 delivery plan](roadmap/pr-plans/R05.md) for validation and delivery records.
+
+## Optional venue/product evidence
+
+The [venue capability registry](VENUE_CAPABILITIES.md) preserves stable identities,
+source/effective scope, units/fees/settlement gaps, access and operation permissions.
+Historical labels and new brand requests never establish verified economics or
+current account access. Existing canonical behavior remains unchanged.

@@ -75,3 +75,11 @@ classifications. Date-only owner evidence remains unlinked; prospective baseline
 settings remain planned context. R06 capability and R07 shared dashboard context
 remain at their destinations. No material baseline scope change or evidence
 reclassification is approved by this implementation choice.
+
+## 2026-11-24 — R06 explicit capability boundary
+
+Reconcile R05/#38 delivery. R06 introduces an optional versioned registry and
+historical-policy adapter; no brand request becomes verified economics/access.
+Existing canonical mappings/readers and money remain unchanged. Missing vendor
+contracts stay evidence gaps, not fabricated seed values. R07 and later connector/
+economic implementations retain their destinations; no material baseline deviation.
