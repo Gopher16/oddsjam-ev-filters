@@ -31,7 +31,7 @@ complete its merge/verification before starting the next. Re-read sources each t
 | <a id="r03"></a>R03 | A | Publish source limitations and decision-process regimes | [R01](#r01) | Merged; remote/main verified | [REQ03](REQUIREMENTS.md#req03); [PR #36](https://github.com/Gopher16/oddsjam-ev-filters/pull/36), merge `75f12cae9386b8ece8d74014d865a6bbded719ae`; [plan](pr-plans/R03.md) |
 | <a id="r04"></a>R04 | A | Land the implementation programme and traceability register | [R01](#r01),[R02](#r02),[R03](#r03) | Merged; remote/main and post-merge CI verified | [REQ04](REQUIREMENTS.md#req04); [PR #37](https://github.com/Gopher16/oddsjam-ev-filters/pull/37), merge `9b7a181fffe1f18258f23ce47b596ea398b4cfea`; [plan](pr-plans/R04.md) |
 | <a id="r05"></a>R05 | B | Version operating regimes and prospective configuration evidence | [R03](#r03),[R04](#r04) | Merged; remote/main and post-merge checks verified | [REQ05](REQUIREMENTS.md#req05); [PR #38](https://github.com/Gopher16/oddsjam-ev-filters/pull/38), merge `0572b9e9a5e1d74869de4c6082d0d822ab78bcf9`; [plan/results](pr-plans/R05.md) |
-| <a id="r06"></a>R06 | B | Add a versioned venue/product and source-capability registry | [R05](#r05) | In progress; plan saved | [REQ06](REQUIREMENTS.md#req06); [plan](pr-plans/R06.md) |
+| <a id="r06"></a>R06 | B | Add a versioned venue/product and source-capability registry | [R05](#r05) | Implemented; remote pending | [REQ06](REQUIREMENTS.md#req06); [plan/results](pr-plans/R06.md), [guide](../VENUE_CAPABILITIES.md) |
 | <a id="r07"></a>R07 | B | Define shared analysis context and linked selection | [R05](#r05),[R06](#r06) | Planned | [REQ07](REQUIREMENTS.md#req07) |
 | <a id="r08"></a>R08 | C | Orchestrate optional research builders with reproducible jobs | [R04](#r04),[R07](#r07) | Planned | [REQ08](REQUIREMENTS.md#req08) |
 | <a id="r09"></a>R09 | C | Implement bounded CSV staging and import preview | [R03](#r03),[R08](#r08) | Planned | [REQ09](REQUIREMENTS.md#req09) |
@@ -89,8 +89,8 @@ complete its merge/verification before starting the next. Re-read sources each t
 
 ## Delivery maintenance
 
-R01–R04 delivery is reconciled through R05; the corresponding plans retain their
-pre-merge history and subsequent evidence. R05's actual merge will be recorded in
+R01–R05 delivery is reconciled through R06; the corresponding plans retain their
+pre-merge history and subsequent evidence. R06's actual merge will be recorded in
 its completion report/PR and reconciled by the next authorized PR. Never label a
 pre-merge entry merged to avoid a bookkeeping loop.
 

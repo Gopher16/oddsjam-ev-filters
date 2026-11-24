@@ -45,7 +45,7 @@ artifact schemas and stage-specific behavior.
 | Area | Component guides |
 | --- | --- |
 | Source selection and grains | [Ingestion](INGESTION.md), [canonical facts](CANONICAL_FACTS.md), [opportunity atlas](OPPORTUNITY_ATLAS.md) |
-| Operating evidence | [Versioned regimes and migration](OPERATING_REGIMES.md) |
+| Operating evidence | [Versioned regimes and migration](OPERATING_REGIMES.md), [venue/product capabilities](VENUE_CAPABILITIES.md) |
 | Historical identity | [Label inventory](FILTER_LABEL_INVENTORY.md), [mapping proposals](FILTER_MAPPING_PROPOSALS.md), [versioned attribution](VERSIONED_FILTER_ATTRIBUTION.md) |
 | EV and sizing | [Continuous EV](CONTINUOUS_EV_CONTRACT.md), [sizing history](SIZING_HISTORY.md), [sizing diagnostics](SIZING_DIAGNOSTICS.md) |
 | Discovery and inference | [Core robust discovery](ROBUST_DISCOVERY.md), [within-filter discovery](WITHIN_FILTER_DISCOVERY.md), [separate statistical prioritization](STATISTICAL_PRIORITIZATION.md) |
