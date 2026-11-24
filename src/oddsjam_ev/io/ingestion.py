@@ -107,7 +107,9 @@ def _code_version() -> str:
         return "unknown"
 
 
-def import_csv(path: Path, root: Path, metadata: SourceMetadata) -> dict:
+def import_csv(
+    path: Path, root: Path, metadata: SourceMetadata, *, expected_imports: list | None = None
+) -> dict:
     """Archive a CSV once per namespace and content hash.
 
     Parameters
@@ -118,6 +120,10 @@ def import_csv(path: Path, root: Path, metadata: SourceMetadata) -> dict:
         Private store, normally data/raw/ingestion.
     metadata : SourceMetadata
         Explicit source context.
+
+    expected_imports : list or None
+        Optional reviewed import identities and manifest hashes. Checked under the
+        writer lock to reject a stale staging preview before any import mutation.
 
     Returns
     -------
@@ -138,6 +144,11 @@ def import_csv(path: Path, root: Path, metadata: SourceMetadata) -> dict:
         context["exported_at"] = utc_time(context["exported_at"])
     import_id = fingerprint([metadata.namespace, source_hash])
     with writer_lock(root):
+        if expected_imports is not None:
+            _, selected = load_observations(root)
+            actual = sorted([m["import_id"], fingerprint(m)] for m in selected)
+            if actual != expected_imports:
+                raise ValueError("Import store changed; review a fresh preview")
         objects = root / "objects"
         imports = root / "imports"
         objects.mkdir(exist_ok=True)

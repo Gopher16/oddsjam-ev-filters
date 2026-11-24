@@ -28,7 +28,7 @@ from typing import BinaryIO
 
 import pandas as pd
 
-from oddsjam_ev.io.ingestion import SourceMetadata, load_observations, utc_time
+from oddsjam_ev.io.ingestion import SourceMetadata, import_csv, load_observations, utc_time
 from oddsjam_ev.io.manifests import write_json, writer_lock
 from oddsjam_ev.io.reconcile import reconcile
 from oddsjam_ev.io.source_csv import fingerprint, read_source
@@ -204,13 +204,27 @@ def preview_csv(root: Path, stage_id: str, ingestion_root: Path) -> dict:
         candidate["_ingest_timestamp_timezone"] = source["timestamp_timezone"]
         _, audit, _ = reconcile(pd.concat([observations, candidate], ignore_index=True))
         selected = audit[audit["_ingest_import_id"].eq(import_id)]
+        prior = audit[~audit["_ingest_import_id"].eq(import_id)]
         for row in selected.to_dict("records"):
-            disposition = row["_ingest_disposition"]
-            counts[{"repeated_observation": "unchanged"}.get(disposition, disposition)] += 1
-            changes = json.loads(row["_ingest_changed_fields"])
-            settlement_changes += int(
-                bool(set(changes) & {"status", "bet_profit", "potential_payout"})
-            )
+            if row["_ingest_disposition"] == "unresolved":
+                counts["unresolved"] += 1
+                continue
+            matches = prior[prior["_ingest_record_id"].eq(row["_ingest_record_id"])]
+            if matches.empty:
+                counts["new"] += 1
+            elif matches["_ingest_payload_hash"].eq(row["_ingest_payload_hash"]).any():
+                counts["unchanged"] += 1
+            else:
+                counts["revised"] += 1
+                settlement_changes += int(
+                    any(
+                        any(
+                            str(old.get(key, "")) != str(row.get(key, ""))
+                            for key in ("status", "bet_profit", "potential_payout")
+                        )
+                        for old in matches.to_dict("records")
+                    )
+                )
     preview = {
         "schema_version": 1,
         "stage_id": stage_id,
@@ -226,7 +240,64 @@ def preview_csv(root: Path, stage_id: str, ingestion_root: Path) -> dict:
         "formula_like_cells": sum(
             str(v).lstrip().startswith(("=", "+", "-", "@")) for v in frame.to_numpy().flat
         ),
-        "prior_imports": sorted((m["import_id"], fingerprint(m)) for m in manifests),
+        "prior_imports": sorted([m["import_id"], fingerprint(m)] for m in manifests),
         "interpretation": "Conservative candidate overlap, not verified fills; raw dates are not freshness or complete coverage. Formula-like cells remain literal text.",
     }
     return {**preview, "preview_sha256": fingerprint(preview)}
+
+
+def confirm_import(
+    root: Path,
+    stage_id: str,
+    ingestion_root: Path,
+    *,
+    preview_sha256: str,
+    confirmed: bool = False,
+) -> dict:
+    """Import only an explicitly confirmed, unchanged preview.
+
+    Parameters
+    ----------
+    root : Path
+        Private staging directory.
+    stage_id : str
+        Verified stage identity.
+    ingestion_root : Path
+        Separate immutable ingestion store.
+    preview_sha256 : str
+        Digest of the exact preview reviewed by the operator.
+    confirmed : bool
+        Must be explicitly true; unknown coverage must first be restaged with a
+        full or partial declaration. This does not verify that declaration.
+
+    Returns
+    -------
+    dict
+        Existing immutable import receipt and repeated-import flag. No build or
+        report activation is performed. Failures preserve the staged source.
+    """
+    if confirmed is not True:
+        raise ValueError("Explicit import confirmation required")
+    if root.resolve() == ingestion_root.resolve():
+        raise ValueError("Staging and ingestion stores must be separate")
+    _private_root(root)
+    with writer_lock(root):
+        preview = preview_csv(root, stage_id, ingestion_root)
+        if preview["preview_sha256"] != preview_sha256:
+            raise ValueError("Preview changed; review a fresh preview")
+        if preview["source"]["scope"] == "unknown":
+            raise ValueError("Restage with an explicit full or partial declaration")
+        data, receipt = load_stage(root, stage_id)
+        _private_root(ingestion_root)
+        # Import the verified bytes through a private temporary file, never a
+        # caller-controlled filename or mutable upload path.
+        with tempfile.TemporaryDirectory(prefix=".confirm-", dir=root) as directory:
+            path = Path(directory) / "source.csv"
+            path.write_bytes(data)
+            path.chmod(0o600)
+            return import_csv(
+                path,
+                ingestion_root,
+                SourceMetadata(**receipt["source"]),
+                expected_imports=preview["prior_imports"],
+            )

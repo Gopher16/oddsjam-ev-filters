@@ -111,3 +111,130 @@ def test_concurrent_stage(tmp_path):
         results = list(pool.map(attempt, range(2)))
     assert any(results)
     assert len(list((tmp_path / "stages").glob("*/receipt.json"))) == 1
+
+
+def test_confirm_explicit_idempotent_and_stale(tmp_path):
+    from oddsjam_ev.io.staging import confirm_import
+
+    r = stage(tmp_path)
+    root, imports = tmp_path / "stages", tmp_path / "imports"
+    p = preview_csv(root, r["stage_id"], imports)
+    with pytest.raises(ValueError, match="confirmation"):
+        confirm_import(root, r["stage_id"], imports, preview_sha256=p["preview_sha256"])
+    result = confirm_import(
+        root, r["stage_id"], imports, preview_sha256=p["preview_sha256"], confirmed=True
+    )
+    assert not result["repeated_import"]
+    with pytest.raises(ValueError, match="Preview changed"):
+        confirm_import(
+            root, r["stage_id"], imports, preview_sha256=p["preview_sha256"], confirmed=True
+        )
+    p = preview_csv(root, r["stage_id"], imports)
+    assert p["candidate_rows"]["unchanged"] == 1
+    assert confirm_import(
+        root, r["stage_id"], imports, preview_sha256=p["preview_sha256"], confirmed=True
+    )["repeated_import"]
+    assert len(list((imports / "imports").iterdir())) == 1
+
+
+def test_unknown_confirmation_blocked(tmp_path):
+    from oddsjam_ev.io.staging import confirm_import
+
+    r = stage(tmp_path, metadata=SourceMetadata("owner"))
+    p = preview_csv(tmp_path / "stages", r["stage_id"], tmp_path / "imports")
+    with pytest.raises(ValueError, match="Restage"):
+        confirm_import(
+            tmp_path / "stages",
+            r["stage_id"],
+            tmp_path / "imports",
+            preview_sha256=p["preview_sha256"],
+            confirmed=True,
+        )
+    assert not (tmp_path / "imports").exists()
+
+
+def test_import_store_lock_rechecks_receipts(tmp_path):
+    path = tmp_path / "old.csv"
+    path.write_text(HEADER + ROW)
+    import_csv(path, tmp_path / "imports", SourceMetadata("owner", scope="full"))
+    with pytest.raises(ValueError, match="store changed"):
+        import_csv(
+            path, tmp_path / "imports", SourceMetadata("owner", scope="full"), expected_imports=[]
+        )
+
+
+def test_ambiguous_revision_and_namespace(tmp_path):
+    path = tmp_path / "old.csv"
+    path.write_text(HEADER + ROW)
+    import_csv(path, tmp_path / "imports", SourceMetadata("owner", scope="full"))
+    r = stage(tmp_path, (HEADER + ROW.replace("pending", "won")).encode())
+    assert (
+        preview_csv(tmp_path / "stages", r["stage_id"], tmp_path / "imports")["candidate_rows"][
+            "unresolved"
+        ]
+        == 1
+    )
+    r = stage(tmp_path, metadata=SourceMetadata("other", scope="partial"))
+    assert (
+        preview_csv(tmp_path / "stages", r["stage_id"], tmp_path / "imports")["candidate_rows"][
+            "new"
+        ]
+        == 1
+    )
+
+
+def test_concurrent_confirm_preserves_single_import(tmp_path):
+    from oddsjam_ev.io.staging import confirm_import
+
+    r = stage(tmp_path)
+    root, imports = tmp_path / "stages", tmp_path / "imports"
+    p = preview_csv(root, r["stage_id"], imports)
+
+    def attempt(_):
+        try:
+            return confirm_import(
+                root, r["stage_id"], imports, preview_sha256=p["preview_sha256"], confirmed=True
+            )
+        except ValueError as exc:
+            assert "locked" in str(exc) or "Preview changed" in str(exc)
+            return None
+
+    with ThreadPoolExecutor(max_workers=2) as pool:
+        results = list(pool.map(attempt, range(2)))
+    assert sum(x is not None for x in results) == 1
+    assert len(list((imports / "imports").iterdir())) == 1
+
+
+def test_cli_stage_preview_confirm(tmp_path):
+    import json
+    import os
+    import subprocess
+    import sys
+
+    path = tmp_path / "bets.csv"
+    path.write_text(HEADER + ROW)
+    base = [
+        sys.executable,
+        "scripts/stage_csv.py",
+        "--staging-root",
+        str(tmp_path / "stages"),
+        "--ingestion-root",
+        str(tmp_path / "imports"),
+    ]
+
+    def run(args):
+        return json.loads(
+            subprocess.run(
+                base + args,
+                check=True,
+                capture_output=True,
+                text=True,
+                env={**os.environ, "PYTHONPATH": "src"},
+            ).stdout
+        )
+
+    r = run(["stage", str(path), "--namespace", "owner", "--scope", "partial"])
+    p = run(["preview", r["stage_id"]])
+    assert not run(
+        ["confirm", r["stage_id"], "--preview-sha256", p["preview_sha256"], "--confirm-import"]
+    )["repeated_import"]
