@@ -22,6 +22,12 @@ def main():
     parser.add_argument(
         "--decisions", type=Path, help="Reviewed ingestion resolutions for CSV mode"
     )
+    parser.add_argument("--research-job", type=Path, help="Explicit optional builder DAG YAML")
+    parser.add_argument(
+        "--fit-models",
+        action="store_true",
+        help="Explicitly request offline model fitting; never enabled by refresh alone",
+    )
     args = parser.parse_args()
     try:
         cfg = read_config(args.config)
@@ -34,6 +40,8 @@ def main():
             register=args.register,
             temporal_evidence=args.temporal_evidence,
             decisions=args.decisions,
+            research_job=args.research_job,
+            fit_models=args.fit_models,
         )
     except (OSError, ValueError, TypeError, KeyError):
         parser.exit(2, "Pipeline failed: configuration_or_lock_failure\n")

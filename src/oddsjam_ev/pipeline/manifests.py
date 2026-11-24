@@ -64,6 +64,18 @@ def load_result(path: Path) -> dict:
     verify_bytes(path / "report.md", result["report_sha256"])
     if result["report_sha256"] != fingerprint_report(result["report"]):
         raise ValueError("Report manifest mismatch")
+    if "research_job" in result["specification"]:
+        job = json.loads((path / "job.json").read_text())
+        if (
+            job != result.get("job_manifest")
+            or fingerprint(job) != result.get("job_manifest_sha256")
+            or job["run_id"] != result["run_id"]
+            or job["request"] != result["specification"]["research_job"]
+        ):
+            raise ValueError("Job manifest integrity failure")
+        from oddsjam_ev.pipeline.research_jobs import verify_job_manifest
+
+        verify_job_manifest(result)
     return result
 
 

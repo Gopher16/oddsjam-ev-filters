@@ -24,6 +24,7 @@ from oddsjam_ev.io.manifests import verify_bytes, writer_lock
 from oddsjam_ev.io.recommendations import load_recommendations, publish_recommendations
 from oddsjam_ev.io.snapshots import load_snapshot, materialize_snapshot
 from oddsjam_ev.io.source_csv import fingerprint, read_source
+from oddsjam_ev.pipeline import research_jobs
 from oddsjam_ev.pipeline.config import PipelineConfig, configuration_bundle
 from oddsjam_ev.pipeline.freshness import assess_freshness
 from oddsjam_ev.pipeline.manifests import (
@@ -50,9 +51,21 @@ def utc_now() -> str:
     return datetime.now(UTC).isoformat()
 
 
+def _load_stage(name, path):
+    return LOADERS[name](path) if name in LOADERS else research_jobs.load_stage(name, path)
+
+
 def _summary(stage, path):
-    tables = LOADERS[stage](path)
-    summary = {"table_rows": {key: len(value) for key, value in tables.items()}}
+    tables = _load_stage(stage, path)
+    if not isinstance(tables, dict):
+        return {"coverage_audit": tables[2]}
+    summary = {
+        "table_rows": {
+            key: len(value) for key, value in tables.items() if hasattr(value, "columns")
+        }
+    }
+    if stage in {"sheets", "queues", "models"}:
+        summary["coverage_audit"] = tables["audit"]
     if stage == "canonical":
         summary["reconciliation"] = json.loads((path / "manifest.json").read_text())["summary"]
         summary["reported_economics_separate_cohorts"] = json.loads(
@@ -76,6 +89,8 @@ def run_pipeline(
     register: Path | None = None,
     temporal_evidence: Path | None = None,
     decisions: Path | None = None,
+    research_job: Path | None = None,
+    fit_models: bool = False,
 ) -> dict:
     """Run one explicit input or resume an exact frozen plan.
 
@@ -125,9 +140,19 @@ def run_pipeline(
             configs = configuration_bundle(cfg)
             code = code_provenance()
             if resume:
+                if fit_models:
+                    raise ValueError("Resume cannot change model build choice")
                 if any(
                     v is not None
-                    for v in (csv, snapshot, as_of, register, temporal_evidence, decisions)
+                    for v in (
+                        csv,
+                        snapshot,
+                        as_of,
+                        register,
+                        temporal_evidence,
+                        decisions,
+                        research_job,
+                    )
                 ):
                     raise ValueError("Resume cannot change inputs")
                 if len(resume) != 64 or any(c not in "0123456789abcdef" for c in resume):
@@ -146,6 +171,13 @@ def run_pipeline(
                 register = Path(plan["register_path"]) if plan["register_path"] else None
                 as_of = spec["as_of"]
             else:
+                if fit_models and research_job is None:
+                    raise ValueError("Model fitting requires an explicit research job")
+                frozen_job = (
+                    research_jobs.freeze_job(research_job, fit_models=fit_models)
+                    if research_job
+                    else None
+                )
                 if (csv is None) == (snapshot is None):
                     if csv is None:
                         return notice("missing_input")
@@ -164,7 +196,10 @@ def run_pipeline(
                     source_cfg = configs["source_config"]
                     metadata = json.loads(decisions.read_text()) if decisions else []
                     source_hash = hashlib.sha256(csv_bytes).hexdigest()
-                    request_id = fingerprint([source_hash, configs, code, metadata])
+                    request_parts = [source_hash, configs, code, metadata]
+                    if frozen_job is not None:
+                        request_parts.append(frozen_job)
+                    request_id = fingerprint(request_parts)
                     input_request = root / "input_requests" / f"{request_id}.json"
                     import_id = fingerprint([source_cfg["source"]["namespace"], source_hash])
                     if not input_request.exists():
@@ -249,6 +284,8 @@ def run_pipeline(
                     if register
                     else None,
                 }
+                if frozen_job is not None:
+                    spec["research_job"] = frozen_job
                 run_id = fingerprint(spec)
                 plan = {
                     "run_id": run_id,
@@ -269,13 +306,15 @@ def run_pipeline(
             # Recheck frozen sources on every attempt, including resumes.
             verify_bytes(snapshot / "manifest.json", spec["snapshot_manifest_sha256"])
             load_snapshot(snapshot)
+            if "research_job" in spec:
+                research_jobs.verify_job_inputs(spec["research_job"], as_of)
             if register and read_experiment_events(register, as_of) != spec["experiment_events"]:
                 raise ValueError("Frozen register changed")
             event("preflight", "completed", snapshot_id=spec["snapshot_id"])
             outputs, summaries = {}, {}
             cache = root / "checkpoints" / run_id
 
-            def stage(name, function):
+            def stage(name, function, dependencies=None):
                 nonlocal current_stage
                 current_stage = name
                 event(name, "started")
@@ -289,15 +328,17 @@ def run_pipeline(
                         raise ValueError("Checkpoint integrity failure")
                     if record["run_id"] != run_id or record["stage"] != name:
                         raise ValueError("Checkpoint run mismatch")
+                    if dependencies is not None and record.get("dependencies") != dependencies:
+                        raise ValueError("Checkpoint dependency mismatch")
                     out = Path(record["path"])
                     verify_bytes(out / "manifest.json", record["manifest_sha256"])
-                    LOADERS[name](out)
+                    _load_stage(name, out)
                     state = "reused"
                 else:
                     for retry in range(cfg.transient_retries + 1):
                         try:
                             out = function()
-                            LOADERS[name](out)
+                            _load_stage(name, out)
                             break
                         except OSError as exc:
                             if exc.errno not in TRANSIENT or retry == cfg.transient_retries:
@@ -309,6 +350,8 @@ def run_pipeline(
                         "path": str(out.resolve()),
                         "manifest_sha256": fingerprint_report((out / "manifest.json").read_text()),
                     }
+                    if dependencies is not None:
+                        record["dependencies"] = dependencies
                     record["checkpoint_sha256"] = fingerprint(record)
                     atomic_json(checkpoint, record)
                     state = "completed"
@@ -361,12 +404,61 @@ def run_pipeline(
                         register, canonical, artifacts / "experiments", as_of
                     ),
                 )
+            job_manifest = None
+            if "research_job" in spec:
+                job = spec["research_job"]
+                receipts = {}
+                paths = {name: Path(record["path"]) for name, record in outputs.items()}
+                for name in job["order"]:
+                    current_stage = name
+                    reasons = research_jobs.stage_blockers(name, job, receipts)
+                    if reasons:
+                        receipts[name] = {"state": "blocked", "reasons": reasons}
+                        event(name, "blocked", reasons=reasons)
+                        continue
+                    dependencies = {
+                        dep: outputs[dep]["manifest_sha256"]
+                        for dep in research_jobs.DEPENDENCIES[name]
+                    }
+                    paths[name] = stage(
+                        name,
+                        lambda name=name: research_jobs.build_stage(
+                            name,
+                            paths,
+                            artifacts / name,
+                            job,
+                            as_of,
+                            root / "frozen_inputs" / run_id,
+                        ),
+                        dependencies,
+                    )
+                    receipts[name] = {"state": "completed", "output": outputs[name]}
+                for name in research_jobs.DEPENDENCIES:
+                    receipts.setdefault(name, {"state": "not_requested"})
+                job_manifest = {
+                    "contract_version": 1,
+                    "run_id": run_id,
+                    "request": job,
+                    "snapshot_id": spec["snapshot_id"],
+                    "snapshot_manifest_sha256": spec["snapshot_manifest_sha256"],
+                    "configuration_sha256": fingerprint(spec["configuration"]),
+                    "code_sha256": fingerprint(spec["code"]),
+                    "receipts": receipts,
+                }
+                summaries["research_job"] = {
+                    "stages": {
+                        name: {key: value for key, value in receipt.items() if key != "output"}
+                        for name, receipt in receipts.items()
+                    }
+                }
             current_stage = "publication"
             if (
                 code_provenance() != spec["code"]
                 or configuration_bundle(cfg) != spec["configuration"]
             ):
                 raise ValueError("Code or configuration changed during execution")
+            if "research_job" in spec:
+                research_jobs.verify_job_inputs(spec["research_job"], as_of)
             report = render_report(spec, summaries)
             result = {
                 "run_id": run_id,
@@ -376,6 +468,9 @@ def run_pipeline(
                 "report": report,
                 "report_sha256": fingerprint_report(report),
             }
+            if job_manifest is not None:
+                result["job_manifest"] = job_manifest
+                result["job_manifest_sha256"] = fingerprint(job_manifest)
             result["payload_sha256"] = fingerprint(result)
             destination = root / "results" / run_id
             destination.parent.mkdir(exist_ok=True)
@@ -390,6 +485,8 @@ def run_pipeline(
                     staged.mkdir()
                     atomic_json(staged / "manifest.json", result)
                     (staged / "report.md").write_text(report)
+                    if job_manifest is not None:
+                        atomic_json(staged / "job.json", job_manifest)
                     load_result(staged)
                     staged.rename(destination)
             event("publication", "completed", run_id=run_id)
