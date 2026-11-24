@@ -90,3 +90,10 @@ R06/#39 is merged and verified (main run 45424580420). R07 adds the portable
 contract and optional adapters; existing pages remain compatible. Full integrated
 presentation and risk computation remain R11/R12/R23/R25–R29/R32. No requirement
 is displaced and no baseline Word file is modified. [R07 plan](pr-plans/R07.md).
+
+## 2026-11-24 — R08 optional orchestration boundary
+
+R07/#40 merged and main CI 45468469602 passed. R08 extends the existing runner
+through an explicit frozen job request, reusing immutable publishers. Default
+refresh stays core-only; model fitting is separately requested. Upload/activation
+remain R09/R10. No baseline requirement displaced. [R08 plan](pr-plans/R08.md).
