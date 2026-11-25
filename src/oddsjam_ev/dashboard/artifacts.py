@@ -33,6 +33,7 @@ ID = re.compile(r"[0-9a-f]{64}\Z")
 class DashboardConfig:
     """Trusted local configuration; the UI does not accept arbitrary filesystem paths."""
 
+    refresh_pipeline_config: str | None = None
     artifact_root: str = "data/processed/weekly_research"
     max_display_rows: int = 200
     min_analyzed_wagers: int = 100
@@ -50,6 +51,10 @@ class DashboardConfig:
     def __post_init__(self):
         from zoneinfo import ZoneInfo
 
+        if self.refresh_pipeline_config is not None and (
+            not isinstance(self.refresh_pipeline_config, str) or not self.refresh_pipeline_config
+        ):
+            raise ValueError("Explicit local refresh pipeline configuration required")
         ZoneInfo(self.display_timezone)
         if self.lifecycle_report_publication is not None and (
             not isinstance(self.lifecycle_report_publication, str)
