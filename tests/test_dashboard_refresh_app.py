@@ -58,7 +58,11 @@ def test_source_settings_saved_and_reused(setup, tmp_path, monkeypatch):
     import yaml
     from streamlit.testing.v1 import AppTest
 
-    cfg, _, _, _ = request(setup, tmp_path)
+    cfg, _, _, _ = setup
+    source = Path(cfg.source_config)
+    metadata = yaml.safe_load(source.read_text())
+    metadata["source"]["namespace"] = "demo"
+    source.write_text(yaml.safe_dump(metadata))
     pipeline = tmp_path / "pipeline.yaml"
     pipeline.write_text(yaml.safe_dump(asdict(cfg)))
     dashboard = tmp_path / "dashboard.yaml"
@@ -80,6 +84,7 @@ def test_source_settings_saved_and_reused(setup, tmp_path, monkeypatch):
     )
     assert next(s for s in fresh.selectbox if s.label == "Usual export coverage").value == "full"
     assert not fresh.exception and not fresh.error
+    assert any("Synthetic acceptance configuration" in w.value for w in fresh.warning)
 
     next(t for t in fresh.text_input if t.label == "Source/account alias").set_value("updated").run(
         timeout=30

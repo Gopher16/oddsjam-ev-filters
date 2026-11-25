@@ -80,6 +80,10 @@ retention/cleanup automation and distributed workers require later design work.
 
 Run from the R10 worktree. The preparation directory must not already exist.
 Only synthetic `Book`/`TEST - Demo` records are created; no account history is read.
+**Use only the supplied synthetic CSVs with this configuration.** Changing the
+source/account alias does not replace product mappings or research policies.
+Before uploading real history, configure the repository research pipeline as
+described above; the synthetic fixture is not a production-history configuration.
 
 ```sh
 PYTHONPATH=src poetry run python scripts/acceptance/prepare_refresh.py /tmp/oddsjam-r10-owner-review --rows 1000
@@ -125,3 +129,23 @@ bootstrap resamples, one private empty import store, no optional job/model/study
 Measured staging+preview+import+core report: 2.86 s; Python process peak RSS
 196,427,776 bytes (~187 MiB) on this macOS environment. This excludes browser/server
 memory and is not a maximum-size or production-history capacity certification.
+
+## Zero eligible wagers after a successful build
+
+A completed build verifies processing, not analytical usefulness. Inspect exclusion
+counts before accepting results. Extensive `unknown_product` exclusions can indicate
+that a synthetic acceptance configuration was used with real platform history.
+Use the vetted repository canonical mappings and research policies; do not remove
+eligibility checks or guess classifications merely to increase coverage.
+
+For an already accepted import, the local operator can materialize its snapshot
+at the import receipt's original `imported_at` cutoff and run the pipeline with a
+new, corrected configuration. This produces a distinct immutable run without
+another upload. Preserve the old request, receipts and report; do not edit frozen
+job inputs or resume the old run with changed settings. Verify eligible counts,
+remaining exclusions and source limitations, then explicitly select the new report.
+
+The core refresh does not create the optional review-queue publication. Its absence
+is distinct from product classification failure. Generating a queue requires its
+own configured research job and evidence; never attach another run's queue or
+invent missing configuration/lifecycle evidence to populate the overview.

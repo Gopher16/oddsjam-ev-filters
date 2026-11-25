@@ -27,6 +27,13 @@ def render(config_path: str, artifact_root: Path):
             if Path(cfg.output_root).resolve() != artifact_root:
                 raise ValueError("Output root mismatch")
             bundle = configuration_bundle(cfg)
+            if bundle["source_config"]["source"]["namespace"] == "demo":
+                st.warning(
+                    "Synthetic acceptance configuration: use the supplied demo CSVs only. "
+                    "Real account history needs the research pipeline's product mappings and "
+                    "policies configured by the local operator; changing the account alias "
+                    "below does not change those mappings."
+                )
             store = Path(bundle["source_config"]["store"])
             private = artifact_root / "dashboard_refresh"
             staging, jobs = private / "staging", private / "jobs"

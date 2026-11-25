@@ -96,6 +96,9 @@ R01–R09 are reconciled through N001. R09 tested head
 passed Ruff, documentation and tests. N001 merged in [PR #43](https://github.com/Gopher16/oddsjam-ev-filters/pull/43)
 at `b08275880a2c0ab1ecfe701062575107377592cc`; main CI 45525069997 passed.
 R10 is implemented under its saved plan; owner UI acceptance remains pending.
+The 2026-11-25 real-history acceptance configuration recovery is recorded in the
+[R10 plan](pr-plans/R10.md#real-history-configuration-recovery--2026-11-25): corrected
+research mappings yield 54,403 ROI-eligible wagers; the original result is retained.
 Pending is not merged; no self-SHA bookkeeping commit is required.
 
 [Requirements](REQUIREMENTS.md) identify coverage; [capability reconciliation](CAPABILITY_RECONCILIATION.md)
