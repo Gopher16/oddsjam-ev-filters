@@ -52,12 +52,19 @@ def main():
             "The local report catalogue is unavailable. Check the dashboard configuration; no older report has been substituted."
         )
         return
+    if "selected_run" not in st.session_state:
+        st.session_state.selected_run = next(iter(labels), None)
+    if cfg.refresh_pipeline_config:
+        from oddsjam_ev.dashboard.refresh_view import render
+
+        render(cfg.refresh_pipeline_config, root)
+        labels = catalogue_labels(root, cfg.display_timezone)
     st.sidebar.header("Choose your report")
     st.sidebar.caption("Verified publications · generation time is not data freshness.")
     selected = st.sidebar.selectbox(
         "Research report",
         list(labels),
-        index=0 if labels else None,
+        index=None,
         placeholder="No published reports",
         format_func=lambda i: labels.get(i, i),
         key="selected_run",

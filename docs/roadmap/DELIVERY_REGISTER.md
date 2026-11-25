@@ -36,7 +36,7 @@ complete its merge/verification before starting the next. Re-read sources each t
 | <a id="r07"></a>R07 | B | Define shared analysis context and linked selection | [R05](#r05),[R06](#r06) | Merged; remote/main and post-merge checks verified | [REQ07](REQUIREMENTS.md#req07); [PR #40](https://github.com/Gopher16/oddsjam-ev-filters/pull/40), merge `fd53093fa1c4833741b9c6df21d8f28431d9ab10`; [plan](pr-plans/R07.md) |
 | <a id="r08"></a>R08 | C | Orchestrate optional research builders with reproducible jobs | [R04](#r04),[R07](#r07) | Merged; remote/main and post-merge CI verified | [PR #41](https://github.com/Gopher16/oddsjam-ev-filters/pull/41), merge `1de23f5486a24d7042d303e4f9329b79e6cd0e50`; [REQ08](REQUIREMENTS.md#req08); [plan/results](pr-plans/R08.md), [guide](../RESEARCH_JOBS.md) |
 | <a id="r09"></a>R09 | C | Implement bounded CSV staging and import preview | [R03](#r03),[R08](#r08) | Merged; remote/main and post-merge CI verified | [PR #42](https://github.com/Gopher16/oddsjam-ev-filters/pull/42), merge `e3e89548b7e16c0eed5035b11ea3cc478c1811be`; [REQ09](REQUIREMENTS.md#req09); [plan/results](pr-plans/R09.md) |
-| <a id="r10"></a>R10 | C | Add drag-and-drop refresh, progress and publication activation | [R09](#r09) | Planned | [REQ09](REQUIREMENTS.md#req09) |
+| <a id="r10"></a>R10 | C | Add drag-and-drop refresh, progress and publication activation | [R09](#r09) | Implemented; PR #44 open; owner UI acceptance and remote CI pending | [PR #44](https://github.com/Gopher16/oddsjam-ev-filters/pull/44); [REQ09](REQUIREMENTS.md#req09); [plan/results](pr-plans/R10.md) |
 | <a id="r11"></a>R11 | D | Design the task-oriented workspace and framework decision record | [R07](#r07),[R10](#r10) | Planned | [REQ10](REQUIREMENTS.md#req10) |
 | <a id="r12"></a>R12 | D | Implement workspace shell, clear scope and accessible design system | [R11](#r11) | Planned | [REQ10](REQUIREMENTS.md#req10) |
 | <a id="r13"></a>R13 | D | Reconcile notebook and dashboard chart contracts | [R03](#r03),[R07](#r07),[R11](#r11) | Planned | [REQ11](REQUIREMENTS.md#req11) |
@@ -93,9 +93,13 @@ complete its merge/verification before starting the next. Re-read sources each t
 R01–R09 are reconciled through N001. R09 tested head
 `805d76a85ef8155f1e271f13d337098d1283422c` and merge are present on fetched main;
 [main CI 45487190940](https://github.com/Gopher16/oddsjam-ev-filters/actions/runs/45487190940)
-passed Ruff, documentation and tests. N001's own merge/main evidence will be reported
-in its PR/completion response and reconciled in the next authorized PR. Pending is
-not merged; no self-SHA bookkeeping commit is required.
+passed Ruff, documentation and tests. N001 merged in [PR #43](https://github.com/Gopher16/oddsjam-ev-filters/pull/43)
+at `b08275880a2c0ab1ecfe701062575107377592cc`; main CI 45525069997 passed.
+R10 is implemented under its saved plan; owner UI acceptance remains pending.
+The 2026-11-25 real-history acceptance configuration recovery is recorded in the
+[R10 plan](pr-plans/R10.md#real-history-configuration-recovery--2026-11-25): corrected
+research mappings yield 54,403 ROI-eligible wagers; the original result is retained.
+Pending is not merged; no self-SHA bookkeeping commit is required.
 
 [Requirements](REQUIREMENTS.md) identify coverage; [capability reconciliation](CAPABILITY_RECONCILIATION.md)
 identifies what already exists and what remains. Use the [delivery workflow](DELIVERY_WORKFLOW.md)
@@ -106,9 +110,7 @@ splits and moved/deferred work retain their original destination and approved de
 
 ## Additive tracker stream — N001–N014
 
-PD005 adopts the 2026-11-24 R&D §7 / PR roadmap §12 addition. **N001 is the current
-selected adoption checkpoint before R10**. After its verified merge, R10 is next
-original candidate on a new owner instruction. R10's original dependency/scope row
+PD005 adopts the 2026-11-24 R&D §7 / PR roadmap §12 addition. **N001 is merged and verified; R10 is the current selected PR**. R10's original dependency/scope row
 above remains unchanged; this is a sequencing checkpoint, not a retroactive change.
 N002–N014 require explicit selection or a recorded owner-authorized insertion
 and their dependencies. They are not automatically prioritized ahead of eligible
@@ -121,7 +123,7 @@ N013 requires relevant adapters, not an unsupported provider chosen by assumptio
 
 | ID | Scope | Required dependencies | Conditional readiness / retained integration | Status | Coverage |
 | --- | --- | --- | --- | --- | --- |
-| <a id="n001"></a>N001 | Adopt the tracker addition and reconcile the programme | [R09](#r09) | Owner-applied expanded sources; no UI | Implemented; local checks passed; remote pending | [TRK01](REQUIREMENTS.md#trk01); [card](TRACKER_ADDITION.md#n001--adopt-the-tracker-addition-and-reconcile-the-programme) |
+| <a id="n001"></a>N001 | Adopt the tracker addition and reconcile the programme | [R09](#r09) | Owner-applied expanded sources; no UI | Merged; PR #43 and main CI verified | [TRK01](REQUIREMENTS.md#trk01); [card](TRACKER_ADDITION.md#n001--adopt-the-tracker-addition-and-reconcile-the-programme) |
 | <a id="n002"></a>N002 | Define the source-linked tracker ledger and annotation extensions | [N001](#n001), [R06](#r06), [R07](#r07), [R10](#r10) | R03/R09 semantics retained | Planned; not selected | [TRK02](REQUIREMENTS.md#trk02); [card](TRACKER_ADDITION.md#n002--define-the-source-linked-tracker-ledger-and-annotation-extensions) |
 | <a id="n003"></a>N003 | Publish shared tracker accounting queries and filter context | [N002](#n002), [R07](#r07), [R13](#r13) | R13 chart/context contract | Planned; not selected | [TRK03](REQUIREMENTS.md#trk03); [card](TRACKER_ADDITION.md#n003--publish-shared-tracker-accounting-queries-and-filter-context) |
 | <a id="n004"></a>N004 | Deliver the dedicated Bet Tracker shell and searchable ledger | [N003](#n003), [R12](#r12) | R10 import/activation reused | Planned; not selected | [TRK04](REQUIREMENTS.md#trk04); [card](TRACKER_ADDITION.md#n004--deliver-the-dedicated-bet-tracker-shell-and-searchable-ledger) |

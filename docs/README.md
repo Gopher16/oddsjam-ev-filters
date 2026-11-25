@@ -12,6 +12,9 @@ planning documents preserve historical proposals and explicitly deferred work.
 | [Architecture](ARCHITECTURE.md) | Three diagrams covering research, prospective studies and applied changes |
 | [Glossary](GLOSSARY.md) | Grains, artifacts, lifecycle terms and setting states |
 
+For opt-in local CSV upload, build, recovery and acceptance, see
+[dashboard refresh](DASHBOARD_REFRESH.md).
+
 ## Hands-on workflows
 
 Start the [isolated synthetic tutorial](walkthroughs/README.md) to review a candidate,
