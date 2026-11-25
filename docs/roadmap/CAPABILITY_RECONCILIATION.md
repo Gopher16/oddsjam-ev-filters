@@ -76,3 +76,22 @@ material extra implementation. No unfinished item is retired by this crosswalk.
 
 [Programme index](README.md) · [Requirement coverage](REQUIREMENTS.md) ·
 [Delivery register](DELIVERY_REGISTER.md)
+
+## Tracker consumer and capture surfaces (N001 addition)
+
+The [adopted tracker scope](TRACKER_ADDITION.md) adds a dedicated personal consumer,
+not a second research/risk/accounting pipeline. Delivered R05 regime evidence,
+R06 venue/product capability, R07 analysis context/query adapters, R08 jobs and
+R09 staging/confirmation are reusable foundations, not an already delivered tracker.
+Actual modules include `analysis/analysis_context.py`, `dashboard/context_queries.py`,
+`io/canonical.py`, `io/reconcile.py`, `io/ingestion.py`, `io/staging.py` and venue/regime
+contracts. Inspect these before extending; existing canonical candidates do not
+establish account balances, ticket completeness or closing-reference truth.
+
+R10 keeps refresh/activation; R11–R15 design/charts; R19–R22 journals/studies;
+R23–R29 exposure/simulation; R30/R31 gaps/explanations. N002/N003 add only missing
+source-linked read/annotation/query contracts. Cash extensions in N007 must reuse
+R40 when delivered or specify later convergence before implementation. N008–N011
+consume qualified evidence/engines; they cannot fabricate source gaps. N013 needs
+actual supported access. R33/R60 acceptance is supplemented by N014, not displaced.
+Every original partial/optional legacy item above retains its original destination.

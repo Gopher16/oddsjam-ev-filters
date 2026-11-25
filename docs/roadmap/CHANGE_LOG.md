@@ -103,3 +103,29 @@ remain R09/R10. No baseline requirement displaced. [R08 plan](pr-plans/R08.md).
 Reconciled R08/#41 verified merge and main CI. R09 adds bounded private staging
 and explicit import; R10 retains dashboard interaction and report activation.
 No baseline scope retired or changed.
+
+## 2026-11-24 — N001 tracker adoption and R09 reconciliation
+
+- **Original expectation:** original R01–R60 roadmap; R10 follows R09. Frozen
+  sources preserve intent and later changes need recorded authority.
+- **New evidence/authority:** owner explicitly requested a Pikkit-inspired tracker,
+  preservation of existing content and stable numbering, then applied expanded
+  R&D §7 / PR roadmap §12 / delivery §10 for the next eligible PR. PD005 accepts
+  the bounded N001 adoption checkpoint before R10. Current attachment paragraph
+  text matches the dated expanded copies; package hashes differ and both are kept.
+- **Alternatives:** leave an unprioritized idea, overload R10, reopen R09, or adopt
+  N001–N014 separately. The supplied amendment selects the last option. N001 is
+  documentation only; no architecture or research-method decision is made here.
+- **Effect/disposition:** add TRK01–TRK14, 14 private screenshot references, N cards,
+  baseline crosswalk and dependency/insertion windows. Preserve every R/REQ scope
+  and original dependency, with no retroactive prerequisites on completed work.
+  R10 remains next original candidate after N001 verification; later N items need
+  explicit selection or recorded owner-authorized scheduling. Conditional sync,
+  quotes, AI, hosting and execution preserve existing access/acceptance gates.
+- **R09:** reconcile PR #42, merge `e3e89548b7e16c0eed5035b11ea3cc478c1811be`, tested
+  head and successful main quality run 45487190940. No new R09 implementation.
+- **Acceptance/privacy:** use public-safe prose and filenames only, no account
+  amounts/images/private sources. Docs checks/coverage audit establish N001
+  acceptance; no UI exists to review. N014 retains future visual/data acceptance.
+- **Sources:** supplied Word files unchanged by this PR. [N001 plan](pr-plans/N001.md),
+  [source versions](SOURCE_BASELINES.md), [tracker scope](TRACKER_ADDITION.md).

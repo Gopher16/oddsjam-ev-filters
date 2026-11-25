@@ -97,3 +97,28 @@ retired only with explicit owner agreement. A single broad REQ row does not waiv
 any detailed baseline acceptance clause. See [delivery workflow](DELIVERY_WORKFLOW.md).
 
 [Programme index](README.md) · [Capability reconciliation](CAPABILITY_RECONCILIATION.md)
+
+## Tracker requirement coverage
+
+Adopted additive families from R&D §7 / PR roadmap §12 on 2026-11-24 (PD005).
+TRK identifiers supplement REQ01–REQ50; neither family rows nor completed work are
+renumbered. Planned is not implemented. P references resolve to the private-reference
+[catalogue](../images/pikkit-tracker/CATALOGUE.md). The [tracker addition](TRACKER_ADDITION.md)
+retains detailed acceptance, dependencies and original ownership.
+
+| ID | Capability | R&D locator | Destination | Reference / key boundary |
+| --- | --- | --- | --- | --- |
+| <a id="trk01"></a>TRK01 | Adoption and source traceability | §§7.1,7.12 | N001 | PD005 and N001; Original versions, N/R crosswalk and additive sequencing |
+| <a id="trk02"></a>TRK02 | Source-linked ticket/leg ledger and annotations | §§7.4,7.11 | N002, N004 | P08; One economic position, immutable observations, reversible manual records |
+| <a id="trk03"></a>TRK03 | Shared accounting, selection and denominators | §§7.3,7.11 | N003 | P01, P02, P04, P08; Same eligible rows, dated units/timezone and unknown-state semantics |
+| <a id="trk04"></a>TRK04 | Daily Home and searchable ledger UI | §§7.3–7.4 | N004 | P03, P08; Daily review, scoped search, pagination, details and empty states |
+| <a id="trk05"></a>TRK05 | Performance, custom/season periods and calendar | §7.3 | N005 | P01, P02, P04, P06; Linked curves/full breakdowns/date controls/heatmaps |
+| <a id="trk06"></a>TRK06 | Tags, saved views and cohort comparison | §7.5 | N006 | P07, P08; Three cohorts, overlap, auditable tags and TEST-only passes |
+| <a id="trk07"></a>TRK07 | Balances, cash movements, promotions and open risk | §7.6 | N007 | P05, P14; Reconciled currencies/accounts; missing is not zero; rewards proposed |
+| <a id="trk08"></a>TRK08 | Qualified closing-reference analysis | §7.7 | N008 | P09, P10, P11; Covered samples, explicit formulas/source semantics, no fair-value inference |
+| <a id="trk09"></a>TRK09 | Ladders, repeats, conflicts and correlated scenarios | §7.8 | N009 | P12; Feasible joint payoffs, separate duplicate ingestion and actual exposure |
+| <a id="trk10"></a>TRK10 | Historical events and conditional quote review | §7.9 | N010 | P13; Date/league event browsing; supported prices; non-executing review slip |
+| <a id="trk11"></a>TRK11 | Global search and optional evidence assistant | §7.10 | N011 | P01, P03, P08, P14; Cited rows/calculations; local templates first; external AI conditional |
+| <a id="trk12"></a>TRK12 | Preferences, privacy, export and accessibility | §7.10 | N012 | P04, P08, P14; Dated units/odds/time basis, theme, safe export and appropriate sessions |
+| <a id="trk13"></a>TRK13 | Conditional supported read-only sync | §§7.6,7.11 | N013 | P05, P08; Source access/freshness/reconciliation; manual-import fallback |
+| <a id="trk14"></a>TRK14 | Integrated acceptance and coverage reconciliation | §7.12 | N014 | P01–P14; Exact totals/navigation, synthetic cases, required UI review and retained optional work |

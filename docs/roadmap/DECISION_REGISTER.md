@@ -23,6 +23,8 @@ actual decision and links. Append changes; never silently rewrite an old decisio
 | PD003 | 2026-11-23; routine R02 implementation within baseline option | Publish stable screenshot placeholders and A–G case references | R02 permits placeholders; [R02 plan](pr-plans/R02.md), [PR #35](https://github.com/Gopher16/oddsjam-ev-filters/pull/35) | Raw images remain private; future assets still need deliberate review |
 | PD004 | 2026-11-23; routine R04 documentation interpretation | Preserve conditional dependency clauses and distinguish current implementation from planned branches | [R04 plan](pr-plans/R04.md), baseline R34/R58–R60, [change log](CHANGE_LOG.md) | No baseline work removed or automatically activated; partial/optional legacy work retains destinations |
 
+| PD005 | 2026-11-24; accepted owner amendment | Adopt R&D §7, PR roadmap §12 and delivery agreement §10; register N001–N014 before R10 | Owner requested tracker addition, supplied expanded documents and applied them for next eligible PR; [versions](SOURCE_BASELINES.md), [N001 plan](pr-plans/N001.md) | Preserve R01–R60/REQ01–REQ50 and completed PRs. N001 is docs only; later N implementation needs selection/readiness. No account, deployment or execution activation |
+
 ## Decisions still required at their gates
 
 These are pending baseline questions, not approved architecture decisions:
