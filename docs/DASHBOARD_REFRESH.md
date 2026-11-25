@@ -23,9 +23,12 @@ ODDSJAM_DASHBOARD_CONFIG=/absolute/private/dashboard.yaml PYTHONPATH=src poetry 
 ## Review, build and activate
 
 1. Expand **Refresh Bet Tracker CSV**, drop a CSV or use the accessible file picker.
-   R09 bounds are 20,000,000 bytes, 100,000 rows and 100 columns. Supply a stable
-   source/account alias, confirmed source timezone (or `unknown`), declared full/
-   partial coverage, and optional aware ISO export timestamp. These are declarations,
+   R10 review increases the byte bound to 50,000,000 bytes; 100,000 rows and
+   100 columns remain enforced. On first use, expand Source settings, confirm
+   full/partial coverage and save your account alias and timezone once. Future
+   uploads reuse those settings; overrides stay available in the expander.
+   Export time is optional and never replaced with upload time. CSV timestamp
+   offsets are preserved; naive timestamps retain the declared timezone or unknown. These are declarations,
    not verified completeness or freshness. No date is inferred from the filename.
 2. Select **Preview CSV**. Inspect new/unchanged/revised/unresolved candidate rows,
    settlement revisions, source diagnostics and repeat status. Changes to controls

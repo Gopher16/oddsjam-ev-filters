@@ -50,3 +50,41 @@ def test_empty_catalogue_requires_explicit_activation(setup, tmp_path, monkeypat
         app.sidebar.selectbox(key="selected_run").value
         == refresh.status(ui_jobs, job)["outcome"]["run_id"]
     )
+
+
+def test_source_settings_saved_and_reused(setup, tmp_path, monkeypatch):
+    from dataclasses import asdict
+
+    import yaml
+    from streamlit.testing.v1 import AppTest
+
+    cfg, _, _, _ = request(setup, tmp_path)
+    pipeline = tmp_path / "pipeline.yaml"
+    pipeline.write_text(yaml.safe_dump(asdict(cfg)))
+    dashboard = tmp_path / "dashboard.yaml"
+    dashboard.write_text(
+        yaml.safe_dump({"artifact_root": cfg.output_root, "refresh_pipeline_config": str(pipeline)})
+    )
+    monkeypatch.setenv("ODDSJAM_DASHBOARD_CONFIG", str(dashboard))
+    script = str(Path(__file__).resolve().parents[1] / "dashboard/app.py")
+    app = AppTest.from_file(script).run(timeout=30)
+    next(s for s in app.selectbox if s.label == "Usual export coverage").select("full")
+    next(t for t in app.text_input if t.label == "Source/account alias").set_value(
+        "my-account"
+    ).run(timeout=30)
+    next(b for b in app.button if b.label == "Save source settings").click().run(timeout=30)
+    assert not app.exception and not app.error
+    fresh = AppTest.from_file(script).run(timeout=30)
+    assert (
+        next(t for t in fresh.text_input if t.label == "Source/account alias").value == "my-account"
+    )
+    assert next(s for s in fresh.selectbox if s.label == "Usual export coverage").value == "full"
+    assert not fresh.exception and not fresh.error
+
+    next(t for t in fresh.text_input if t.label == "Source/account alias").set_value("updated").run(
+        timeout=30
+    )
+    next(b for b in fresh.button if b.label == "Save source settings").click().run(timeout=30)
+    assert not fresh.exception and not fresh.error
+    again = AppTest.from_file(script).run(timeout=30)
+    assert next(t for t in again.text_input if t.label == "Source/account alias").value == "updated"

@@ -33,7 +33,7 @@ from oddsjam_ev.io.manifests import write_json, writer_lock
 from oddsjam_ev.io.reconcile import reconcile
 from oddsjam_ev.io.source_csv import fingerprint, read_source
 
-MAX_BYTES = 20_000_000
+MAX_BYTES = 50_000_000
 MAX_ROWS = 100_000
 MAX_COLUMNS = 100
 

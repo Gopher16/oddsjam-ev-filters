@@ -258,3 +258,15 @@ def test_symlink_stage_and_public_directory_rejected(tmp_path):
             filename="bets.csv",
             metadata=SourceMetadata("owner"),
         )
+
+
+def test_export_above_previous_byte_limit(monkeypatch):
+    import pandas as pd
+
+    from oddsjam_ev.io import staging
+
+    monkeypatch.setattr(staging, "read_source", lambda data: (pd.DataFrame({"id": [1]}), {}))
+    frame, _ = staging._parse(b"x" * 28_000_000)
+    assert len(frame) == 1
+    with pytest.raises(ValueError, match="byte limit"):
+        staging._parse(b"x" * (staging.MAX_BYTES + 1))

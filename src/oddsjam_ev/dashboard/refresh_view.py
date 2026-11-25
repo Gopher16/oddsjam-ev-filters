@@ -1,5 +1,8 @@
 """Opt-in local CSV refresh controls, separate from report selection."""
 
+import json
+import os
+import tempfile
 from pathlib import Path
 
 import streamlit as st
@@ -17,7 +20,7 @@ def render(config_path: str, artifact_root: Path):
     """Offer bounded staging, explicit build and verified activation in that order."""
     with st.expander("Refresh Bet Tracker CSV"):
         st.caption(
-            "Local use only · CSV up to 20 MB / 100,000 rows. Builds preserve your selected report."
+            "Local use only · CSV up to 50 MB / 100,000 rows. Builds preserve your selected report."
         )
         try:
             cfg = read_config(Path(config_path))
@@ -30,16 +33,57 @@ def render(config_path: str, artifact_root: Path):
             upload = st.file_uploader(
                 "Drop a Bet Tracker CSV or browse files",
                 type=["csv"],
-                max_upload_size=20,
+                max_upload_size=50,
                 key="refresh_upload",
             )
-            namespace = st.text_input(
-                "Source/account alias", value=bundle["source_config"]["source"]["namespace"]
+            settings_path = private / "source_settings.json"
+            settings = json.loads(settings_path.read_text()) if settings_path.exists() else {}
+            default_source = bundle["source_config"]["source"]
+            default_namespace = default_source["namespace"]
+            if default_namespace == "demo":
+                default_namespace = "oddsjam"
+            st.caption(
+                "Source settings are remembered locally. Coverage cannot be proven from CSV rows; "
+                "confirm your usual export once below. Upload time is recorded automatically, "
+                "but is not treated as export time."
             )
-            timezone = st.text_input("Source timestamp timezone (IANA or unknown)", value="unknown")
-            scope = st.selectbox("Declared export coverage", ["unknown", "full", "partial"])
-            exported = st.text_input(
-                "Export time (optional, ISO timestamp with timezone)", value=""
+            with st.expander("Source settings (first upload or overrides)", expanded=not settings):
+                namespace = st.text_input(
+                    "Source/account alias", value=settings.get("namespace", default_namespace)
+                )
+                timezone = st.text_input(
+                    "Timezone for timestamps without offsets",
+                    value=settings.get(
+                        "timestamp_timezone", default_source.get("timestamp_timezone", "unknown")
+                    ),
+                    help="Timestamp offsets in the CSV are preserved. A timezone cannot safely be inferred for naive timestamps.",
+                )
+                scopes = ["unknown", "full", "partial"]
+                scope = st.selectbox(
+                    "Usual export coverage",
+                    scopes,
+                    index=scopes.index(settings.get("scope", "unknown")),
+                )
+                if st.button("Save source settings", disabled=scope == "unknown"):
+                    source = SourceMetadata(namespace, None, timezone, scope)
+                    from dataclasses import asdict
+
+                    from oddsjam_ev.io.staging import _private_root
+
+                    _private_root(private)
+                    with tempfile.NamedTemporaryFile(mode="w", dir=private, delete=False) as saved:
+                        json.dump(asdict(source), saved)
+                        saved_path = Path(saved.name)
+                    try:
+                        os.replace(saved_path, settings_path)
+                    finally:
+                        saved_path.unlink(missing_ok=True)
+                    st.success("Source settings saved for future uploads.")
+                exported = st.text_input(
+                    "Actual export time (optional override, ISO timestamp with timezone)", value=""
+                )
+            st.caption(
+                f"Using source: {namespace} · coverage: {scope} · naive timestamp timezone: {timezone}"
             )
             if st.button("Preview CSV", disabled=upload is None):
                 st.session_state.pop("refresh_preview", None)
@@ -131,5 +175,5 @@ def render(config_path: str, artifact_root: Path):
                         st.rerun()
         except Exception:
             st.error(
-                "Refresh could not complete or verify its frozen inputs. Re-preview if the source/store/configuration changed. Your selected report was preserved; inspect local receipts for recovery."
+                "Refresh could not complete or verify its frozen inputs. Check CSV size (50 MB), row count (100,000), source settings and local receipts. Re-preview if inputs changed. Your selected report was preserved."
             )
