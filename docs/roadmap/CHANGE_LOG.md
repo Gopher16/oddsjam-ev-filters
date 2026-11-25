@@ -129,3 +129,9 @@ No baseline scope retired or changed.
   acceptance; no UI exists to review. N014 retains future visual/data acceptance.
 - **Sources:** supplied Word files unchanged by this PR. [N001 plan](pr-plans/N001.md),
   [source versions](SOURCE_BASELINES.md), [tracker scope](TRACKER_ADDITION.md).
+
+### 2026-11-24 — R10 planned after N001 adoption
+
+N001 merged in PR #43 at b08275880a2c0ab1ecfe701062575107377592cc;
+main CI 45525069997 passed. R10 proceeds under its original R09 dependency.
+See [R10 plan](pr-plans/R10.md); no baseline work removed or renumbered.
