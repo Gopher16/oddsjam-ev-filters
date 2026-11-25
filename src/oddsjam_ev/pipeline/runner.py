@@ -5,6 +5,7 @@ import hashlib
 import json
 import tempfile
 import uuid
+from collections.abc import Callable
 from dataclasses import asdict
 from datetime import UTC, datetime
 from pathlib import Path
@@ -79,6 +80,10 @@ def _summary(stage, path):
     return summary
 
 
+class PipelineCancelled(Exception):
+    """Cooperative stop requested at a safe publication boundary."""
+
+
 def run_pipeline(
     cfg: PipelineConfig,
     *,
@@ -91,6 +96,8 @@ def run_pipeline(
     decisions: Path | None = None,
     research_job: Path | None = None,
     fit_models: bool = False,
+    on_event: Callable[[dict], None] | None = None,
+    cancelled: Callable[[], bool] | None = None,
 ) -> dict:
     """Run one explicit input or resume an exact frozen plan.
 
@@ -112,6 +119,12 @@ def run_pipeline(
             entry = {"stage": stage, "state": state, "recorded_at": utc_now(), **fields}
             atomic_json(attempt / f"{len(events):04d}.json", entry)
             events.append(entry)
+            if on_event is not None:
+                on_event({**entry, "run_id": run_id})
+
+        def check_cancel():
+            if cancelled is not None and cancelled():
+                raise PipelineCancelled
 
         def finish(status, exit_code, error_code=None):
             record = {
@@ -136,6 +149,7 @@ def run_pipeline(
             return finish(code, 3)
 
         try:
+            check_cancel()
             input_request = None
             configs = configuration_bundle(cfg)
             code = code_provenance()
@@ -317,6 +331,7 @@ def run_pipeline(
             def stage(name, function, dependencies=None):
                 nonlocal current_stage
                 current_stage = name
+                check_cancel()
                 event(name, "started")
                 checkpoint = cache / f"{name}.json"
                 if checkpoint.exists():
@@ -452,6 +467,7 @@ def run_pipeline(
                     }
                 }
             current_stage = "publication"
+            check_cancel()
             if (
                 code_provenance() != spec["code"]
                 or configuration_bundle(cfg) != spec["configuration"]
@@ -488,12 +504,16 @@ def run_pipeline(
                     if job_manifest is not None:
                         atomic_json(staged / "job.json", job_manifest)
                     load_result(staged)
+                    check_cancel()
                     staged.rename(destination)
             event("publication", "completed", run_id=run_id)
             return finish(
                 "completed_historical" if spec["mode"] == "historical_reanalysis" else "completed",
                 0,
             )
+        except PipelineCancelled:
+            event(current_stage, "cancelled")
+            return finish("cancelled", 4, "operator_cancelled")
         except Exception as exc:
             # Unexpected failures must not dump source-bearing exception text to logs.
             code = (
