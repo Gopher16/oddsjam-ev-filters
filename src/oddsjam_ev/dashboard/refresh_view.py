@@ -28,7 +28,10 @@ def render(config_path: str, artifact_root: Path):
             private = artifact_root / "dashboard_refresh"
             staging, jobs = private / "staging", private / "jobs"
             upload = st.file_uploader(
-                "Drop a Bet Tracker CSV or browse files", type=["csv"], key="refresh_upload"
+                "Drop a Bet Tracker CSV or browse files",
+                type=["csv"],
+                max_upload_size=20,
+                key="refresh_upload",
             )
             namespace = st.text_input(
                 "Source/account alias", value=bundle["source_config"]["source"]["namespace"]
