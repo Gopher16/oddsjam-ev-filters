@@ -1,7 +1,7 @@
 # Delivering one roadmap PR
 
 Apply this workflow when the owner selects a PR or requests the next eligible one
-under the [frozen delivery agreement](SOURCE_BASELINES.md). A plan is saved and
+under the [versioned delivery agreement and adopted amendments](SOURCE_BASELINES.md). A plan is saved and
 presented before implementation; routine approval pauses are not required. A request
 to continue the next unfinished commit authorizes finishing the current PR, not
 skipping a pending owner checkpoint or automatically starting another PR.
@@ -17,13 +17,16 @@ skipping a pending owner checkpoint or automatically starting another PR.
 3. Verify dependencies are actually merged into main, including required post-merge
    checks. Record actual PR numbers/merge SHAs. Evaluate the register's conditional
    clauses explicitly; do not convert feasibility into activation permission.
-4. Identify current capability to reuse and unresolved evidence. Pick the lowest
-   eligible planned ID if none was specified; document why it is eligible. Missing
+4. Identify current capability to reuse and unresolved evidence. Apply accepted scheduling amendments first: N001 is the checkpoint before R10.
+   Otherwise pick the lowest eligible original R ID if none was specified. Later
+   N items need explicit selection or recorded owner-authorized scheduling; document
+   why the selected item is eligible. Missing
    evidence or a material baseline conflict is not permission to invent a workaround.
 
 ## 2. Save and present the detailed plan
 
-Use [pr-plans/TEMPLATE.md](pr-plans/TEMPLATE.md) as `pr-plans/Rxx.md`. Include the
+Use [pr-plans/TEMPLATE.md](pr-plans/TEMPLATE.md) as `pr-plans/Rxx.md`
+or `pr-plans/Nxxx.md` for an adopted additive PR. Include the
 problem/before-and-after behavior; source/REQ/legacy IDs; dependency evidence;
 exact files, contracts and adapters; ordered Conventional Commits; acceptance
 examples; tests and owner checkpoints; failure/empty states; migration, rollout,
@@ -136,3 +139,14 @@ never renumber history. Optional dated Word delivery-status reports can suppleme
 Git records if requested, without editing either frozen baseline.
 
 [Programme index](README.md) · [Delivery register](DELIVERY_REGISTER.md)
+
+## Adopted source amendments
+
+Preserve archived originals and applied-source fingerprints. An explicit owner
+request may produce a dated additive version; applying it authorizes only the
+selected PR under the delivery agreement. Read the full original sections and
+adopted addenda, compare changed content and record authority/disposition. A changed
+hash is neither automatic rejection nor automatic approval of all new work. PD005
+adopts tracker scope and N001-before-R10 sequencing; unchanged R01–R60 remain intact.
+Use [source versions](SOURCE_BASELINES.md) and [tracker cards](TRACKER_ADDITION.md).
+Do not edit supplied Word files during implementation or publish private captures.

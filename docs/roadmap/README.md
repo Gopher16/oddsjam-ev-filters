@@ -14,7 +14,8 @@ R01–R60 are stable identities; actual GitHub PR numbers and merge evidence are
 | [PR plan template](pr-plans/TEMPLATE.md) | File-level plan and acceptance/commit/completion record for each selected PR |
 | [Programme decision register](DECISION_REGISTER.md) | Approved versus proposed decisions; significant architecture choices link to ADRs |
 | [Change log](CHANGE_LOG.md) | Chronological departures, reasons, affected IDs and preserved work |
-| [Opportunity backlog](OPPORTUNITY_BACKLOG.md) | New N-series ideas awaiting explicit prioritization |
+| [Opportunity backlog](OPPORTUNITY_BACKLOG.md) | Additive N-series dispositions and new ideas |
+| [Personal tracker addition](TRACKER_ADDITION.md) | Adopted N001–N014 scope, reuse, dependencies and private-reference catalogue |
 
 ## Programme phases
 
@@ -27,10 +28,13 @@ Section 5 acceptance. Conditional phases I–N (R34–R60) explore independent c
 models/strategies, execution, fantasy, expansion and sustainable operations.
 The register's actual dependency clauses control entry, not this broad sequence.
 
-R01–R03 are merged. R04 implementation is locally verified; remote checks and merge remain pending. Future features are
-not implemented merely because their row exists. The next normal candidate after
-R04's verified merge is R05, subject to its own source review and plan. No dates,
-external spending, framework rewrite or trading activation are promised here.
+R01–R09 are merged and verified. N001 is the current documentation-only adoption
+of the owner-requested personal tracker addition; its implementation/remote status
+is in the register. After N001's verified merge, R10 is next original candidate on
+a new owner prompt. Later N002–N014 are inserted only through explicit selection
+or a recorded owner-authorized schedule after their dependencies pass. No tracker
+feature is delivered merely because its entry exists. No external spending,
+framework rewrite, deployment or trading activation is promised.
 
 The existing [multidimensional implementation ledger](../plans/MULTIDIMENSIONAL_IMPLEMENTATION_STATUS.md)
 remains the detailed current-capability reference; the original discovery brief
