@@ -41,3 +41,35 @@ agreement before affected implementation.
 [Requirements](REQUIREMENTS.md) are public capability summaries; the private cards
 retain detailed acceptance requirements. [Change log](CHANGE_LOG.md) and
 [programme decisions](DECISION_REGISTER.md) preserve evolution without erasing intent.
+
+## 2026-11-24 — adopted tracker amendments (N001)
+
+The owner requested a Pikkit-inspired personal tracker after R09 and applied the
+expanded bundle in the next-PR instruction. R&D §7, PR roadmap §12 and delivery
+agreement §10 are accepted additive sources (PD005). Old sections remain dated
+baselines; N001 registers scope, not tracker implementation. R01–R60 and existing
+REQ IDs remain stable.
+
+The current sources use the normal filenames. Every paragraph's text, including
+tables, matches the dated expanded deliverables; package/XML metadata differs after
+saving. Retain both fingerprints, not an assertion of package byte equality. The
+preceding expansion verified original body children/section properties and non-body
+ZIP entries were preserved; this adoption reverified paragraph-text equality to
+those expanded copies. Private source files remain outside Git.
+
+| Applied expanded source | SHA-256 | Addition |
+| --- | --- | --- |
+| OddsJam Research & Development Roadmap.docx | `0a7e977a62f3efce7f4d40471d540bb361569557b45971aaecc92b2cbbeb1f0d` | §7 |
+| OddsJam Comprehensive PR Implementation Roadmap.docx | `ce4fe13a586c28ccc68e051f17b6690d5660dab74f6b4cf41661005a92e6cd22` | §12; N001–N014 |
+| OddsJam Reusable PR Delivery Instructions.docx | `3fffc28fd4efb55fe1d379fa0069c8e6fe26d8bf8555a8afe7bbe78e05e9df64` | §10 |
+
+Dated expanded-deliverable package fingerprints (2026-11-24):
+
+- OddsJam Research & Development Roadmap: `e7e0b60a13557f49fc1aa5f879c2bc08b4a3aa58f1970447bcea41f3a656e266`.
+- OddsJam Comprehensive PR Implementation Roadmap: `d28d4bfaa1a0a740a9c98d002f87908431d9d3890733d3be8d9a4b71c5dbf8d2`.
+- OddsJam Reusable PR Delivery Instructions: `a1f6e31c666852755ddeb37e776039e73c6e8570c95d38ccf1038dd171ce8405`.
+
+Future review reads unchanged baseline sections and adopted addenda. Retain archived
+hashes above; record changed versions/comparisons and actual owner disposition.
+Neither hash equality nor changed source content independently grants authority.
+See the [N001 plan](pr-plans/N001.md) and [decision register](DECISION_REGISTER.md).
