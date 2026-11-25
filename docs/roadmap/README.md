@@ -28,10 +28,9 @@ Section 5 acceptance. Conditional phases I–N (R34–R60) explore independent c
 models/strategies, execution, fantasy, expansion and sustainable operations.
 The register's actual dependency clauses control entry, not this broad sequence.
 
-R01–R09 are merged and verified. N001 is the current documentation-only adoption
-of the owner-requested personal tracker addition; its implementation/remote status
-is in the register. After N001's verified merge, R10 is next original candidate on
-a new owner prompt. Later N002–N014 are inserted only through explicit selection
+R01–R09 and N001 are merged and verified. R10 is the current selected PR;
+implementation is complete and owner UI acceptance is pending before merge.
+Later N002–N014 are inserted only through explicit selection
 or a recorded owner-authorized schedule after their dependencies pass. No tracker
 feature is delivered merely because its entry exists. No external spending,
 framework rewrite, deployment or trading activation is promised.
