@@ -34,8 +34,12 @@ from oddsjam_ev.io.reconcile import reconcile
 from oddsjam_ev.io.source_csv import fingerprint, read_source
 
 MAX_BYTES = 50_000_000
-MAX_ROWS = 100_000
+MAX_ROWS = 200_000
 MAX_COLUMNS = 100
+
+
+class UploadLimitError(ValueError):
+    """Safe, actionable upload-bound diagnostic without source contents."""
 
 
 def _private_root(root: Path) -> None:
@@ -46,10 +50,13 @@ def _private_root(root: Path) -> None:
 
 def _parse(data: bytes) -> tuple[pd.DataFrame, dict]:
     if len(data) > MAX_BYTES or b"\x00" in data:
-        raise ValueError("CSV exceeds byte limit or contains NUL bytes")
+        raise UploadLimitError("CSV exceeds the 50 MB byte limit or contains NUL bytes")
     frame, diagnostics = read_source(data)
     if len(frame) > MAX_ROWS or len(frame.columns) > MAX_COLUMNS:
-        raise ValueError("CSV exceeds row or column limit")
+        raise UploadLimitError(
+            f"CSV has {len(frame):,} rows and {len(frame.columns):,} columns; "
+            f"limits are {MAX_ROWS:,} rows and {MAX_COLUMNS:,} columns."
+        )
     return frame, diagnostics
 
 

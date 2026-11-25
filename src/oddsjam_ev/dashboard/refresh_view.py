@@ -12,7 +12,7 @@ from oddsjam_ev.dashboard.artifacts import load_published_run
 from oddsjam_ev.dashboard.labels import report_dates
 from oddsjam_ev.dashboard.queries import validate_display_contract
 from oddsjam_ev.io.ingestion import SourceMetadata
-from oddsjam_ev.io.staging import preview_csv, stage_csv
+from oddsjam_ev.io.staging import UploadLimitError, preview_csv, stage_csv
 from oddsjam_ev.pipeline.config import configuration_bundle, read_config
 
 
@@ -20,7 +20,7 @@ def render(config_path: str, artifact_root: Path):
     """Offer bounded staging, explicit build and verified activation in that order."""
     with st.expander("Refresh Bet Tracker CSV"):
         st.caption(
-            "Local use only · CSV up to 50 MB / 100,000 rows. Builds preserve your selected report."
+            "Local use only · CSV up to 50 MB / 200,000 rows. Builds preserve your selected report."
         )
         try:
             cfg = read_config(Path(config_path))
@@ -173,7 +173,9 @@ def render(config_path: str, artifact_root: Path):
                         st.session_state.selected_run = run_id
                         st.session_state.pop("published_run", None)
                         st.rerun()
+        except UploadLimitError as exc:
+            st.error(str(exc))
         except Exception:
             st.error(
-                "Refresh could not complete or verify its frozen inputs. Check CSV size (50 MB), row count (100,000), source settings and local receipts. Re-preview if inputs changed. Your selected report was preserved."
+                "Refresh could not complete or verify its frozen inputs. Check CSV size (50 MB), row count (200,000), source settings and local receipts. Re-preview if inputs changed. Your selected report was preserved."
             )
